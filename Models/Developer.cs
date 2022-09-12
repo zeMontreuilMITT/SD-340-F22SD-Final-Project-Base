@@ -3,6 +3,6 @@
     public class Developer
     {
         public int TaskAmount { get; set; }
-        public List<Task> TaskList { get; set; }
+        public List<Ticket> TaskList { get; set; }
     }
 }
