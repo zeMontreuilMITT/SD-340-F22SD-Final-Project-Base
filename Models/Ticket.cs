@@ -4,7 +4,9 @@
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public string Details { get; set; }
+        public string Body { get; set; }
+
+        public ICollection<ApplicationUser> AssignedUsers { get; set; } = new HashSet<ApplicationUser>();
 
         public Priority Priority { get; set; }
 
