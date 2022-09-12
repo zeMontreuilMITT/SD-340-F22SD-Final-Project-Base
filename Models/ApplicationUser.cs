@@ -7,8 +7,8 @@ namespace SD_340_W22SD_Final_Project_Group6.Models
     {
         public string Name { get; set; }
 
-        public ICollection<Ticket> tickets { get; set; } = new HashSet<Ticket>();
-        public ICollection<Project> projects { get; set; } = new HashSet<Project>();
+        public ICollection<Ticket> Tickets { get; set; } = new HashSet<Ticket>();
+        public ICollection<Project> Projects { get; set; } = new HashSet<Project>();
 
     }
 }

@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public ApplicationUser CreatedBy { get; set; }
 
-        public ICollection<Ticket> Tickets = new HashSet<Ticket>();
+        public Ticket Ticket { get; set; }
 
     }
 }

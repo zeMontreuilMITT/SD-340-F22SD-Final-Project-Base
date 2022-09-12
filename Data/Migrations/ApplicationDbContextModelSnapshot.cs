@@ -27,12 +27,12 @@ namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
                     b.Property<string>("AssignedUsersId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("ticketsId")
+                    b.Property<int>("TicketsId")
                         .HasColumnType("int");
 
-                    b.HasKey("AssignedUsersId", "ticketsId");
+                    b.HasKey("AssignedUsersId", "TicketsId");
 
-                    b.HasIndex("ticketsId");
+                    b.HasIndex("TicketsId");
 
                     b.ToTable("ApplicationUserTicket");
                 });
@@ -257,9 +257,14 @@ namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int>("TicketId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
+
+                    b.HasIndex("TicketId");
 
                     b.ToTable("Comments");
                 });
@@ -329,7 +334,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
 
                     b.HasOne("SD_340_W22SD_Final_Project_Group6.Models.Ticket", null)
                         .WithMany()
-                        .HasForeignKey("ticketsId")
+                        .HasForeignKey("TicketsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -393,13 +398,21 @@ namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SD_340_W22SD_Final_Project_Group6.Models.Ticket", "Ticket")
+                        .WithMany()
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("CreatedBy");
+
+                    b.Navigation("Ticket");
                 });
 
             modelBuilder.Entity("SD_340_W22SD_Final_Project_Group6.Models.Project", b =>
                 {
                     b.HasOne("SD_340_W22SD_Final_Project_Group6.Models.ApplicationUser", "CreatedBy")
-                        .WithMany("projects")
+                        .WithMany("Projects")
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -409,7 +422,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
 
             modelBuilder.Entity("SD_340_W22SD_Final_Project_Group6.Models.ApplicationUser", b =>
                 {
-                    b.Navigation("projects");
+                    b.Navigation("Projects");
                 });
 #pragma warning restore 612, 618
         }
