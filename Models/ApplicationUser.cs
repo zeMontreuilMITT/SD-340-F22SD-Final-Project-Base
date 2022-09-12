@@ -5,8 +5,6 @@ namespace SD_340_W22SD_Final_Project_Group6.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        [Key]
-        public int Id { get; set; }
         public string Name { get; set; }
 
         public ICollection<Ticket> tickets { get; set; } = new HashSet<Ticket>();

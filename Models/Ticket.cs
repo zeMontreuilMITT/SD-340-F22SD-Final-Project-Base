@@ -8,7 +8,7 @@
 
         public ICollection<ApplicationUser> AssignedUsers { get; set; } = new HashSet<ApplicationUser>();
 
-        public Priority Priority { get; set; }
+        public enum Priority { Low, Medium, High }
 
     }
 }
