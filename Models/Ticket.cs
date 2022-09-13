@@ -17,7 +17,14 @@ namespace SD_340_W22SD_Final_Project_Group6.Models
 
         public Project Project { get; set; }
 
-        public enum Priority { Low, Medium, High }
+        public Priority TicketPriority { get; set; }
+
+        public enum Priority
+        {
+            Low,
+            Medium,
+            High,
+        }
 
     }
 }
