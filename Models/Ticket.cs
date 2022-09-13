@@ -21,8 +21,11 @@ namespace SD_340_W22SD_Final_Project_Group6.Models
 
         public enum Priority
         {
+            [Display(Name = "Low")]
             Low,
+            [Display(Name = "Medium")]
             Medium,
+            [Display(Name = "High")]
             High,
         }
 

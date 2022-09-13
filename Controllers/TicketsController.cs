@@ -49,7 +49,22 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         // GET: Tickets/Create
         public IActionResult Create()
         {
-           return View();
+            List<SelectListItem> currProjects = new List<SelectListItem>();
+            _context.Projects.ToList().ForEach(t =>
+            {
+                currProjects.Add(new SelectListItem(t.ProjectName, t.Id.ToString()));
+            });
+
+            List<SelectListItem> currUsers = new List<SelectListItem>();
+            _context.Users.ToList().ForEach(t =>
+            {
+                currUsers.Add(new SelectListItem(t.UserName, t.Id.ToString()));
+            });
+
+            ViewBag.Projects = currProjects;
+            ViewBag.Users = currUsers;
+
+            return View();
 
         }
 
