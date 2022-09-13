@@ -19,7 +19,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Models
 
             List<string> roles = new List<string>
             {
-                "ProjectManager", "Developer"
+                "ProjectManager", "Developer", "User"
             };
 
             if (!context.Roles.Any())
@@ -65,30 +65,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Models
                 seedDeveloperUser1.PasswordHash = hashed2;
 
                 await userManager.CreateAsync(seedDeveloperUser1);
-                await userManager.AddToRoleAsync(seedDeveloperUser1, "GroupAdmin");
-
-
-                if (!context.Projects.Any())
-                {
-                    Project newProject = new Project
-                    {
-                        ProjectName = "Flavor Shots",
-                        CreatedBy = seedProjectManagerUser,
-                        AssignedTo = { seedProjectManagerUser, },
-                        Tickets = { },
-                    };
-
-                    Project newProject2 = new Project
-                    {
-                        ProjectName = "John Cena Endorsement",
-                        CreatedBy = seedProjectManagerUser,
-                        AssignedTo = { seedProjectManagerUser, },
-                        Tickets = { },
-                    };
-
-                    context.Add(newProject);
-                    context.Add(newProject2);
-                }
+                await userManager.AddToRoleAsync(seedDeveloperUser1, "Developer");
 
                 await context.SaveChangesAsync();
             }

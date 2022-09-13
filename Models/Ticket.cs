@@ -13,6 +13,8 @@ namespace SD_340_W22SD_Final_Project_Group6.Models
 
         public ICollection<ApplicationUser> AssignedUsers { get; set; } = new HashSet<ApplicationUser>();
 
+        public Project Project { get; set; }
+
         public enum Priority { Low, Medium, High }
 
     }

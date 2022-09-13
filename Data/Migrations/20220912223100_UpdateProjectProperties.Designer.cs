@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SD_340_W22SD_Final_Project_Group6.Data;
 
@@ -11,9 +12,10 @@ using SD_340_W22SD_Final_Project_Group6.Data;
 namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220912223100_UpdateProjectProperties")]
+    partial class UpdateProjectProperties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -304,9 +306,6 @@ namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int");
-
                     b.Property<int>("RequiredHours")
                         .HasColumnType("int");
 
@@ -315,8 +314,6 @@ namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProjectId");
 
                     b.ToTable("Tickets");
                 });
@@ -411,17 +408,6 @@ namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
                         .HasForeignKey("CreatedById");
 
                     b.Navigation("CreatedBy");
-                });
-
-            modelBuilder.Entity("SD_340_W22SD_Final_Project_Group6.Models.Ticket", b =>
-                {
-                    b.HasOne("SD_340_W22SD_Final_Project_Group6.Models.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("SD_340_W22SD_Final_Project_Group6.Models.ApplicationUser", b =>
