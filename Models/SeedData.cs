@@ -68,19 +68,6 @@ namespace SD_340_W22SD_Final_Project_Group6.Models
                 await userManager.AddToRoleAsync(seedDeveloperUser1, "Developer");
 
                 await context.SaveChangesAsync();
-
-                Project newProj1 = new Project();
-                newProj1.ProjectName = "Jellow Shots";
-                newProj1.CreatedBy = seedProjectManagerUser;
-
-                Project newProj2 = new Project();
-                newProj2.ProjectName = "You can't see me Jello";
-                newProj2.CreatedBy = seedProjectManagerUser;
-
-                await context.Projects.AddAsync(newProj1);
-                await context.Projects.AddAsync(newProj2);
-
-                await context.SaveChangesAsync();
             }
 
 
