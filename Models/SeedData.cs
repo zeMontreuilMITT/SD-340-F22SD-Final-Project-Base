@@ -70,6 +70,24 @@ namespace SD_340_W22SD_Final_Project_Group6.Models
                 await context.SaveChangesAsync();
             }
 
+            if(!context.Projects.Any())
+            {
+                Project newProj1 = new Project()
+                {
+                    ProjectName = "Seed Project One",
+                    CreatedBy = context.Users.First(),
+                };
+                await context.Projects.AddAsync(newProj1);
+
+                Project newProj2 = new Project()
+                {
+                    ProjectName = "Seed Project Two",
+                    CreatedBy = context.Users.First(),
+                };
+                await context.Projects.AddAsync(newProj2);
+
+                await context.SaveChangesAsync();
+            }
 
         }
     }
