@@ -24,7 +24,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         public async Task<IActionResult> Index()
         {
               return _context.Tickets != null ? 
-                          View(await _context.Tickets.ToListAsync()) :
+                          View(await _context.Tickets.Include(t => t.Project).Include(t => t.AssignedUsers).ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.Tickets'  is null.");
         }
 
@@ -73,7 +73,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Body,RequiredHours")] Ticket ticket)
+        public async Task<IActionResult> Create([Bind("Title,Body,RequiredHours,TicketPriority,Project,AssignedUsers")] Ticket ticket)
         {
             if (ModelState.IsValid)
             {
