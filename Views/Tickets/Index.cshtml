@@ -23,9 +23,6 @@
                 @Html.DisplayNameFor(model => model.RequiredHours)
             </th>
             <th>@Html.DisplayNameFor(model => model.Project)</th>
-                        <th>
-                @Html.DisplayNameFor(model => model.AssignedUsers)
-            </th>
         </tr>
     </thead>
     <tbody>
@@ -43,9 +40,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Project.ProjectName)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AssignedUsers.First().UserName)
-            </td>
+
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Assign" asp-route-id="@item.Id">Assign a Dev</a> |

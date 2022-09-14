@@ -73,10 +73,16 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Body,RequiredHours,TicketPriority")] Ticket ticket)
+        public async Task<IActionResult> Create([Bind("Id,Title,Body,RequiredHours,TicketPriority")] Ticket ticket, int projId, List<string> userIds)
         {
             if (ModelState.IsValid)
             { 
+                ticket.Project = await _context.Projects.FirstAsync(p => p.Id == projId);
+                userIds.ForEach((user) =>
+                {
+                    ApplicationUser currUser =  _context.Users.FirstOrDefault(u => u.Id == user);
+                    ticket.AssignedUsers.Add(currUser);
+                });
                 _context.Add(ticket);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
