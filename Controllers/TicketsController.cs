@@ -36,7 +36,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets
+            var ticket = await _context.Tickets.Include(u => u.AssignedUsers)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (ticket == null)
             {

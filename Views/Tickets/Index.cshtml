@@ -20,9 +20,10 @@
                 @Html.DisplayNameFor(model => model.Body)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.RequiredHours)
+                Required Hours
             </th>
             <th>@Html.DisplayNameFor(model => model.Project)</th>
+                        <th>Developer Count</th>
         </tr>
     </thead>
     <tbody>
@@ -39,6 +40,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Project.ProjectName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AssignedUsers.Count)
             </td>
 
             <td>

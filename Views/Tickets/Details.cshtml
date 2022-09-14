@@ -5,10 +5,10 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
+<h1>Details for:</h1>
 
 <div>
-    <h4>Ticket</h4>
+    <h4>Ticket #@Model.Id</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -24,12 +24,23 @@
             @Html.DisplayFor(model => model.Body)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RequiredHours)
+            Required Hours
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.RequiredHours)
         </dd>
+        <dt class = "col-sm-2">
+            Assigned Developers
+        </dt>
     </dl>
+            <ol>
+            @foreach (var dev in Model.AssignedUsers)
+            {
+                <li>
+                @dev.Name
+                </li>
+            }
+        </ol>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
