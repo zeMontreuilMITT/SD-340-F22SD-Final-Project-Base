@@ -19,6 +19,8 @@ namespace SD_340_W22SD_Final_Project_Group6.Models
 
         public Priority? TicketPriority { get; set; }
 
+        public ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
+
         public enum Priority
         {
             [Display(Name = "Low")]

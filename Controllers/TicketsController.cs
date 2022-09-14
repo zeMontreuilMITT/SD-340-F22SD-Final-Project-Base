@@ -36,7 +36,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets.Include(u => u.AssignedUsers)
+            var ticket = await _context.Tickets.Include(u => u.AssignedUsers).ThenInclude(c => c.Comments)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (ticket == null)
             {
@@ -141,6 +141,38 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             return View(ticket);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CommentTask(int TaskId, string? TaskText)
+        {
+            if (TaskId != null || TaskText != null)
+            {
+                try
+                {
+                    Comment newComment = new Comment();
+                    string userName = User.Identity.Name;
+                    ApplicationUser user = _context.Users.First(u => u.UserName == userName);
+                    Ticket ticket = _context.Tickets.FirstOrDefault(t => t.Id == TaskId);
+
+                    newComment.CreatedBy = user;
+                    newComment.Description = TaskText;
+                    newComment.Ticket = ticket;
+                    user.Comments.Add(newComment);
+                    _context.Comments.Add(newComment);
+                    ticket.Comments.Add(newComment);
+
+                    int Id = TaskId;
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("Details", new {Id});
+
+                }
+                catch (Exception ex)
+                {
+                    return RedirectToAction("Error", "Home");
+                }
+            }
+            return RedirectToAction("Index");
+        }
+
         // GET: Tickets/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -184,3 +216,4 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         }
     }
 }
+
