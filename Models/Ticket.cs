@@ -13,11 +13,11 @@ namespace SD_340_W22SD_Final_Project_Group6.Models
         [Range(1,999)]
         public int RequiredHours { get; set; }  
 
-        public ICollection<ApplicationUser> AssignedUsers { get; set; } = new HashSet<ApplicationUser>();
+        public ICollection<ApplicationUser>? AssignedUsers { get; set; } = new HashSet<ApplicationUser>();
 
-        public Project Project { get; set; }
+        public Project? Project { get; set; }
 
-        public Priority TicketPriority { get; set; }
+        public Priority? TicketPriority { get; set; }
 
         public enum Priority
         {
