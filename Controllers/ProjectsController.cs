@@ -23,7 +23,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         public async Task<IActionResult> Index()
         {
               return _context.Projects != null ? 
-                          View(await _context.Projects.Include(p => p.CreatedBy).ToListAsync()) :
+                          View(await _context.Projects.Include(p => p.CreatedBy).Include(p => p.AssignedTo).ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.Projects'  is null.");
         }
 
@@ -43,6 +43,19 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             }
 
             return View(project);
+        }
+
+        public async Task<IActionResult> RemoveAssignedUser(string id, int projId)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            UserProject currUserProj = await _context.UserProjects.FirstAsync(up => up.ProjectId == projId && up.UserId == id);
+            _context.UserProjects.Remove(currUserProj);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Edit", new { id = projId });
         }
 
         // GET: Projects/Create
@@ -84,7 +97,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 return NotFound();
             }
 
-            List<ApplicationUser> results = _context.Users.Where(u => !project.AssignedTo.Contains(u)).ToList();
+            List<ApplicationUser> results = _context.Users.ToList();
 
             List<SelectListItem> currUsers = new List<SelectListItem>();
             results.ForEach(r =>
@@ -115,7 +128,11 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                     userIds.ForEach((user) =>
                     {
                         ApplicationUser currUser = _context.Users.FirstOrDefault(u => u.Id == user);
-                        project.AssignedTo.Add(currUser);
+                        UserProject newUserProj = new UserProject();
+                        newUserProj.ApplicationUser = currUser;
+                        newUserProj.UserId = currUser.Id;
+                        newUserProj.Project = project;
+                        project.AssignedTo.Add(newUserProj);
                     });
                     _context.Update(project);
                     await _context.SaveChangesAsync();
@@ -163,10 +180,24 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.Projects'  is null.");
             }
-            var project = await _context.Projects.FindAsync(id);
+            var project = await _context.Projects.Include(p => p.Tickets).FirstAsync(p => p.Id == id);
             if (project != null)
             {
+                List<Ticket> tickets = project.Tickets.ToList();
+                tickets.ForEach(ticket =>
+                {
+                    _context.Tickets.Remove(ticket);
+                });
+                await _context.SaveChangesAsync();
+                List<UserProject> userProjects = _context.UserProjects.Where(up => up.ProjectId == project.Id).ToList();
+                userProjects.ForEach(userProj =>
+                {
+                    _context.UserProjects.Remove(userProj);
+                });
+
                 _context.Projects.Remove(project);
+                
+                
             }
             
             await _context.SaveChangesAsync();

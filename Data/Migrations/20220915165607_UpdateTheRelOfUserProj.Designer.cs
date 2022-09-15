@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SD_340_W22SD_Final_Project_Group6.Data;
 
@@ -11,9 +12,10 @@ using SD_340_W22SD_Final_Project_Group6.Data;
 namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220915165607_UpdateTheRelOfUserProj")]
+    partial class UpdateTheRelOfUserProj
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -220,6 +222,9 @@ namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("int");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -239,6 +244,8 @@ namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("ProjectId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -335,6 +342,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("ApplicationUserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int?>("ProjectId")
@@ -349,7 +357,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("UserProjects");
+                    b.ToTable("UserProject");
                 });
 
             modelBuilder.Entity("ApplicationUserTicket", b =>
@@ -418,6 +426,13 @@ namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SD_340_W22SD_Final_Project_Group6.Models.ApplicationUser", b =>
+                {
+                    b.HasOne("SD_340_W22SD_Final_Project_Group6.Models.Project", null)
+                        .WithMany("AssignedTo")
+                        .HasForeignKey("ProjectId");
+                });
+
             modelBuilder.Entity("SD_340_W22SD_Final_Project_Group6.Models.Comment", b =>
                 {
                     b.HasOne("SD_340_W22SD_Final_Project_Group6.Models.ApplicationUser", "CreatedBy")
@@ -457,10 +472,12 @@ namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
                 {
                     b.HasOne("SD_340_W22SD_Final_Project_Group6.Models.ApplicationUser", "ApplicationUser")
                         .WithMany("Projects")
-                        .HasForeignKey("ApplicationUserId");
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("SD_340_W22SD_Final_Project_Group6.Models.Project", "Project")
-                        .WithMany("AssignedTo")
+                        .WithMany()
                         .HasForeignKey("ProjectId");
 
                     b.Navigation("ApplicationUser");

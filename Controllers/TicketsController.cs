@@ -78,12 +78,14 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             if (ModelState.IsValid)
             { 
                 ticket.Project = await _context.Projects.FirstAsync(p => p.Id == projId);
+                Project currProj = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projId);
                 userIds.ForEach((user) =>
                 {
                     ApplicationUser currUser =  _context.Users.FirstOrDefault(u => u.Id == user);
                     ticket.AssignedUsers.Add(currUser);
                 });
                 _context.Add(ticket);
+                currProj.Tickets.Add(ticket);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -212,7 +214,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets
+            var ticket = await _context.Tickets.Include(t => t.Project)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (ticket == null)
             {
@@ -225,15 +227,17 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         // POST: Tickets/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id, int projId)
         {
             if (_context.Tickets == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Tickets'  is null.");
             }
-            var ticket = await _context.Tickets.FindAsync(id);
+            var ticket = await _context.Tickets.Include(t => t.Project).FirstAsync(p => p.Id == id);
+            Project currProj = await _context.Projects.FirstAsync(p => p.Id.Equals(projId));
             if (ticket != null)
             {
+                currProj.Tickets.Remove(ticket);
                 _context.Tickets.Remove(ticket);
             }
             
