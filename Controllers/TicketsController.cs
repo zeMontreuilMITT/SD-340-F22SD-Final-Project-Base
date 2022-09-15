@@ -98,12 +98,38 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets.FindAsync(id);
+            var ticket = await _context.Tickets.Include(t => t.AssignedUsers).FirstAsync(t => t.Id == id);
+      
             if (ticket == null)
             {
                 return NotFound();
             }
+
+            List<ApplicationUser> results = _context.Users.Where(u => !ticket.AssignedUsers.Contains(u)).ToList();
+
+            List<SelectListItem> currUsers = new List<SelectListItem>();
+            results.ForEach(r =>
+            {
+                currUsers.Add(new SelectListItem(r.UserName, r.Id.ToString()));
+            });
+            ViewBag.Users = currUsers;
+
             return View(ticket);
+        }
+
+        
+        public async Task<IActionResult> RemoveAssignedUser(string id, int ticketId)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            Ticket currTicket = await _context.Tickets.Include(t => t.AssignedUsers).FirstAsync(t => t.Id == ticketId);
+            ApplicationUser currUser = await _context.Users.FirstAsync(u => u.Id == id);
+            currTicket.AssignedUsers.Remove(currUser);
+            await _context.SaveChangesAsync();
+            
+            return RedirectToAction("Edit", new { id = ticketId });
         }
 
         // POST: Tickets/Edit/5
@@ -111,7 +137,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Body,RequiredHours")] Ticket ticket)
+        public async Task<IActionResult> Edit(int id,List<string> userIds, [Bind("Id,Title,Body,RequiredHours")] Ticket ticket)
         {
             if (id != ticket.Id)
             {
@@ -122,6 +148,11 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             {
                 try
                 {
+                    userIds.ForEach((user) =>
+                    {
+                        ApplicationUser currUser = _context.Users.FirstOrDefault(u => u.Id == user);
+                        ticket.AssignedUsers.Add(currUser);
+                    });
                     _context.Update(ticket);
                     await _context.SaveChangesAsync();
                 }
@@ -136,7 +167,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Edit), new {id = ticket.Id});
             }
             return View(ticket);
         }
