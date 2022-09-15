@@ -23,7 +23,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         public async Task<IActionResult> Index()
         {
               return _context.Projects != null ? 
-                          View(await _context.Projects.Include(p => p.CreatedBy).Include(p => p.AssignedTo).ToListAsync()) :
+                          View(await _context.Projects.Include(p => p.CreatedBy).Include(p => p.AssignedTo).Include(p => p.Tickets).ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.Projects'  is null.");
         }
 

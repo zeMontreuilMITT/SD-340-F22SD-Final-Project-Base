@@ -1,43 +1,71 @@
 ﻿@model IEnumerable<SD_340_W22SD_Final_Project_Group6.Models.Project>
 
 @{
-    ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewData["Title"] = "Index";
+	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Projects</h1>
+<div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center">
+	<h1>Projects</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ProjectName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedBy)
-            </th>
-            <th>Assigned To Count</th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProjectName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
-            </td>
-            <td>@item.AssignedTo.Count()</td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+	<p>
+		<a asp-action="Create">Create New Project</a>
+	</p>
+</div>
+
+
+<div>
+	@foreach (var item in Model)
+	{
+		<div style="margin-bottom: 2rem; border: 1px solid gray; border-radius: 10px; padding: 1rem">
+			<div style="display:flex; flex-direction: row; justify-content: space-between">
+				<h4>Project Name: @item.ProjectName</h4>
+				<h4>Created By: @item.CreatedBy</h4>
+				<h4>Assigned To</h4>
+				<div>
+					<form>
+						<input asp-action="Edit" asp-controller="Projects" asp-route-id=@item.Id type="submit" class="btn btn-dark" value="Edit" />
+						<input asp-action="Delete" asp-controller="Projects" asp-route-id=@item.Id type="submit" class="btn btn-danger" value="Delete" />
+					</form>
+				</div>
+
+			</div>
+
+
+			<h4>Tickets</h4>
+
+
+			<table class="table">
+				<thead>
+					<tr>
+						<th>TicketName</th>
+						<th>Body</th>
+						<th>Required Hours</th>
+						<th>Settings</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var ticket in item.Tickets)
+					{
+						<tr>
+							<td>@ticket.Title</td>
+							<td>@ticket.Body</td>
+							<td>@ticket.RequiredHours</td>
+							<td>
+								<a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id">Edit</a> |
+								<a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id">Details</a> |
+								<a asp-action="Delete" asp-controller="Tickets" asp-route-id="@ticket.Id">Delete</a>
+							</td>
+						</tr>
+					}
+
+				</tbody>
+			</table>
+			<p>
+				<a asp-action="Create" asp-controller="Tickets">Create New Ticket</a>
+			</p>
+		</div>
+	}
+</div>
+
+
