@@ -24,7 +24,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         public async Task<IActionResult> Index()
         {
               return _context.Tickets != null ? 
-                          View(await _context.Tickets.Include(t => t.Project).Include(t => t.AssignedUsers).ToListAsync()) :
+                          View(await _context.Tickets.Include(t => t.Project).Include(t => t.Owner).ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.Tickets'  is null.");
         }
 
@@ -36,7 +36,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets.Include(u => u.AssignedUsers).ThenInclude(c => c.Comments)
+            var ticket = await _context.Tickets.Include(u => u.Owner).ThenInclude(c => c.Comments)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (ticket == null)
             {
@@ -47,13 +47,9 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         }
 
         // GET: Tickets/Create
-        public IActionResult Create()
+        public IActionResult Create(int projId)
         {
-            List<SelectListItem> currProjects = new List<SelectListItem>();
-            _context.Projects.ToList().ForEach(t =>
-            {
-                currProjects.Add(new SelectListItem(t.ProjectName, t.Id.ToString()));
-            });
+            Project currProject = _context.Projects.FirstOrDefault(p => p.Id == projId);
 
             List<SelectListItem> currUsers = new List<SelectListItem>();
             _context.Users.ToList().ForEach(t =>
@@ -61,7 +57,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 currUsers.Add(new SelectListItem(t.UserName, t.Id.ToString()));
             });
 
-            ViewBag.Projects = currProjects;
+            ViewBag.Projects = currProject;
             ViewBag.Users = currUsers;
 
             return View();
@@ -73,17 +69,14 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Body,RequiredHours,TicketPriority")] Ticket ticket, int projId, List<string> userIds)
+        public async Task<IActionResult> Create([Bind("Id,Title,Body,RequiredHours,TicketPriority")] Ticket ticket, int projId, string userId)
         {
             if (ModelState.IsValid)
             { 
                 ticket.Project = await _context.Projects.FirstAsync(p => p.Id == projId);
                 Project currProj = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projId);
-                userIds.ForEach((user) =>
-                {
-                    ApplicationUser currUser =  _context.Users.FirstOrDefault(u => u.Id == user);
-                    ticket.AssignedUsers.Add(currUser);
-                });
+                ApplicationUser owner = _context.Users.FirstOrDefault(u => u.Id == userId);
+                ticket.Owner = owner;
                 _context.Add(ticket);
                 currProj.Tickets.Add(ticket);
                 await _context.SaveChangesAsync();
@@ -100,14 +93,14 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets.Include(t => t.AssignedUsers).FirstAsync(t => t.Id == id);
+            var ticket = await _context.Tickets.Include(t => t.Owner).FirstAsync(t => t.Id == id);
       
             if (ticket == null)
             {
                 return NotFound();
             }
 
-            List<ApplicationUser> results = _context.Users.Where(u => !ticket.AssignedUsers.Contains(u)).ToList();
+            List<ApplicationUser> results = _context.Users.Where(u => u != ticket.Owner).ToList();
 
             List<SelectListItem> currUsers = new List<SelectListItem>();
             results.ForEach(r =>
@@ -126,9 +119,10 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             {
                 return NotFound();
             }
-            Ticket currTicket = await _context.Tickets.Include(t => t.AssignedUsers).FirstAsync(t => t.Id == ticketId);
+            Ticket currTicket = await _context.Tickets.Include(t => t.Owner).FirstAsync(t => t.Id == ticketId);
             ApplicationUser currUser = await _context.Users.FirstAsync(u => u.Id == id);
-            currTicket.AssignedUsers.Remove(currUser);
+            //To be fixed ASAP
+            currTicket.Owner = currUser;
             await _context.SaveChangesAsync();
             
             return RedirectToAction("Edit", new { id = ticketId });
@@ -139,7 +133,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,List<string> userIds, [Bind("Id,Title,Body,RequiredHours")] Ticket ticket)
+        public async Task<IActionResult> Edit(int id,string userId, [Bind("Id,Title,Body,RequiredHours")] Ticket ticket)
         {
             if (id != ticket.Id)
             {
@@ -150,11 +144,8 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             {
                 try
                 {
-                    userIds.ForEach((user) =>
-                    {
-                        ApplicationUser currUser = _context.Users.FirstOrDefault(u => u.Id == user);
-                        ticket.AssignedUsers.Add(currUser);
-                    });
+                    ApplicationUser currUser = _context.Users.FirstOrDefault(u => u.Id == userId);
+                    ticket.Owner = currUser;
                     _context.Update(ticket);
                     await _context.SaveChangesAsync();
                 }

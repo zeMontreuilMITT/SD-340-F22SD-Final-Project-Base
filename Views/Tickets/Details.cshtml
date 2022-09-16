@@ -33,14 +33,9 @@
             Assigned Developers
         </dt>
     </dl>
-            <ol>
-            @foreach (var dev in Model.AssignedUsers)
-            {
-                <li>
-                @dev.Name
-                </li>
-            }
-        </ol>
+	<ol>
+		<li>@Model.Owner</li>
+	</ol>
 
         <h5>Comments</h5>
         <ol>

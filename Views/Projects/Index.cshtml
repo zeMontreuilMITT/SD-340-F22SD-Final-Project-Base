@@ -1,15 +1,28 @@
-﻿@model IEnumerable<SD_340_W22SD_Final_Project_Group6.Models.Project>
+﻿
+@model IPagedList<SD_340_W22SD_Final_Project_Group6.Models.Project>
+@using X.PagedList;
+@using X.PagedList.Mvc.Bootstrap4.Core
+@using X.PagedList.Mvc.Core;
+@using X.PagedList.Mvc.Bootstrap4;
 
 @{
 	ViewData["Title"] = "Index";
 	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+
 <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center">
 	<h1>Projects</h1>
 
 	<p>
 		<a asp-action="Create">Create New Project</a>
+	</p>
+
+	<p>
+		<a asp-action="Index" asp-route-sortOrder="Priority" name="sortOrder">Priority</a>
+	</p>
+	<p>
+		<a asp-action="Index" asp-route-sortOrder="RequiredHrs" name="sortOrder">RequiredHrs</a>
 	</p>
 </div>
 
@@ -41,6 +54,7 @@
 						<th>TicketName</th>
 						<th>Body</th>
 						<th>Required Hours</th>
+						<th>Priority</th>
 						<th>Settings</th>
 					</tr>
 				</thead>
@@ -51,8 +65,9 @@
 							<td>@ticket.Title</td>
 							<td>@ticket.Body</td>
 							<td>@ticket.RequiredHours</td>
+							<td>@ticket.TicketPriority</td>
 							<td>
-								<a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id">Edit</a> |
+								@*<a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id">Edit</a>*@
 								<a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id">Details</a> |
 								<a asp-action="Delete" asp-controller="Tickets" asp-route-id="@ticket.Id">Delete</a>
 							</td>
@@ -62,10 +77,14 @@
 				</tbody>
 			</table>
 			<p>
-				<a asp-action="Create" asp-controller="Tickets">Create New Ticket</a>
+				<a asp-action="Create" asp-controller="Tickets" asp-route-projId="@item.Id" name="projId">Create New Ticket</a>
 			</p>
 		</div>
 	}
+	            
 </div>
+		<div>
+                @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), Bootstrap4PagedListRenderOptions.PageNumbersOnly)
+            </div>
 
 

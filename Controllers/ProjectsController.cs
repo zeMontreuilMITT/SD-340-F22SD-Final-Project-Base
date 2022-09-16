@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SD_340_W22SD_Final_Project_Group6.Data;
 using SD_340_W22SD_Final_Project_Group6.Models;
+using X.PagedList;
+using X.PagedList.Mvc;
+
 
 namespace SD_340_W22SD_Final_Project_Group6.Controllers
 {
@@ -20,11 +23,27 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         }
 
         // GET: Projects
-        public async Task<IActionResult> Index()
-        {
-              return _context.Projects != null ? 
-                          View(await _context.Projects.Include(p => p.CreatedBy).Include(p => p.AssignedTo).Include(p => p.Tickets).ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Projects'  is null.");
+        public async Task<IActionResult> Index(string? sortOrder, int? page)
+        { 
+
+            List<Project> SortedProjs = new List<Project>();
+            
+
+            switch (sortOrder)
+            {
+                case "Priority":
+                    SortedProjs = await _context.Projects.Include(p => p.CreatedBy).Include(p => p.AssignedTo).Include(p => p.Tickets.OrderByDescending(t => t.TicketPriority)).ToListAsync();
+                    break;
+                case "RequiredHrs":
+                    SortedProjs = await _context.Projects.Include(p => p.CreatedBy).Include(p => p.AssignedTo).Include(p => p.Tickets.OrderByDescending(t => t.RequiredHours)).ToListAsync();
+                    break;
+                default:
+                    SortedProjs = await _context.Projects.Include(p => p.CreatedBy).Include(p => p.AssignedTo).Include(p => p.Tickets).ToListAsync();
+                    break;
+            }
+            X.PagedList.IPagedList<Project> projList = SortedProjs.ToPagedList(page ?? 1, 3);
+            return View(projList);
+
         }
 
         // GET: Projects/Details/5

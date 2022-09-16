@@ -67,6 +67,21 @@ namespace SD_340_W22SD_Final_Project_Group6.Models
                 await userManager.CreateAsync(seedDeveloperUser1);
                 await userManager.AddToRoleAsync(seedDeveloperUser1, "Developer");
 
+                ApplicationUser seedAdminUser = new ApplicationUser
+                {
+                    Email = "admin@jello.com",
+                    NormalizedEmail = "ADMIN@JELLO.COM",
+                    UserName = "admin@jello.com",
+                    NormalizedUserName = "ADMIN@JELLO.COM",
+                    Name = "Admiral Jello",
+                    EmailConfirmed = true,
+                };
+
+                var password3 = new PasswordHasher<ApplicationUser>();
+                var hashed3 = password3.HashPassword(seedAdminUser, "P@ssW0rd");
+                seedAdminUser.PasswordHash = hashed3;
+                await userManager.CreateAsync(seedAdminUser);
+                await userManager.AddToRoleAsync(seedAdminUser, "Admin");
                 await context.SaveChangesAsync();
             }
 

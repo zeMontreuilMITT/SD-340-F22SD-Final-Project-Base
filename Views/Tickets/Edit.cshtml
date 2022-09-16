@@ -33,28 +33,21 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.AssignedUsers)
+                @Html.DisplayNameFor(model => model.Owner)
             </th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.AssignedUsers) {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserName)
-            </td>
-            <td>
-                <a asp-action="RemoveAssignedUser" asp-route-id="@item.Id" asp-route-ticketId="@Model.Id">Remove</a>
-            </td>
+            <td>@Model.Owner</td>
         </tr>
-}
     </tbody>
 </table>
                 <div class="form-group">
                     <input type="hidden" value=@Model.Id name="ticketId" />
-                    <label asp-for="AssignedUsers" class="control-label">Select Users:</label>
-                    <select name="userIds" asp-for="AssignedUsers" asp-items=@ViewBag.Users></select>
-                    <span asp-validation-for="AssignedUsers" class="text-danger"></span>
+                    <label asp-for="Owner" class="control-label">Select Users:</label>
+                    <select name="userId" asp-for="Owner" asp-items=@ViewBag.Users></select>
+                    <span asp-validation-for="Owner" class="text-danger"></span>
                 </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
