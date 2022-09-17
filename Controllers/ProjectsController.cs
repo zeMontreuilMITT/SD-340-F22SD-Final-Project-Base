@@ -32,13 +32,13 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             switch (sortOrder)
             {
                 case "Priority":
-                    SortedProjs = await _context.Projects.Include(p => p.CreatedBy).Include(p => p.AssignedTo).Include(p => p.Tickets.OrderByDescending(t => t.TicketPriority)).ToListAsync();
+                    SortedProjs = await _context.Projects.Include(p => p.CreatedBy).Include(p => p.AssignedTo).Include(p => p.Tickets.OrderByDescending(t => t.TicketPriority)).ThenInclude(t => t.Owner).ToListAsync();
                     break;
                 case "RequiredHrs":
-                    SortedProjs = await _context.Projects.Include(p => p.CreatedBy).Include(p => p.AssignedTo).Include(p => p.Tickets.OrderByDescending(t => t.RequiredHours)).ToListAsync();
+                    SortedProjs = await _context.Projects.Include(p => p.CreatedBy).Include(p => p.AssignedTo).Include(p => p.Tickets.OrderByDescending(t => t.RequiredHours)).ThenInclude(t => t.Owner).ToListAsync();
                     break;
                 default:
-                    SortedProjs = await _context.Projects.Include(p => p.CreatedBy).Include(p => p.AssignedTo).Include(p => p.Tickets).ToListAsync();
+                    SortedProjs = await _context.Projects.Include(p => p.CreatedBy).Include(p => p.AssignedTo).Include(p => p.Tickets).ThenInclude(t => t.Owner).ToListAsync();
                     break;
             }
             X.PagedList.IPagedList<Project> projList = SortedProjs.ToPagedList(page ?? 1, 3);

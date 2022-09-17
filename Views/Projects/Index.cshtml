@@ -1,5 +1,4 @@
-﻿
-@model IPagedList<SD_340_W22SD_Final_Project_Group6.Models.Project>
+﻿@model IPagedList<SD_340_W22SD_Final_Project_Group6.Models.Project>
 @using X.PagedList;
 @using X.PagedList.Mvc.Bootstrap4.Core
 @using X.PagedList.Mvc.Core;
@@ -11,27 +10,27 @@
 }
 
 
-<div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center">
-	<h1>Projects</h1>
+<div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 1rem">
+	<div>
+		<h4 style="display: inline">Projects</h4>
+		<a asp-action="Create" class="btn" style="background-color: #E4BCB9">Create New</a>
+	</div>
 
-	<p>
-		<a asp-action="Create">Create New Project</a>
-	</p>
 
-	<p>
-		<a asp-action="Index" asp-route-sortOrder="Priority" name="sortOrder">Priority</a>
-	</p>
-	<p>
-		<a asp-action="Index" asp-route-sortOrder="RequiredHrs" name="sortOrder">RequiredHrs</a>
-	</p>
+	<div>
+		<a asp-action="Index" asp-route-sortOrder="Priority" name="sortOrder" class="btn" style="background-color: #E4BCB9">Sort by Priority</a>
+		<a asp-action="Index" asp-route-sortOrder="RequiredHrs" name="sortOrder" class="btn" style="background-color: #E4BCB9">Sort by RequiredHrs</a>
+	</div>
+
+
 </div>
 
 
 <div>
 	@foreach (var item in Model)
 	{
-		<div style="margin-bottom: 2rem; border: 1px solid gray; border-radius: 10px; padding: 1rem">
-			<div style="display:flex; flex-direction: row; justify-content: space-between">
+		<div style="margin-bottom: 2rem; border: 1px solid gray; border-radius: 10px; padding: 1rem; background-color: white">
+			<div style="display:flex; flex-direction: row; justify-content: space-between; border-bottom: solid 1px gray; padding-bottom: 1rem; margin-bottom: 1rem">
 				<h4>Project Name: @item.ProjectName</h4>
 				<h4>Created By: @item.CreatedBy</h4>
 				<h4>Assigned To</h4>
@@ -55,6 +54,7 @@
 						<th>Body</th>
 						<th>Required Hours</th>
 						<th>Priority</th>
+						<th>Owner</th>
 						<th>Settings</th>
 					</tr>
 				</thead>
@@ -66,6 +66,7 @@
 							<td>@ticket.Body</td>
 							<td>@ticket.RequiredHours</td>
 							<td>@ticket.TicketPriority</td>
+							<td>@ticket.Owner</td>
 							<td>
 								@*<a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id">Edit</a>*@
 								<a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id">Details</a> |
@@ -81,10 +82,10 @@
 			</p>
 		</div>
 	}
-	            
+
 </div>
-		<div>
-                @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), Bootstrap4PagedListRenderOptions.PageNumbersOnly)
-            </div>
+<div>
+	@Html.PagedListPager(Model, page => Url.Action("Index", new { page }), Bootstrap4PagedListRenderOptions.PageNumbersOnly)
+</div>
 
 

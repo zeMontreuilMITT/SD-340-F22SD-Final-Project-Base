@@ -37,7 +37,7 @@
             <div class="form-group">
                 <label asp-for="Project" class="control-label"></label>
                 <input type="hidden" value="@ViewBag.Projects.Id" name="projId"/>
-                <p>@ViewBag.Projects.ProjectName</p>
+                <p style="font-weight: bold; display: inline">@ViewBag.Projects.ProjectName</p>
                 <span asp-validation-for="Project" class="text-danger"></span>
             </div>
                         <div class="form-group">
@@ -57,7 +57,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" asp-controller="Projects">Back to List</a>
 </div>
 
 @section Scripts {

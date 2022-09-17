@@ -49,12 +49,12 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         // GET: Tickets/Create
         public IActionResult Create(int projId)
         {
-            Project currProject = _context.Projects.FirstOrDefault(p => p.Id == projId);
+            Project currProject = _context.Projects.Include(p => p.AssignedTo).ThenInclude(at => at.ApplicationUser).FirstOrDefault(p => p.Id == projId);
 
             List<SelectListItem> currUsers = new List<SelectListItem>();
-            _context.Users.ToList().ForEach(t =>
+            currProject.AssignedTo.ToList().ForEach(t =>
             {
-                currUsers.Add(new SelectListItem(t.UserName, t.Id.ToString()));
+                currUsers.Add(new SelectListItem(t.ApplicationUser.UserName, t.Id.ToString()));
             });
 
             ViewBag.Projects = currProject;
@@ -80,7 +80,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 _context.Add(ticket);
                 currProj.Tickets.Add(ticket);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index","Projects", new { area = ""});
             }
             return View(ticket);
         }
