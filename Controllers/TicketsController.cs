@@ -204,6 +204,26 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             return RedirectToAction("Index");
         }
 
+        public async Task<IActionResult> UpdateHrs(int id, int hrs)
+        {
+            if (id != null || hrs != null)
+            {
+                try
+                {
+                    Ticket ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
+                    ticket.RequiredHours = hrs;
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("Details", new { id });
+
+                }
+                catch (Exception ex)
+                {
+                    return RedirectToAction("Error", "Home");
+                }
+            }
+            return RedirectToAction("Index");
+        }
+
         public async Task<IActionResult> AddToWatchers(int id)
         {
             if (id != null)
