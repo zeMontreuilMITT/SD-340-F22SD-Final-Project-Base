@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SD_340_W22SD_Final_Project_Group6.Data;
 
@@ -11,9 +12,10 @@ using SD_340_W22SD_Final_Project_Group6.Data;
 namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220918183733_AddTicketWatcherModel")]
+    partial class AddTicketWatcherModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -332,6 +334,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("WatcherId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -340,7 +343,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
 
                     b.HasIndex("WatcherId");
 
-                    b.ToTable("TicketWatchers");
+                    b.ToTable("TicketWatcher");
                 });
 
             modelBuilder.Entity("SD_340_W22SD_Final_Project_Group6.Models.UserProject", b =>
@@ -471,7 +474,9 @@ namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
 
                     b.HasOne("SD_340_W22SD_Final_Project_Group6.Models.ApplicationUser", "Watcher")
                         .WithMany("TicketWatching")
-                        .HasForeignKey("WatcherId");
+                        .HasForeignKey("WatcherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Ticket");
 

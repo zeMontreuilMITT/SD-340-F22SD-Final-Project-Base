@@ -14,69 +14,190 @@
 <div>
 	<h4>Ticket #@Model.Title - Project @Model.Project.ProjectName</h4>
 	<hr />
-	@if(User.Identity.Name == Model.Owner.UserName)
+	@if (User.Identity.Name != Model.Owner.UserName && !Model.TicketWatchers.Any(tw => tw.Watcher.UserName == User.Identity.Name))
 	{
-		
+		<dl class="row">
+			<dt class="col-sm-2">
+				@Html.DisplayNameFor(model => model.Title)
+			</dt>
+			<dd class="col-sm-10">
+				@Html.DisplayFor(model => model.Title)
+			</dd>
+			<dt class="col-sm-2">
+				@Html.DisplayNameFor(model => model.Body)
+			</dt>
+			<dd class="col-sm-10">
+				@Html.DisplayFor(model => model.Body)
+			</dd>
+			<dt class="col-sm-2">
+				Priority
+			</dt>
+			<dd class="col-sm-10">
+				@Html.DisplayFor(model => model.TicketPriority)
+			</dd>
+			<dt class="col-sm-2">
+				Required Hours
+			</dt>
+			<dd class="col-sm-10">
+				@Html.DisplayFor(model => model.RequiredHours)
+			</dd>
+			<dt class="col-sm-2">
+				Owner
+			</dt>
+			<dd class="col-sm-10">
+				@Html.DisplayFor(model => model.Owner.UserName)
+			</dd>
+			<dt class="col-sm-2">
+				Completed
+			</dt>
+			<dd class="col-sm-10">
+				@Html.DisplayFor(model => model.Completed.Value)
+			</dd>
+			<span>
+				<a asp-action="AddToWatchers" asp-controller="Tickets" asp-route-id="@Model.Id" class="btn" style="background-color: #E4BCB9">Add to Watching</a>
+			</span>
+			<h5>Comments</h5>
+			<ol>
+				@foreach (var comment in Model.Comments)
+				{
+					<li>
+						@comment.Description
+						By @comment.CreatedBy
+					</li>
+				}
+			</ol>
+		</dl>
 	}
-	
-	<dl class="row">
-		<dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.Title)
-		</dt>
-		<dd class="col-sm-10">
-			@Html.DisplayFor(model => model.Title)
-		</dd>
-		<dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.Body)
-		</dt>
-		<dd class="col-sm-10">
-			@Html.DisplayFor(model => model.Body)
-		</dd>
-		<dt class="col-sm-2">
-			Priority
-		</dt>
-		<dd class="col-sm-10">
-			@Html.DisplayFor(model => model.TicketPriority)
-		</dd>
-		<dt class="col-sm-2">
-			Required Hours
-		</dt>
-		<dd class="col-sm-10">
-			@Html.DisplayFor(model => model.RequiredHours)
-		</dd>
-		<dt class="col-sm-2">
-			Owner
-		</dt>
-		<dd class="col-sm-10">
-			@Html.DisplayFor(model => model.Owner.UserName)
-		</dd>
-		<dt class="col-sm-2">
-			Completed
-		</dt>
-		<dd class="col-sm-10">
-			@Html.DisplayFor(model => model.Completed.Value)
-		</dd>
-	</dl>
+	@if (Model.TicketWatchers.Any(tw => tw.Watcher.UserName == User.Identity.Name))
+	{
+		<dl class="row">
+			<dt class="col-sm-2">
+				@Html.DisplayNameFor(model => model.Title)
+			</dt>
+			<dd class="col-sm-10">
+				@Html.DisplayFor(model => model.Title)
+			</dd>
+			<dt class="col-sm-2">
+				@Html.DisplayNameFor(model => model.Body)
+			</dt>
+			<dd class="col-sm-10">
+				@Html.DisplayFor(model => model.Body)
+			</dd>
+			<dt class="col-sm-2">
+				Priority
+			</dt>
+			<dd class="col-sm-10">
+				@Html.DisplayFor(model => model.TicketPriority)
+			</dd>
+			<dt class="col-sm-2">
+				Required Hours
+			</dt>
+			<dd class="col-sm-10">
+				@Html.DisplayFor(model => model.RequiredHours)
+			</dd>
+			<dt class="col-sm-2">
+				Owner
+			</dt>
+			<dd class="col-sm-10">
+				@Html.DisplayFor(model => model.Owner.UserName)
+			</dd>
+			<dt class="col-sm-2">
+				Completed
+			</dt>
+			<dd class="col-sm-10">
+				@Html.DisplayFor(model => model.Completed.Value)
+			</dd>
+			<span>
+				<a asp-action="UnWatch" asp-controller="Tickets" asp-route-id="@Model.Id" class="btn" style="background-color: #E4BCB9">Unwatch</a>
+			</span>
+			<h5>Comments</h5>
+			<ol>
+				@foreach (var comment in Model.Comments)
+				{
+					<li>
+						@comment.Description
+						By @comment.CreatedBy
+					</li>
+				}
+			</ol>
+			<form asp-action="CommentTask" method="post" asp-controller="Tickets" asp-route-TaskId="@Model.Id">
+				<div class="form-group">
+					<label asp-for="Comments" class="control-label"></label>
+					<input name="TaskText" class="form-control" />
+					<span asp-validation-for="Comments" class="text-danger"></span>
+				</div>
+			</form>
+		</dl>
+	}
 
-	<h5>Comments</h5>
-	<ol>
-		@foreach (var comment in Model.Comments)
-		{
-			<li>
-				@comment.Description
-				By @comment.CreatedBy
-			</li>
-		}
-	</ol>
+	@if (User.Identity.Name == Model.Owner.UserName)
+	{
+		<dl class="row">
+			<dt class="col-sm-2">
+				@Html.DisplayNameFor(model => model.Title)
+			</dt>
+			<dd class="col-sm-10">
+				@Html.DisplayFor(model => model.Title)
+			</dd>
+			<dt class="col-sm-2">
+				@Html.DisplayNameFor(model => model.Body)
+			</dt>
+			<dd class="col-sm-10">
+				@Html.DisplayFor(model => model.Body)
+			</dd>
+			<dt class="col-sm-2">
+				Priority
+			</dt>
+			<dd class="col-sm-10">
+				@Html.DisplayFor(model => model.TicketPriority)
+			</dd>
+			<dt class="col-sm-2">
+				Required Hours
+			</dt>
+			<dd class="col-sm-10">
+				<form>
+				<div class="form-group">
+					<input asp-for="RequiredHours" class="form-control" style="width: 20px"/>
+					<span asp-validation-for="RequiredHours" class="text-danger"></span>
+				</div>
+				</form>
+			</dd>
+			<dt class="col-sm-2">
+				Owner
+			</dt>
+			<dd class="col-sm-10">
+				@Html.DisplayFor(model => model.Owner.UserName)
+			</dd>
+			<dt class="col-sm-2">
+				Completed
+			</dt>
+			<dd class="col-sm-10">
+				<a asp-action="MarkAsCompleted" asp-controller="Tickets" asp-route-id="@Model.Id" class="btn" style="background-color: #E4BCB9">Mark As Completed</a>
+			</dd>
+
+			<h5>Comments</h5>
+			<ol>
+				@foreach (var comment in Model.Comments)
+				{
+					<li>
+						@comment.Description
+						By @comment.CreatedBy
+					</li>
+				}
+			</ol>
+			<form asp-action="CommentTask" method="post" asp-controller="Tickets" asp-route-TaskId="@Model.Id">
+				<div class="form-group">
+					<label asp-for="Comments" class="control-label"></label>
+					<input name="TaskText" class="form-control" />
+					<span asp-validation-for="Comments" class="text-danger"></span>
+				</div>
+			</form>
+		</dl>
+	}
+
 </div>
 
-<form asp-action="CommentTask" method="post" asp-controller="Tickets" asp-route-TaskId="@Model.Id">
-	<div class="form-group">
-		<label asp-for="Comments" class="control-label"></label>
-		<input name="TaskText" class="form-control" />
-		<span asp-validation-for="Comments" class="text-danger"></span>
-	</div>
-</form>
+
 
 <div>
 

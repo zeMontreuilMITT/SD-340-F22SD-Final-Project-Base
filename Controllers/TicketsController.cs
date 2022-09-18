@@ -36,8 +36,15 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets.Include(t => t.Project).Include(u => u.Owner).ThenInclude(c => c.Comments)
+            var ticket = await _context.Tickets.Include(t => t.Project).Include(t => t.TicketWatchers).ThenInclude(tw => tw.Watcher).Include(u => u.Owner).ThenInclude(c => c.Comments)
                 .FirstOrDefaultAsync(m => m.Id == id);
+            List<SelectListItem> currUsers = new List<SelectListItem>();
+            ticket.Project.AssignedTo.ToList().ForEach(t =>
+            {
+                currUsers.Add(new SelectListItem(t.ApplicationUser.UserName, t.ApplicationUser.Id.ToString()));
+            });
+            ViewBag.Users = currUsers;
+
             if (ticket == null)
             {
                 return NotFound();
@@ -197,6 +204,63 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             return RedirectToAction("Index");
         }
 
+        public async Task<IActionResult> AddToWatchers(int id)
+        {
+            if (id != null)
+            {
+                try
+                {
+                    TicketWatcher newTickWatch = new TicketWatcher();
+                    string userName = User.Identity.Name;
+                    ApplicationUser user = _context.Users.First(u => u.UserName == userName);
+                    Ticket ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
+
+                    newTickWatch.Ticket = ticket;
+                    newTickWatch.Watcher = user;
+                    user.TicketWatching.Add(newTickWatch);
+                    ticket.TicketWatchers.Add(newTickWatch);
+                    _context.Add(newTickWatch);
+
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("Details", new { id });
+
+                }
+                catch (Exception ex)
+                {
+                    return RedirectToAction("Error", "Home");
+                }
+            }
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> UnWatch(int id)
+        {
+            if (id != null)
+            {
+                try
+                {
+                    
+                    string userName = User.Identity.Name;
+                    ApplicationUser user = _context.Users.First(u => u.UserName == userName);
+                    Ticket ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
+                    TicketWatcher currTickWatch = await _context.TicketWatchers.FirstAsync(tw => tw.Ticket.Equals(ticket) && tw.Watcher.Equals(user));
+                    _context.TicketWatchers.Remove(currTickWatch);
+                    ticket.TicketWatchers.Remove(currTickWatch);
+                    user.TicketWatching.Remove(currTickWatch);
+
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("Details", new { id });
+
+                }
+                catch (Exception ex)
+                {
+                    return RedirectToAction("Error", "Home");
+                }
+            }
+            return RedirectToAction("Index");
+        }
+
+
         // GET: Tickets/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -233,7 +297,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             }
             
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Projects");
         }
 
         private bool TicketExists(int id)

@@ -32,13 +32,35 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             switch (sortOrder)
             {
                 case "Priority":
-                    SortedProjs = await _context.Projects.Include(p => p.CreatedBy).Include(p => p.AssignedTo).ThenInclude(at => at.ApplicationUser).Include(p => p.Tickets.OrderByDescending(t => t.TicketPriority)).ThenInclude(t => t.Owner).ToListAsync();
+                    SortedProjs = 
+                        await _context.Projects
+                        .Include(p => p.CreatedBy)
+                        .Include(p => p.AssignedTo)
+                        .ThenInclude(at => at.ApplicationUser)
+                        .Include(p => p.Tickets.OrderByDescending(t => t.TicketPriority))
+                        .ThenInclude(t => t.Owner)
+                        .ToListAsync();
                     break;
                 case "RequiredHrs":
-                    SortedProjs = await _context.Projects.Include(p => p.CreatedBy).Include(p => p.AssignedTo).ThenInclude(at => at.ApplicationUser).Include(p => p.Tickets.OrderByDescending(t => t.RequiredHours)).ThenInclude(t => t.Owner).ToListAsync();
+                    SortedProjs = 
+                        await _context.Projects
+                        .Include(p => p.CreatedBy)
+                        .Include(p => p.AssignedTo)
+                        .ThenInclude(at => at.ApplicationUser)
+                        .Include(p => p.Tickets.OrderByDescending(t => t.RequiredHours))
+                        .ThenInclude(t => t.Owner)
+                        .ToListAsync();
                     break;
                 default:
-                    SortedProjs = await _context.Projects.Include(p => p.CreatedBy).Include(p => p.AssignedTo).ThenInclude(at => at.ApplicationUser).Include(p => p.Tickets).ThenInclude(t => t.Owner).ToListAsync();
+                    SortedProjs = 
+                        await _context.Projects
+                        .Include(p => p.CreatedBy)
+                        .Include(p => p.AssignedTo)
+                        .ThenInclude(at => at.ApplicationUser)
+                        .Include(p => p.Tickets)
+                        .ThenInclude(t => t.Owner)
+                        .Include(p => p.Tickets).ThenInclude(t => t.TicketWatchers).ThenInclude(tw => tw.Watcher)
+                        .ToListAsync();
                     break;
             }
             X.PagedList.IPagedList<Project> projList = SortedProjs.ToPagedList(page ?? 1, 3);
