@@ -57,30 +57,29 @@
 				<thead>
 					<tr>
 						<th>TicketName</th>
-						<th>Body</th>
+						<th>Owner</th>
 						<th>Required Hours</th>
 						<th>Priority</th>
-						<th>Owner</th>
+
 						<th>Watching</th>
 						<th>Completed</th>
-						<th>Settings</th>
+						<th>Delete</th>
 					</tr>
 				</thead>
 				<tbody>
 					@foreach (var ticket in item.Tickets)
 					{
 						<tr>
-							<td>@ticket.Title</td>
-							<td>@ticket.Body</td>
+							<td><a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id">@ticket.Title</a></td>
+							<td>@ticket.Owner</td>
 							<td>@ticket.RequiredHours</td>
 							<td>@ticket.TicketPriority</td>
-							<td>@ticket.Owner</td>
+
 							<td>&#128065</td>
 							<td>&#9989</td>
 							<td>
 								@*<a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id">Edit</a>*@
-								<a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id">Details</a> |
-								<a asp-action="Delete" asp-controller="Tickets" asp-route-id="@ticket.Id">Delete</a>
+								<a asp-action="Delete" asp-controller="Tickets" asp-route-id="@ticket.Id">&#128465</a>
 							</td>
 						</tr>
 					}

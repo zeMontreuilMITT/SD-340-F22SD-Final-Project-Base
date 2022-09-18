@@ -1,63 +1,84 @@
-﻿@model SD_340_W22SD_Final_Project_Group6.Models.Ticket
+﻿@using Microsoft.AspNetCore.Identity
+@model SD_340_W22SD_Final_Project_Group6.Models.Ticket
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
 
 @{
-    ViewData["Title"] = "Details";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewData["Title"] = "Details";
+	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h1>Details for:</h1>
 
 <div>
-    <h4>Ticket #@Model.Id</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Body)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Body)
-        </dd>
-        <dt class = "col-sm-2">
-            Required Hours
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RequiredHours)
-        </dd>
-        <dt class = "col-sm-2">
-            Assigned Developers
-        </dt>
-    </dl>
-	<ol>
-		<li>@Model.Owner</li>
-	</ol>
+	<h4>Ticket #@Model.Title - Project @Model.Project.ProjectName</h4>
+	<hr />
+	@if(User.Identity.Name == Model.Owner.UserName)
+	{
+		
+	}
+	
+	<dl class="row">
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(model => model.Title)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.Title)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(model => model.Body)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.Body)
+		</dd>
+		<dt class="col-sm-2">
+			Priority
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.TicketPriority)
+		</dd>
+		<dt class="col-sm-2">
+			Required Hours
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.RequiredHours)
+		</dd>
+		<dt class="col-sm-2">
+			Owner
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.Owner.UserName)
+		</dd>
+		<dt class="col-sm-2">
+			Completed
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.Completed.Value)
+		</dd>
+	</dl>
 
-        <h5>Comments</h5>
-        <ol>
-            @foreach (var comment in Model.Comments)
-            {
-                <li>
-                @comment.Description
-                By @comment.CreatedBy
-                </li>
-            }
-        </ol>
+	<h5>Comments</h5>
+	<ol>
+		@foreach (var comment in Model.Comments)
+		{
+			<li>
+				@comment.Description
+				By @comment.CreatedBy
+			</li>
+		}
+	</ol>
 </div>
 
-            <form asp-action="CommentTask" method="post" asp-controller="Tickets" asp-route-TaskId="@Model.Id">
-            <div class="form-group">
-                <label asp-for="Comments" class="control-label"></label>
-                <input name="TaskText" class="form-control" />
-                <span asp-validation-for="Comments" class="text-danger"></span>
-            </div>
-            </form>
+<form asp-action="CommentTask" method="post" asp-controller="Tickets" asp-route-TaskId="@Model.Id">
+	<div class="form-group">
+		<label asp-for="Comments" class="control-label"></label>
+		<input name="TaskText" class="form-control" />
+		<span asp-validation-for="Comments" class="text-danger"></span>
+	</div>
+</form>
 
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+	<a asp-action="Index" asp-controller="Projects">Back to List</a>
 </div>

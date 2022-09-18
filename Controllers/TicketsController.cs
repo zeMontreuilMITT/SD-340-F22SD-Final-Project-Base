@@ -36,7 +36,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets.Include(u => u.Owner).ThenInclude(c => c.Comments)
+            var ticket = await _context.Tickets.Include(t => t.Project).Include(u => u.Owner).ThenInclude(c => c.Comments)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (ticket == null)
             {
@@ -54,7 +54,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             List<SelectListItem> currUsers = new List<SelectListItem>();
             currProject.AssignedTo.ToList().ForEach(t =>
             {
-                currUsers.Add(new SelectListItem(t.ApplicationUser.UserName, t.Id.ToString()));
+                currUsers.Add(new SelectListItem(t.ApplicationUser.UserName, t.ApplicationUser.Id.ToString()));
             });
 
             ViewBag.Projects = currProject;
