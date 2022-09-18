@@ -280,6 +280,48 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             return RedirectToAction("Index");
         }
 
+        public async Task<IActionResult> MarkAsCompleted(int id)
+        {
+            if (id != null)
+            {
+                try
+                {
+                    Ticket ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
+                    ticket.Completed = true;
+
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("Details", new { id });
+
+                }
+                catch (Exception ex)
+                {
+                    return RedirectToAction("Error", "Home");
+                }
+            }
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> UnMarkAsCompleted(int id)
+        {
+            if (id != null)
+            {
+                try
+                {
+                    Ticket ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
+                    ticket.Completed = false;
+
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("Details", new { id });
+
+                }
+                catch (Exception ex)
+                {
+                    return RedirectToAction("Error", "Home");
+                }
+            }
+            return RedirectToAction("Index");
+        }
+
 
         // GET: Tickets/Delete/5
         public async Task<IActionResult> Delete(int? id)

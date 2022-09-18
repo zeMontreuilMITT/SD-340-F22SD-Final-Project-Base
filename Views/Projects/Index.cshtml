@@ -84,7 +84,14 @@
 								<td></td>
 							}
 
-							<td>&#9989</td>
+							@if(ticket.Completed == true)
+							{
+								<td>&#10024</td>
+							} else
+							{
+								<td></td>
+							}
+
 							<td>
 								<a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id">&#9999</a> |
 								<a asp-action="Delete" asp-controller="Tickets" asp-route-id="@ticket.Id">&#128465</a>
