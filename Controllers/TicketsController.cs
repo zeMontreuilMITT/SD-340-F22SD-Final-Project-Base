@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
 
 namespace SD_340_W22SD_Final_Project_Group6.Controllers
 {
+    [Authorize]
     public class TicketsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -54,6 +56,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         }
 
         // GET: Tickets/Create
+        [Authorize(Roles = "ProjectManager")]
         public IActionResult Create(int projId)
         {
             Project currProject = _context.Projects.Include(p => p.AssignedTo).ThenInclude(at => at.ApplicationUser).FirstOrDefault(p => p.Id == projId);
@@ -76,6 +79,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> Create([Bind("Id,Title,Body,RequiredHours,TicketPriority")] Ticket ticket, int projId, string userId)
         {
             if (ModelState.IsValid)
@@ -93,6 +97,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         }
 
         // GET: Tickets/Edit/5
+        [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Tickets == null)
@@ -119,7 +124,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             return View(ticket);
         }
 
-        
+        [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> RemoveAssignedUser(string id, int ticketId)
         {
             if (id == null)
@@ -140,6 +145,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> Edit(int id,string userId, [Bind("Id,Title,Body,RequiredHours")] Ticket ticket)
         {
             if (id != ticket.Id)
@@ -324,6 +330,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
 
 
         // GET: Tickets/Delete/5
+        [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Tickets == null)
@@ -344,6 +351,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         // POST: Tickets/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> DeleteConfirmed(int id, int projId)
         {
             if (_context.Tickets == null)

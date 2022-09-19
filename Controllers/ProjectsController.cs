@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ using X.PagedList.Mvc;
 
 namespace SD_340_W22SD_Final_Project_Group6.Controllers
 {
+    [Authorize]
     public class ProjectsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -100,6 +102,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         }
 
         // GET: Projects/Create
+        [Authorize(Roles = "ProjectManager")]
         public IActionResult Create()
         {
             return View();
@@ -110,6 +113,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> Create([Bind("Id,ProjectName")] Project project)
         {
             if (ModelState.IsValid)
@@ -125,6 +129,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         }
 
         // GET: Projects/Edit/5
+        [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Projects == null)
@@ -155,6 +160,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> Edit(int id, List<string> userIds, [Bind("Id,ProjectName")] Project project)
         {
             if (id != project.Id)
@@ -195,6 +201,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         }
 
         // GET: Projects/Delete/5
+        [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Projects == null)
@@ -215,6 +222,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         // POST: Projects/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Projects == null)
