@@ -102,6 +102,15 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         // GET: Projects/Create
         public IActionResult Create()
         {
+            List<ApplicationUser> allUsers = _context.Users.ToList();
+
+            List<SelectListItem> users = new List<SelectListItem>();
+            allUsers.ForEach(au =>
+            {
+                users.Add(new SelectListItem(au.Name, au.Id.ToString()));
+            });
+            ViewBag.Users = users;
+
             return View();
         }
 
@@ -110,13 +119,23 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ProjectName")] Project project)
+        public async Task<IActionResult> Create([Bind("Id,ProjectName")] Project project, List<string> userIds)
         {
             if (ModelState.IsValid)
             {
                 string userName = User.Identity.Name;
-                ApplicationUser user = _context.Users.First(u => u.UserName == userName);
-                project.CreatedBy = user;
+
+                ApplicationUser createdBy = _context.Users.First(u => u.UserName == userName);
+                userIds.ForEach((user) =>
+                {
+                    ApplicationUser currUser = _context.Users.FirstOrDefault(u => u.Id == user);
+                    UserProject newUserProj = new UserProject();
+                    newUserProj.ApplicationUser = currUser;
+                    newUserProj.UserId = currUser.Id;
+                    newUserProj.Project = project;
+                    project.AssignedTo.Add(newUserProj);
+                    _context.UserProjects.Add(newUserProj);
+                });
                 _context.Add(project);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
