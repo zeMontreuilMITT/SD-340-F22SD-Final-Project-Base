@@ -75,7 +75,7 @@
 							<td>@ticket.RequiredHours</td>
 							<td>@ticket.TicketPriority</td>
 
-							@if (ticket.TicketWatchers.Any(tw => tw.Watcher.UserName == User.Identity.Name))
+							@if (ticket.TicketWatchers.Any(tw => tw.Watcher.UserName == User.Identity.Name) || User.Identity.Name == ticket.Owner.UserName)
 							{
 								<td>&#9989</td>
 							}
