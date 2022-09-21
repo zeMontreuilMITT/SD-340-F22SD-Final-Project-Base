@@ -56,6 +56,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 default:
                     SortedProjs = 
                         await _context.Projects
+                        .OrderBy(p => p.ProjectName)
                         .Include(p => p.CreatedBy)
                         .Include(p => p.AssignedTo)
                         .ThenInclude(at => at.ApplicationUser)
