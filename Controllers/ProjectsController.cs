@@ -18,10 +18,12 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
     public class ProjectsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _users;
 
-        public ProjectsController(ApplicationDbContext context)
+        public ProjectsController(ApplicationDbContext context, UserManager<ApplicationUser> users)
         {
             _context = context;
+            _users = users;
         }
 
         // GET: Projects
@@ -105,6 +107,15 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [Authorize(Roles = "ProjectManager")]
         public IActionResult Create()
         {
+            List<ApplicationUser> allUsers = (List<ApplicationUser>)await _users.GetUsersInRoleAsync("Developer");
+
+            List<SelectListItem> users = new List<SelectListItem>();
+            allUsers.ForEach(au =>
+            {
+                users.Add(new SelectListItem(au.Name, au.Id.ToString()));
+            });
+            ViewBag.Users = users;
+
             return View();
         }
 
@@ -115,12 +126,23 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> Create([Bind("Id,ProjectName")] Project project)
+        public async Task<IActionResult> Create([Bind("Id,ProjectName")] Project project, List<string> userIds)
         {
             if (ModelState.IsValid)
             {
                 string userName = User.Identity.Name;
-                ApplicationUser user = _context.Users.First(u => u.UserName == userName);
-                project.CreatedBy = user;
+
+                ApplicationUser createdBy = _context.Users.First(u => u.UserName == userName);
+                userIds.ForEach((user) =>
+                {
+                    ApplicationUser currUser = _context.Users.FirstOrDefault(u => u.Id == user);
+                    UserProject newUserProj = new UserProject();
+                    newUserProj.ApplicationUser = currUser;
+                    newUserProj.UserId = currUser.Id;
+                    newUserProj.Project = project;
+                    project.AssignedTo.Add(newUserProj);
+                    _context.UserProjects.Add(newUserProj);
+                });
                 _context.Add(project);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
