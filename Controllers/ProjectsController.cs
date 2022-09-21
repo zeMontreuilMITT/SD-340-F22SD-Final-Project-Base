@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -105,9 +106,9 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
 
         // GET: Projects/Create
         [Authorize(Roles = "ProjectManager")]
-        public IActionResult Create()
+        public async Task<IActionResult> CreateAsync()
         {
-            List<ApplicationUser> allUsers = (List<ApplicationUser>)await _users.GetUsersInRoleAsync("Developer");
+            List<ApplicationUser> allUsers = (List<ApplicationUser>) await _users.GetUsersInRoleAsync("Developer");
 
             List<SelectListItem> users = new List<SelectListItem>();
             allUsers.ForEach(au =>
@@ -125,7 +126,6 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "ProjectManager")]
-        public async Task<IActionResult> Create([Bind("Id,ProjectName")] Project project)
         public async Task<IActionResult> Create([Bind("Id,ProjectName")] Project project, List<string> userIds)
         {
             if (ModelState.IsValid)
