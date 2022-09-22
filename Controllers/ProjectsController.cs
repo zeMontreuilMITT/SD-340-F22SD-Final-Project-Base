@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -18,23 +19,20 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
     public class ProjectsController : Controller
     {
         private readonly ApplicationDbContext _context;
-
-        public ProjectsController(ApplicationDbContext context)
+        private readonly UserManager<ApplicationUser> _userManager;
+        public ProjectsController(ApplicationDbContext context, UserManager<ApplicationUser> um)
         {
             _context = context;
+            _userManager = um;
         }
-
         // GET: Projects
         public async Task<IActionResult> Index(string? sortOrder, int? page)
-        { 
-
+        {
             List<Project> SortedProjs = new List<Project>();
-            
-
             switch (sortOrder)
             {
                 case "Priority":
-                    SortedProjs = 
+                    SortedProjs =
                         await _context.Projects
                         .Include(p => p.CreatedBy)
                         .Include(p => p.AssignedTo)
@@ -44,7 +42,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                         .ToListAsync();
                     break;
                 case "RequiredHrs":
-                    SortedProjs = 
+                    SortedProjs =
                         await _context.Projects
                         .Include(p => p.CreatedBy)
                         .Include(p => p.AssignedTo)
@@ -54,7 +52,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                         .ToListAsync();
                     break;
                 default:
-                    SortedProjs = 
+                    SortedProjs =
                         await _context.Projects
                         .OrderBy(p => p.ProjectName)
                         .Include(p => p.CreatedBy)
@@ -66,9 +64,21 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                         .ToListAsync();
                     break;
             }
-            X.PagedList.IPagedList<Project> projList = SortedProjs.ToPagedList(page ?? 1, 3);
+            //check if User is PM or Develoer
+            var LogedUserName = User.Identity.Name;  // logined user name
+            var user = _context.Users.FirstOrDefault(u => u.UserName == LogedUserName);
+            var rolenames = await _userManager.GetRolesAsync(user);
+            var AssinedProject = new List<Project>();
+            // geting assined project
+            if (rolenames.Contains("Developer"))
+            {
+                AssinedProject = SortedProjs.Where(p => p.AssignedTo.Select(projectUser => projectUser.UserId).Contains(user.Id)).ToList(); ;
+            } else
+            {
+                AssinedProject = SortedProjs;
+            }
+            X.PagedList.IPagedList<Project> projList = AssinedProject.ToPagedList(page ?? 1, 3);
             return View(projList);
-
         }
 
         // GET: Projects/Details/5
