@@ -4,20 +4,20 @@
 
 @foreach (ApplicationUser allUsers in Model.allUsers)
 {
-    <h5>@allUsers.Name</h5>
+    <h5>@allUsers.UserName</h5>
 }
 <h2>Project Mangers</h2>
 
 @foreach (ApplicationUser pm in Model.pms)
 {
-    <h5>@pm.Name</h5>
+    <h5>@pm.UserName</h5>
 }
 
 <h2>Developers</h2>
 
 @foreach (ApplicationUser dev in Model.devs)
 {
-    <h5>@dev.Name</h5>
+    <h5>@dev.UserName</h5>
 }
 
 <div>

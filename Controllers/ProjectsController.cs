@@ -27,6 +27,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             _users = users;
         }
         // GET: Projects
+        [Authorize]
         public async Task<IActionResult> Index(string? sortOrder, int? page, bool? sort, string? userId)
         {
             List<Project> SortedProjs = new List<Project>();

@@ -59,12 +59,12 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             if (roleUser.Count == 0)
             {
                 await _users.AddToRoleAsync(user, role);
-                return RedirectToAction("Index", "Projects", new { area = "" });
+                return RedirectToAction("Index", "Admin", new { area = "" });
             } else
             {
                 await _users.RemoveFromRoleAsync(user, roleUser.First());
                 await _users.AddToRoleAsync(user, role);
-                return RedirectToAction("Index", "Projects", new { area = "" });
+                return RedirectToAction("Index", "Admin", new { area = "" });
             }
         }
     }
