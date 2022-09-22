@@ -1,0 +1,25 @@
+﻿@model SD_340_W22SD_Final_Project_Group6.Models.ViewModel.ProjectManagersAndDevelopersViewModels;
+
+<h2>All Users</h2>
+
+@foreach (ApplicationUser allUsers in Model.allUsers)
+{
+    <h5>@allUsers.Name</h5>
+}
+<h2>Project Mangers</h2>
+
+@foreach (ApplicationUser pm in Model.pms)
+{
+    <h5>@pm.Name</h5>
+}
+
+<h2>Developers</h2>
+
+@foreach (ApplicationUser dev in Model.devs)
+{
+    <h5>@dev.Name</h5>
+}
+
+<div>
+    <a asp-action="ReassignRole">Reassign user role</a>
+</div>
