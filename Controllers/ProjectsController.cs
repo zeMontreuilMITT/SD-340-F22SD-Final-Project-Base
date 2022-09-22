@@ -26,7 +26,6 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             _context = context;
             _users = users;
         }
-
         // GET: Projects
         public async Task<IActionResult> Index(string? sortOrder, int? page)
         { 
@@ -59,6 +58,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 default:
                     SortedProjs = 
                         await _context.Projects
+                        .OrderBy(p => p.ProjectName)
                         .Include(p => p.CreatedBy)
                         .Include(p => p.AssignedTo)
                         .ThenInclude(at => at.ApplicationUser)
@@ -68,9 +68,21 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                         .ToListAsync();
                     break;
             }
-            X.PagedList.IPagedList<Project> projList = SortedProjs.ToPagedList(page ?? 1, 3);
+            //check if User is PM or Develoer
+            var LogedUserName = User.Identity.Name;  // logined user name
+            var user = _context.Users.FirstOrDefault(u => u.UserName == LogedUserName);
+            var rolenames = await _users.GetRolesAsync(user);
+            var AssinedProject = new List<Project>();
+            // geting assined project
+            if (rolenames.Contains("Developer"))
+            {
+                AssinedProject = SortedProjs.Where(p => p.AssignedTo.Select(projectUser => projectUser.UserId).Contains(user.Id)).ToList(); ;
+            } else
+            {
+                AssinedProject = SortedProjs;
+            }
+            X.PagedList.IPagedList<Project> projList = AssinedProject.ToPagedList(page ?? 1, 3);
             return View(projList);
-
         }
 
         // GET: Projects/Details/5
