@@ -11,15 +11,33 @@
 
 
 <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 1rem">
-	<div>
+	<div style="display: flex; align-content: center; gap: .5rem">
 		<h4 style="display: inline">Projects</h4>
+		<a asp-action="Create" class="btn" style="background-color: #E4BCB9">Create New</a>
+		<a asp-action="Index" asp-route-sortOrder="default" class="btn" style="background-color: #E4BCB9" name="sortOrder">Show All</a>
+		<a asp-action="Index" asp-route-sortOrder="Completed" class="btn" style="background-color: #E4BCB9" name="sortOrder">Show Completed</a>
+		<form asp-action="Index">
+			<div class="form-group" style="display: inline">
+				<input type="submit" value="Filter by User" class="btn" style="background-color: #E4BCB9" />
+			</div>
+			<div class="form-group" style="display: inline">
+				<select name="userId" asp-items=@ViewBag.Users></select>
+				<span class="text-danger"></span>
+			</div>
+		</form>
 	</div>
 
-
-	<div>
-		<a asp-action="Create" class="btn" style="background-color: #E4BCB9">Create New</a>
-		<a asp-action="Index" asp-route-sortOrder="Priority" name="sortOrder" class="btn" style="background-color: #E4BCB9">Sort by Priority</a>
-		<a asp-action="Index" asp-route-sortOrder="RequiredHrs" name="sortOrder" class="btn" style="background-color: #E4BCB9">Sort by RequiredHrs</a>
+	<div style="display: flex">
+		<div>
+			<p style="display: inline">Sort Priority:</p>
+			<a asp-action="Index" asp-route-sortOrder="Priority" asp-route-sort=true name="sortOrder">&#128077</a>
+			<a asp-action="Index" asp-route-sortOrder="Priority" asp-route-sort=false name="sortOrder">&#128078</a>
+		</div>
+		<div>
+			<p style="display: inline">Sort Required Hrs:</p>
+			<a asp-action="Index" asp-route-sortOrder="RequiredHrs" asp-route-sort=true name="sortOrder">&#128077</a>
+			<a asp-action="Index" asp-route-sortOrder="RequiredHrs" asp-route-sort=false name="sortOrder">&#128078</a>
+		</div>
 	</div>
 
 
@@ -84,10 +102,11 @@
 								<td></td>
 							}
 
-							@if(ticket.Completed == true)
+							@if (ticket.Completed == true)
 							{
 								<td>&#10024</td>
-							} else
+							}
+							else
 							{
 								<td></td>
 							}

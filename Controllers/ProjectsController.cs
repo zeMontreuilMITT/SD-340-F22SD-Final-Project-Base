@@ -27,16 +27,23 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             _users = users;
         }
         // GET: Projects
-        public async Task<IActionResult> Index(string? sortOrder, int? page)
-        { 
-
+        public async Task<IActionResult> Index(string? sortOrder, int? page, bool? sort, string? userId)
+        {
             List<Project> SortedProjs = new List<Project>();
-            
+            List<ApplicationUser> allUsers = (List<ApplicationUser>)await _users.GetUsersInRoleAsync("Developer");
 
+            List<SelectListItem> users = new List<SelectListItem>();
+            allUsers.ForEach(au =>
+            {
+                users.Add(new SelectListItem(au.UserName, au.Id.ToString()));
+            });
+            ViewBag.Users = users;
             switch (sortOrder)
             {
                 case "Priority":
-                    SortedProjs = 
+                    if (sort == true)
+                    {
+                        SortedProjs =
                         await _context.Projects
                         .Include(p => p.CreatedBy)
                         .Include(p => p.AssignedTo)
@@ -44,9 +51,24 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                         .Include(p => p.Tickets.OrderByDescending(t => t.TicketPriority))
                         .ThenInclude(t => t.Owner)
                         .ToListAsync();
+                    }
+                    else
+                    {
+                        SortedProjs =
+                        await _context.Projects
+                        .Include(p => p.CreatedBy)
+                        .Include(p => p.AssignedTo)
+                        .ThenInclude(at => at.ApplicationUser)
+                        .Include(p => p.Tickets.OrderBy(t => t.TicketPriority))
+                        .ThenInclude(t => t.Owner)
+                        .ToListAsync();
+                    }
+
                     break;
                 case "RequiredHrs":
-                    SortedProjs = 
+                    if (sort == true)
+                    {
+                        SortedProjs =
                         await _context.Projects
                         .Include(p => p.CreatedBy)
                         .Include(p => p.AssignedTo)
@@ -54,9 +76,47 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                         .Include(p => p.Tickets.OrderByDescending(t => t.RequiredHours))
                         .ThenInclude(t => t.Owner)
                         .ToListAsync();
+                    }
+                    else
+                    {
+                        SortedProjs =
+                        await _context.Projects
+                        .Include(p => p.CreatedBy)
+                        .Include(p => p.AssignedTo)
+                        .ThenInclude(at => at.ApplicationUser)
+                        .Include(p => p.Tickets.OrderBy(t => t.RequiredHours))
+                        .ThenInclude(t => t.Owner)
+                        .ToListAsync();
+                    }
+
+                    break;
+                case "Completed":
+                    SortedProjs =
+                        await _context.Projects
+                        .Include(p => p.CreatedBy)
+                        .Include(p => p.AssignedTo)
+                        .ThenInclude(at => at.ApplicationUser)
+                        .Include(p => p.Tickets.Where(t => t.Completed == true))
+                        .ThenInclude(t => t.Owner)
+                        .ToListAsync();
                     break;
                 default:
-                    SortedProjs = 
+                    if (userId != null)
+                    {
+                        SortedProjs =
+                        await _context.Projects
+                        .OrderBy(p => p.ProjectName)
+                        .Include(p => p.CreatedBy)
+                        .Include(p => p.AssignedTo)
+                        .ThenInclude(at => at.ApplicationUser)
+                        .Include(p => p.Tickets.Where(t => t.Owner.Id.Equals(userId)))
+                        .ThenInclude(t => t.Owner)
+                        .Include(p => p.Tickets).ThenInclude(t => t.TicketWatchers).ThenInclude(tw => tw.Watcher)
+                        .ToListAsync();
+                    }
+                    else
+                    {
+                        SortedProjs =
                         await _context.Projects
                         .OrderBy(p => p.ProjectName)
                         .Include(p => p.CreatedBy)
@@ -66,6 +126,8 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                         .ThenInclude(t => t.Owner)
                         .Include(p => p.Tickets).ThenInclude(t => t.TicketWatchers).ThenInclude(tw => tw.Watcher)
                         .ToListAsync();
+                    }
+
                     break;
             }
             //check if User is PM or Develoer
@@ -76,8 +138,9 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             // geting assined project
             if (rolenames.Contains("Developer"))
             {
-                AssinedProject = SortedProjs.Where(p => p.AssignedTo.Select(projectUser => projectUser.UserId).Contains(user.Id)).ToList(); ;
-            } else
+                AssinedProject = SortedProjs.Where(p => p.AssignedTo.Select(projectUser => projectUser.UserId).Contains(user.Id)).ToList();
+            }
+            else
             {
                 AssinedProject = SortedProjs;
             }
@@ -120,7 +183,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> CreateAsync()
         {
-            List<ApplicationUser> allUsers = (List<ApplicationUser>) await _users.GetUsersInRoleAsync("Developer");
+            List<ApplicationUser> allUsers = (List<ApplicationUser>)await _users.GetUsersInRoleAsync("Developer");
 
             List<SelectListItem> users = new List<SelectListItem>();
             allUsers.ForEach(au =>
@@ -229,7 +292,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Edit), new {id = id});
+                return RedirectToAction(nameof(Edit), new { id = id });
             }
             return View(project);
         }
@@ -279,17 +342,17 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 });
 
                 _context.Projects.Remove(project);
-                
-                
+
+
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ProjectExists(int id)
         {
-          return (_context.Projects?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Projects?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
