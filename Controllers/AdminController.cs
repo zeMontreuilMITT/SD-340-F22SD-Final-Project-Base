@@ -1,18 +1,72 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using SD_340_W22SD_Final_Project_Group6.Data;
+using SD_340_W22SD_Final_Project_Group6.Models;
+using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
 
 namespace SD_340_W22SD_Final_Project_Group6.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _users;
 
-        public AdminController(ILogger<HomeController> logger)
+        public AdminController(ApplicationDbContext context, UserManager<ApplicationUser> users)
         {
-            _logger = logger;
+            _context = context;
+            _users = users;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            ProjectManagersAndDevelopersViewModels vm = new ProjectManagersAndDevelopersViewModels();
+
+            List<ApplicationUser> pmUsers = (List<ApplicationUser>)await _users.GetUsersInRoleAsync("ProjectManager");
+            List<ApplicationUser> devUsers = (List<ApplicationUser>)await _users.GetUsersInRoleAsync("Developer");
+            List<ApplicationUser> allUsers = _context.Users.ToList();
+
+
+
+            vm.pms = pmUsers;
+            vm.devs = devUsers;
+            vm.allUsers = allUsers;
+            return View(vm);
+        }
+
+        public async Task<IActionResult> ReassignRoleAsync()
+        {
+            List<ApplicationUser> allUsers = _context.Users.ToList();
+
+            List<SelectListItem> users = new List<SelectListItem>();
+            allUsers.ForEach(u =>
+            {
+                users.Add(new SelectListItem(u.UserName, u.Id.ToString()));
+            });
+            ViewBag.Users = users;
+
+            return View(allUsers);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ReassignRole(string role, string userId)
+        {
+
+            ApplicationUser user = _users.Users.First(u => u.Id == userId);
+            ICollection<string> roleUser = await _users.GetRolesAsync(user);
+            if (roleUser.Count == 0)
+            {
+                await _users.AddToRoleAsync(user, role);
+                return RedirectToAction("Index", "Projects", new { area = "" });
+            } else
+            {
+                await _users.RemoveFromRoleAsync(user, roleUser.First());
+                await _users.AddToRoleAsync(user, role);
+                return RedirectToAction("Index", "Projects", new { area = "" });
+            }
         }
     }
 }
+

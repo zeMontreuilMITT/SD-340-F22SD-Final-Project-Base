@@ -85,7 +85,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Models
                 await context.SaveChangesAsync();
             }
 
-            if(!context.Projects.Any())
+            if (!context.Projects.Any())
             {
                 Project newProj1 = new Project()
                 {

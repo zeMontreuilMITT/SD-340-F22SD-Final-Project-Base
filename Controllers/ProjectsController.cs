@@ -15,7 +15,7 @@ using X.PagedList.Mvc;
 
 namespace SD_340_W22SD_Final_Project_Group6.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "ProjectManager, Developer")]
     public class ProjectsController : Controller
     {
         private readonly ApplicationDbContext _context;
