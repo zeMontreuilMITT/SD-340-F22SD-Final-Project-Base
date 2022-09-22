@@ -39,7 +39,6 @@ namespace SD_340_W22SD_Final_Project_Group6.Models
                     NormalizedEmail = "PM@JELLO.COM",
                     UserName = "pm@jello.com",
                     NormalizedUserName = "PM@JELLO.COM",
-                    Name = "Gus Jello",
                     EmailConfirmed = true,
                 };
 
@@ -57,7 +56,6 @@ namespace SD_340_W22SD_Final_Project_Group6.Models
                     UserName = "dev1@jello.com",
                     NormalizedUserName = "DEV1@JELLO.COM",
                     EmailConfirmed = true,
-                    Name = "Pinkman Jello"
                 };
 
                 var password2 = new PasswordHasher<ApplicationUser>();
@@ -73,7 +71,6 @@ namespace SD_340_W22SD_Final_Project_Group6.Models
                     NormalizedEmail = "ADMIN@JELLO.COM",
                     UserName = "admin@jello.com",
                     NormalizedUserName = "ADMIN@JELLO.COM",
-                    Name = "Admiral Jello",
                     EmailConfirmed = true,
                 };
 

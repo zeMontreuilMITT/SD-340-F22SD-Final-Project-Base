@@ -113,7 +113,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             List<SelectListItem> users = new List<SelectListItem>();
             allUsers.ForEach(au =>
             {
-                users.Add(new SelectListItem(au.Name, au.Id.ToString()));
+                users.Add(new SelectListItem(au.UserName, au.Id.ToString()));
             });
             ViewBag.Users = users;
 
