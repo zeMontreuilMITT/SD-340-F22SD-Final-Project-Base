@@ -4,7 +4,7 @@
     {
         public T Create(T entity);
 
-        public T Get(int id);
+        public T? Get(int id);
         public ICollection<T> GetAll();
 
         public T Update(T entity);
