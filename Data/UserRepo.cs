@@ -10,23 +10,20 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
         {
             _context = context;
         }
+
         public ApplicationUser Create(ApplicationUser entity)
         {
-            _context.Users.Add(entity);
-            _context.SaveChanges();
-            return entity;
+            throw new NotImplementedException();
         }
 
         public ApplicationUser Delete(ApplicationUser entity)
         {
-            _context.Users.Remove(entity);
-            _context.SaveChanges();
-            return entity;
+            throw new NotImplementedException();
         }
 
         public ApplicationUser? Get(int id)
         {
-            return _context.Users.Find(id);
+            throw new NotImplementedException();
         }
 
         public ICollection<ApplicationUser> GetAll()
@@ -36,9 +33,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
 
         public ApplicationUser Update(ApplicationUser entity)
         {
-            _context.Users.Update(entity);
-            _context.SaveChanges();
-            return entity;
+            throw new NotImplementedException();
         }
     }
 }
