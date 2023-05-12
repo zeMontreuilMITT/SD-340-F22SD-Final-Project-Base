@@ -12,6 +12,8 @@ namespace SD_340_W22SD_Final_Project_Group6.Models
                 = new ApplicationDbContext(serviceProvider
                 .GetRequiredService<DbContextOptions<ApplicationDbContext>>());
 
+            context.Database.Migrate();
+
             RoleManager<IdentityRole> roleManager =
                 serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             UserManager<ApplicationUser> userManager =
