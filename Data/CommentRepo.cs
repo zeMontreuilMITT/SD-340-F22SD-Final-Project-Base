@@ -26,12 +26,12 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
 
         public Comment? Get(int id)
         {
-            return _context.Comment.Find(id);
+            return _context.Comments.Find(id);
         }
 
         public ICollection<Comment> GetAll()
         {
-            return _context.Comment.ToList();
+            return _context.Comments.ToList();
         }
 
         public Comment Update(Comment entity)
