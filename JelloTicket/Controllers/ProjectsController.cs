@@ -54,121 +54,121 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
 
             var projects = await query.ToListAsync();
 
+            foreach (var project in projects)
+            {
+                switch (sortOrder)
+                {
+                    case "Priority":
+                        project.Tickets = sort == true
+                            ? project.Tickets.OrderByDescending(t => t.TicketPriority).ToList()
+                            : project.Tickets.OrderBy(t => t.TicketPriority).ToList();
+                        break;
+                    case "RequiredHrs":
+                        project.Tickets = sort == true
+                            ? project.Tickets.OrderByDescending(t => t.RequiredHours).ToList()
+                            : project.Tickets.OrderBy(t => t.RequiredHours).ToList();
+                        break;
+                    case "Completed":
+                        project.Tickets = project.Tickets.Where(t => (bool)t.Completed).ToList();
+                        break;
+                    default:
+                        // No sorting for tickets within the project
+                        break;
+                }
 
+            }
             //switch (sortOrder)
             //{
             //    case "Priority":
-            //        SortedProjs = sort == true
-            //            ? projects.OrderByDescending(p => p.Tickets.Max(t => t.TicketPriority)).ToList()
-            //            : projects.OrderBy(p => p.Tickets.Min(t => t.TicketPriority)).ToList();
-            //        break;
+            //        if (sort == true)
+            //        {
+            //            SortedProjs =
+            //            await _context.Projects
+            //            .Include(p => p.CreatedBy)
+            //            .Include(p => p.AssignedTo)
+            //            .ThenInclude(at => at.ApplicationUser)
+            //            .Include(p => p.Tickets.OrderByDescending(t => t.TicketPriority))
+            //            .ThenInclude(t => t.Owner)
+            //            .ToListAsync();
+            //        }
+            //        else
+            //        {
+            //            SortedProjs =
+            //            await _context.Projects
+            //            .Include(p => p.CreatedBy)
+            //            .Include(p => p.AssignedTo)
+            //            .ThenInclude(at => at.ApplicationUser)
+            //            .Include(p => p.Tickets.OrderBy(t => t.TicketPriority))
+            //            .ThenInclude(t => t.Owner)
+            //            .ToListAsync();
+            //        }
 
+            //        break;
             //    case "RequiredHrs":
-            //        SortedProjs = sort == true
-            //           ? projects.OrderByDescending(p => p.Tickets.Max(t => t.RequiredHours)).ToList()
-            //           : projects.OrderBy(p => p.Tickets.Min(t => t.RequiredHours)).ToList();
-            //        break;
+            //        if (sort == true)
+            //        {
+            //            SortedProjs =
+            //            await _context.Projects
+            //            .Include(p => p.CreatedBy)
+            //            .Include(p => p.AssignedTo)
+            //            .ThenInclude(at => at.ApplicationUser)
+            //            .Include(p => p.Tickets.OrderByDescending(t => t.RequiredHours))
+            //            .ThenInclude(t => t.Owner)
+            //            .ToListAsync();
+            //        }
+            //        else
+            //        {
+            //            SortedProjs =
+            //            await _context.Projects
+            //            .Include(p => p.CreatedBy)
+            //            .Include(p => p.AssignedTo)
+            //            .ThenInclude(at => at.ApplicationUser)
+            //            .Include(p => p.Tickets.OrderBy(t => t.RequiredHours))
+            //            .ThenInclude(t => t.Owner)
+            //            .ToListAsync();
+            //        }
 
+            //        break;
             //    case "Completed":
-            //        SortedProjs = projects.Where(p => p.Tickets.Any(t => (bool)t.Completed)).ToList();
+            //        SortedProjs =
+            //            await _context.Projects
+            //            .Include(p => p.CreatedBy)
+            //            .Include(p => p.AssignedTo)
+            //            .ThenInclude(at => at.ApplicationUser)
+            //            .Include(p => p.Tickets.Where(t => t.Completed == true))
+            //            .ThenInclude(t => t.Owner)
+            //            .ToListAsync();
             //        break;
-
             //    default:
-            //        SortedProjs = projects.OrderBy(p => p.ProjectName).ToList();
+            //        if (userId != null)
+            //        {
+            //            SortedProjs =
+            //            await _context.Projects
+            //            .OrderBy(p => p.ProjectName)
+            //            .Include(p => p.CreatedBy)
+            //            .Include(p => p.AssignedTo)
+            //            .ThenInclude(at => at.ApplicationUser)
+            //            .Include(p => p.Tickets.Where(t => t.Owner.Id.Equals(userId)))
+            //            .ThenInclude(t => t.Owner)
+            //            .Include(p => p.Tickets).ThenInclude(t => t.TicketWatchers).ThenInclude(tw => tw.Watcher)
+            //            .ToListAsync();
+            //        }
+            //        else
+            //        {
+            //            SortedProjs =
+            //            await _context.Projects
+            //            .OrderBy(p => p.ProjectName)
+            //            .Include(p => p.CreatedBy)
+            //            .Include(p => p.AssignedTo)
+            //            .ThenInclude(at => at.ApplicationUser)
+            //            .Include(p => p.Tickets)
+            //            .ThenInclude(t => t.Owner)
+            //            .Include(p => p.Tickets).ThenInclude(t => t.TicketWatchers).ThenInclude(tw => tw.Watcher)
+            //            .ToListAsync();
+            //        }
+
             //        break;
             //}
-            switch (sortOrder)
-            {
-                case "Priority":
-                    if (sort == true)
-                    {
-                        SortedProjs =
-                        await _context.Projects
-                        .Include(p => p.CreatedBy)
-                        .Include(p => p.AssignedTo)
-                        .ThenInclude(at => at.ApplicationUser)
-                        .Include(p => p.Tickets.OrderByDescending(t => t.TicketPriority))
-                        .ThenInclude(t => t.Owner)
-                        .ToListAsync();
-                    }
-                    else
-                    {
-                        SortedProjs =
-                        await _context.Projects
-                        .Include(p => p.CreatedBy)
-                        .Include(p => p.AssignedTo)
-                        .ThenInclude(at => at.ApplicationUser)
-                        .Include(p => p.Tickets.OrderBy(t => t.TicketPriority))
-                        .ThenInclude(t => t.Owner)
-                        .ToListAsync();
-                    }
-
-                    break;
-                case "RequiredHrs":
-                    if (sort == true)
-                    {
-                        SortedProjs =
-                        await _context.Projects
-                        .Include(p => p.CreatedBy)
-                        .Include(p => p.AssignedTo)
-                        .ThenInclude(at => at.ApplicationUser)
-                        .Include(p => p.Tickets.OrderByDescending(t => t.RequiredHours))
-                        .ThenInclude(t => t.Owner)
-                        .ToListAsync();
-                    }
-                    else
-                    {
-                        SortedProjs =
-                        await _context.Projects
-                        .Include(p => p.CreatedBy)
-                        .Include(p => p.AssignedTo)
-                        .ThenInclude(at => at.ApplicationUser)
-                        .Include(p => p.Tickets.OrderBy(t => t.RequiredHours))
-                        .ThenInclude(t => t.Owner)
-                        .ToListAsync();
-                    }
-
-                    break;
-                case "Completed":
-                    SortedProjs =
-                        await _context.Projects
-                        .Include(p => p.CreatedBy)
-                        .Include(p => p.AssignedTo)
-                        .ThenInclude(at => at.ApplicationUser)
-                        .Include(p => p.Tickets.Where(t => t.Completed == true))
-                        .ThenInclude(t => t.Owner)
-                        .ToListAsync();
-                    break;
-                default:
-                    if (userId != null)
-                    {
-                        SortedProjs =
-                        await _context.Projects
-                        .OrderBy(p => p.ProjectName)
-                        .Include(p => p.CreatedBy)
-                        .Include(p => p.AssignedTo)
-                        .ThenInclude(at => at.ApplicationUser)
-                        .Include(p => p.Tickets.Where(t => t.Owner.Id.Equals(userId)))
-                        .ThenInclude(t => t.Owner)
-                        .Include(p => p.Tickets).ThenInclude(t => t.TicketWatchers).ThenInclude(tw => tw.Watcher)
-                        .ToListAsync();
-                    }
-                    else
-                    {
-                        SortedProjs =
-                        await _context.Projects
-                        .OrderBy(p => p.ProjectName)
-                        .Include(p => p.CreatedBy)
-                        .Include(p => p.AssignedTo)
-                        .ThenInclude(at => at.ApplicationUser)
-                        .Include(p => p.Tickets)
-                        .ThenInclude(t => t.Owner)
-                        .Include(p => p.Tickets).ThenInclude(t => t.TicketWatchers).ThenInclude(tw => tw.Watcher)
-                        .ToListAsync();
-                    }
-
-                    break;
-            }
 
             //check if User is PM or Develoer
             var LogedUserName = User.Identity.Name;  // logined user name
@@ -178,11 +178,11 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             // geting assined project
             if (rolenames.Contains("Developer"))
             {
-                AssinedProject = SortedProjs.Where(p => p.AssignedTo.Select(projectUser => projectUser.UserId).Contains(user.Id)).ToList();
+                AssinedProject = projects.Where(p => p.AssignedTo.Select(projectUser => projectUser.UserId).Contains(user.Id)).ToList();
             }
             else
             {
-                AssinedProject = SortedProjs;
+                AssinedProject = projects;
             }
             X.PagedList.IPagedList<Project> projList = AssinedProject.ToPagedList(page ?? 1, 3);
             return View(projList);
