@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using JelloTicket.DataLayer.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using SD_340_W22SD_Final_Project_Group6.Data;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace SD_340_W22SD_Final_Project_Group6.Models
+namespace JelloTicket.DataLayer.Models
 {
     public static class SeedData
     {

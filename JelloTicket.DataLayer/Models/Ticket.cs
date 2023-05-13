@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SD_340_W22SD_Final_Project_Group6.Models
+namespace JelloTicket.DataLayer.Models
 {
     public class Ticket
     {

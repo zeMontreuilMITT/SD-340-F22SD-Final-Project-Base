@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SD_340_W22SD_Final_Project_Group6.Data;
+using SD_340_W22SD_Final_Project_Group6.Models;
+using JelloTicket.DataLayer.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using SD_340_W22SD_Final_Project_Group6.Data;
-using SD_340_W22SD_Final_Project_Group6.Models;
 using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
 
 namespace SD_340_W22SD_Final_Project_Group6.Controllers

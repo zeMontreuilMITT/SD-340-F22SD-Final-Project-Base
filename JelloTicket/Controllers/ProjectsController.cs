@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SD_340_W22SD_Final_Project_Group6.Data;
+using SD_340_W22SD_Final_Project_Group6.Models;
+using JelloTicket.DataLayer.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using SD_340_W22SD_Final_Project_Group6.Data;
-using SD_340_W22SD_Final_Project_Group6.Models;
 using X.PagedList;
 using X.PagedList.Mvc;
 
@@ -20,6 +21,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _users;
+        //private readonly IRepository<Project> _projectRepo;
 
         public ProjectsController(ApplicationDbContext context, UserManager<ApplicationUser> users)
         {
@@ -39,6 +41,42 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 users.Add(new SelectListItem(au.UserName, au.Id.ToString()));
             });
             ViewBag.Users = users;
+
+            var query = _context.Projects
+                .Include(p => p.CreatedBy)
+                .Include(p => p.AssignedTo)
+                    .ThenInclude(at => at.ApplicationUser)
+                .Include(p => p.Tickets)
+                    .ThenInclude(t => t.Owner)
+                .Include(p => p.Tickets)
+                    .ThenInclude(t => t.TicketWatchers)
+                    .ThenInclude(tw => tw.Watcher);
+
+            var projects = await query.ToListAsync();
+
+
+            //switch (sortOrder)
+            //{
+            //    case "Priority":
+            //        SortedProjs = sort == true
+            //            ? projects.OrderByDescending(p => p.Tickets.Max(t => t.TicketPriority)).ToList()
+            //            : projects.OrderBy(p => p.Tickets.Min(t => t.TicketPriority)).ToList();
+            //        break;
+
+            //    case "RequiredHrs":
+            //        SortedProjs = sort == true
+            //           ? projects.OrderByDescending(p => p.Tickets.Max(t => t.RequiredHours)).ToList()
+            //           : projects.OrderBy(p => p.Tickets.Min(t => t.RequiredHours)).ToList();
+            //        break;
+
+            //    case "Completed":
+            //        SortedProjs = projects.Where(p => p.Tickets.Any(t => (bool)t.Completed)).ToList();
+            //        break;
+
+            //    default:
+            //        SortedProjs = projects.OrderBy(p => p.ProjectName).ToList();
+            //        break;
+            //}
             switch (sortOrder)
             {
                 case "Priority":
@@ -131,6 +169,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
 
                     break;
             }
+
             //check if User is PM or Develoer
             var LogedUserName = User.Identity.Name;  // logined user name
             var user = _context.Users.FirstOrDefault(u => u.UserName == LogedUserName);

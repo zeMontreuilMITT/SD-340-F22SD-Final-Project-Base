@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SD_340_W22SD_Final_Project_Group6.Data;
+using JelloTicket.DataLayer.Data;
 
 #nullable disable
 
-namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
+namespace JelloTicket.DataLayer.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20220914195701_MakePropsOfTicketNull")]
