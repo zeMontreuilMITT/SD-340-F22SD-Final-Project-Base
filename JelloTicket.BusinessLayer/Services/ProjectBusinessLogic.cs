@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JelloTicket.BusinessLayer.Services
 {
-    internal class Class1
+    public class ProjectBusinessLogic
     {
     }
 }
