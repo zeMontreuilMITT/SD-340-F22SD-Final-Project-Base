@@ -14,5 +14,7 @@ namespace JelloTicket.DataLayer.Models
 
         public Ticket Ticket { get; set; }
 
+        public int TicketId { get; set; }
+
     }
 }

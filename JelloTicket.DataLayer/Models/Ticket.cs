@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.CodeAnalysis;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -26,6 +27,8 @@ namespace JelloTicket.DataLayer.Models
 
         [DisplayName("Project :")]
         public Project? Project { get; set; }
+
+        public int ProjectId { get; set; }
 
         [DisplayName("Ticket Priority :")]
         public Priority? TicketPriority { get; set; }
