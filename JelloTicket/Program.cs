@@ -1,8 +1,11 @@
 using JelloTicket.DataLayer.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using SD_340_W22SD_Final_Project_Group6.Models;
-using SD_340_W22SD_Final_Project_Group6.Data;
+
+//using SD_340_W22SD_Final_Project_Group6.Models;
+//using SD_340_W22SD_Final_Project_Group6.Data;
+using JelloTicket.DataLayer.Data;
+using JelloTicket.DataLayer.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +20,11 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
-//builder.Services.AddScoped<IRepository<Project>, ProjectRepo>();
+builder.Services.AddScoped<IRepository<Project>, ProjectRepo>();
+builder.Services.AddScoped<IRepository<Ticket>, TicketRepo>();
+builder.Services.AddScoped<IRepository<TicketWatcher>, TicketWatcherRepo>();
+builder.Services.AddScoped<IRepository<Comment>, CommentRepo>();
+builder.Services.AddScoped<IRepository<UserProject>, UserProjectRepo>();
 
 var app = builder.Build();
 
