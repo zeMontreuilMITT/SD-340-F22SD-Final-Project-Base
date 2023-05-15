@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SD_340_W22SD_Final_Project_Group6.Data;
 
@@ -11,9 +12,10 @@ using SD_340_W22SD_Final_Project_Group6.Data;
 namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230515210223_AddForeignKeyProperties")]
+    partial class AddForeignKeyProperties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -285,16 +287,15 @@ namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<string>("ApplicationUser")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Body")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool?>("Completed")
                         .HasColumnType("bit");
-
-                    b.Property<string>("OwnerId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
@@ -312,7 +313,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OwnerId");
+                    b.HasIndex("ApplicationUser");
 
                     b.HasIndex("ProjectId");
 
@@ -351,17 +352,20 @@ namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int?>("ProjectId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectId");
+                    b.HasIndex("ApplicationUserId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ProjectId");
 
                     b.ToTable("UserProjects");
                 });
@@ -451,9 +455,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
                 {
                     b.HasOne("SD_340_W22SD_Final_Project_Group6.Models.ApplicationUser", "Owner")
                         .WithMany("Tickets")
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ApplicationUser");
 
                     b.HasOne("SD_340_W22SD_Final_Project_Group6.Models.Project", "Project")
                         .WithMany("Tickets")
@@ -487,13 +489,13 @@ namespace SD_340_W22SD_Final_Project_Group6.Data.Migrations
 
             modelBuilder.Entity("SD_340_W22SD_Final_Project_Group6.Models.UserProject", b =>
                 {
+                    b.HasOne("SD_340_W22SD_Final_Project_Group6.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("Projects")
+                        .HasForeignKey("ApplicationUserId");
+
                     b.HasOne("SD_340_W22SD_Final_Project_Group6.Models.Project", "Project")
                         .WithMany("AssignedTo")
                         .HasForeignKey("ProjectId");
-
-                    b.HasOne("SD_340_W22SD_Final_Project_Group6.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany("Projects")
-                        .HasForeignKey("UserId");
 
                     b.Navigation("ApplicationUser");
 

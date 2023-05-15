@@ -11,8 +11,10 @@ namespace SD_340_W22SD_Final_Project_Group6.Models
         [DisplayName("Comments :")]
         public string Description { get; set; }
         public ApplicationUser CreatedBy { get; set; }
+        public string CreatedById { get; set; }
 
         public Ticket Ticket { get; set; }
+        public int TicketId { get; set; }
 
     }
 }
