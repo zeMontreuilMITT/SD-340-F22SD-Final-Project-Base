@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using SD_340_W22SD_Final_Project_Group6.BLL;
 using SD_340_W22SD_Final_Project_Group6.Data;
 using SD_340_W22SD_Final_Project_Group6.Models;
 using X.PagedList;
@@ -20,11 +21,13 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _users;
+        private readonly ProjectBL _projectBL;
 
-        public ProjectsController(ApplicationDbContext context, UserManager<ApplicationUser> users)
+        public ProjectsController(ApplicationDbContext context, UserManager<ApplicationUser> users, ProjectBL projectBL)
         {
             _context = context;
             _users = users;
+            _projectBL = projectBL;
         }
         // GET: Projects
         [Authorize]
