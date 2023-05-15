@@ -1,5 +1,6 @@
 ﻿using SD_340_W22SD_Final_Project_Group6.Data;
 using SD_340_W22SD_Final_Project_Group6.Models;
+using X.PagedList;
 
 namespace SD_340_W22SD_Final_Project_Group6.BLL
 {
@@ -20,6 +21,10 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             _ticketWatcherRepo = ticketWatcherRepo;
             _userProjectRepo = userProjectRepo;
             _userRepo = userRepo;
+        }
+        public async Task<ICollection<Ticket>> GetAllTickets()
+        {
+            return await _ticketRepo.GetAll().ToListAsync();
         }
     }
 }
