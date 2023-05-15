@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol.Core.Types;
 using SD_340_W22SD_Final_Project_Group6.Data;
 using SD_340_W22SD_Final_Project_Group6.Models;
 using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
+using System.Web.Mvc;
 
 namespace SD_340_W22SD_Final_Project_Group6.BLL
 {
@@ -27,6 +30,15 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             VM.allUsers = allUsers;
             VM.pms = pmUsers;
             VM.devs = devUsers;
+
+            return VM;
+        }
+
+        public ReassignUserViewModel GetReassignUserView()
+        {
+            // ====== Get all users and initialize view model ======
+            List<ApplicationUser> allUsers = _users.Users.ToList();   
+            ReassignUserViewModel VM = new ReassignUserViewModel(allUsers);
 
             return VM;
         }

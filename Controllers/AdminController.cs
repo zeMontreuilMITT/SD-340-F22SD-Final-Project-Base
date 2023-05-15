@@ -25,19 +25,10 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             return View(VM);
         }
 
-        /*public async Task<IActionResult> ReassignRoleAsync()
+        public async Task<IActionResult> ReassignRoleAsync()
         {
-            List<ApplicationUser> allUsers = _context.Users.ToList();
-
-            List<SelectListItem> users = new List<SelectListItem>();
-            allUsers.ForEach(u =>
-            {
-                users.Add(new SelectListItem(u.UserName, u.Id.ToString()));
-            });
-            ViewBag.Users = users;
-
-            return View(allUsers);
-        }*/
+            return View(_adminBusinessLogic.GetReassignUserView());
+        }
 
         /*[HttpPost]
         [ValidateAntiForgeryToken]
