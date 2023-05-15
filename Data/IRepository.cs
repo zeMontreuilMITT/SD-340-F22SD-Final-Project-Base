@@ -8,6 +8,8 @@
         // READ
         T? Get(int? id);
 
+        ICollection<T> GetAll();
+
         // UPDATE
         void Update(T entity);  
 
