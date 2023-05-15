@@ -20,12 +20,14 @@ namespace SD_340_W22SD_Final_Project_Group6.Models
         [DisplayName("Required Hours :")]
         public int RequiredHours { get; set; }
 
-        [ForeignKey("ApplicationUser")]
+        [ForeignKey("OwnerId")]
         [DisplayName("Owner :")]
         public ApplicationUser? Owner { get; set; }
+        public string OwnerId { get; set; }
 
         [DisplayName("Project :")]
         public Project? Project { get; set; }
+        public int ProjectId { get; set; }
 
         [DisplayName("Ticket Priority :")]
         public Priority? TicketPriority { get; set; }
