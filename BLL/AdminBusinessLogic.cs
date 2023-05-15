@@ -14,22 +14,22 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             _users = users;
         }   
 
-        public async ProjectManagersAndDevelopersViewModels GetAllAsync()
+        public async Task<ProjectManagersAndDevelopersViewModels> GetAllAsync()
         {
             // ====== Get User List ======
-            HashSet<ApplicationUser> allUsers = _users.Users.ToHashSet();
-            HashSet<ApplicationUser> pmUsers = (HashSet<ApplicationUser>)await _users.GetUsersInRoleAsync("ProjectManager");
-            HashSet<ApplicationUser> devUsers = (HashSet<ApplicationUser>)await _users.GetUsersInRoleAsync("Developer");
+            List<ApplicationUser> allUsers = _users.Users.ToList();
+            List<ApplicationUser> pmUsers = (List<ApplicationUser>)await _users.GetUsersInRoleAsync("ProjectManager");
+            List<ApplicationUser> devUsers = (List<ApplicationUser>)await _users.GetUsersInRoleAsync("Developer");
 
             // ====== Initialize View Model ======
-            ProjectManagersAndDevelopersViewModels VM = new ProjectManagersAndDevelopersViewModels
-            {
-                allUsers = allUsers,
-                pms = pmUsers,
-                devs = devUsers
-            };
+            ProjectManagersAndDevelopersViewModels VM = new ProjectManagersAndDevelopersViewModels();
+
+            VM.allUsers = allUsers;
+            VM.pms = pmUsers;
+            VM.devs = devUsers;
 
             return VM;
         }
+
     }
 }
