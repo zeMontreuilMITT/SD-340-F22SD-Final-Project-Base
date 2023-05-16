@@ -19,12 +19,15 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         {
             _adminBusinessLogic = new AdminBusinessLogic(users);
         }
+
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             ProjectManagersAndDevelopersViewModels VM = await _adminBusinessLogic.GetAllAsync();
             return View(VM);
         }
 
+        [HttpGet]
         public async Task<IActionResult> ReassignRoleAsync()
         {
             return View(_adminBusinessLogic.GetReassignUserView());
