@@ -30,24 +30,13 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             return View(_adminBusinessLogic.GetReassignUserView());
         }
 
-        /*[HttpPost]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ReassignRole(string role, string userId)
         {
-
-            ApplicationUser user = _users.Users.First(u => u.Id == userId);
-            ICollection<string> roleUser = await _users.GetRolesAsync(user);
-            if (roleUser.Count == 0)
-            {
-                await _users.AddToRoleAsync(user, role);
-                return RedirectToAction("Index", "Admin", new { area = "" });
-            } else
-            {
-                await _users.RemoveFromRoleAsync(user, roleUser.First());
-                await _users.AddToRoleAsync(user, role);
-                return RedirectToAction("Index", "Admin", new { area = "" });
-            }
-        }*/
+            await _adminBusinessLogic.PostReassignUserAsync(role, userId);
+            return RedirectToAction("Index", "Admin", new { area = "" });
+        }
     }
 }
 
