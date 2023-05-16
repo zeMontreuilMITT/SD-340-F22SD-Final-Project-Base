@@ -3,7 +3,9 @@
     public class TicketWatcher
     {
         public int Id { get; set; }
-        public ApplicationUser Watcher { get; set; }
-        public Ticket Ticket { get; set; }
+        public virtual ApplicationUser Watcher { get; set; }
+        public string WatcherId { get; set; }
+        public virtual Ticket Ticket { get; set; }
+        public int TicketId { get; set; }
     }
 }
