@@ -1,6 +1,36 @@
-﻿namespace SD_340_W22SD_Final_Project_Group6.BLL
+﻿using Microsoft.AspNetCore.Identity;
+using SD_340_W22SD_Final_Project_Group6.Data;
+using SD_340_W22SD_Final_Project_Group6.Models;
+
+namespace SD_340_W22SD_Final_Project_Group6.BLL
 {
     public class UserBusinessLogic
     {
+        private UserRepository _userRepository;
+        private UserManager<ApplicationUser> _users;
+
+        public UserBusinessLogic(UserManager<ApplicationUser> _users) 
+        {
+            _userRepository = new UserRepository(_users);
+        }
+
+        public ApplicationUser GetUser(string? id)
+        {
+            if(id == null)
+            {
+                throw new NullReferenceException("User Id cannot be null");
+            } else
+            {
+                ApplicationUser user = _userRepository.GetUser(id);
+
+                if(user != null)
+                {
+                    return user;
+                } else
+                {
+                    throw new KeyNotFoundException();
+                }
+            }
+        }
     }
 }
