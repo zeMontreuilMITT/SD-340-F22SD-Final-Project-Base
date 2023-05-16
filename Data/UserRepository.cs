@@ -12,9 +12,9 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
             _users = users;
         }
 
-        public ApplicationUser? GetUser(string? id)
+        public ApplicationUser? Get(string? userParameter)
         {
-            return _users.Users.First(u => u.Id == id);
+            return _users.Users.First(u => u.Id == userParameter || u.UserName == userParameter);
         }
     }
 }

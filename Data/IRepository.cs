@@ -6,7 +6,7 @@
         void Create(T entity);
 
         // READ
-        T? Get(int? id);
+        T? Get(T? userParameter);
 
         ICollection<T> GetAll();
 
