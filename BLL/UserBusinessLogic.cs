@@ -14,14 +14,14 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             _userRepository = new UserRepository(_users);
         }
 
-        public ApplicationUser GetUser(string? id)
+        public ApplicationUser GetUser(string? userParameter)
         {
-            if(id == null)
+            if(userParameter == null)
             {
-                throw new NullReferenceException("User Id cannot be null");
+                throw new NullReferenceException("User parameter passed cannot be null");
             } else
             {
-                ApplicationUser user = _userRepository.GetUser(id);
+                ApplicationUser user = _userRepository.Get(userParameter);
 
                 if(user != null)
                 {
