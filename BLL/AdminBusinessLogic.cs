@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using NuGet.Protocol.Core.Types;
 using SD_340_W22SD_Final_Project_Group6.Data;
 using SD_340_W22SD_Final_Project_Group6.Models;
@@ -41,6 +43,24 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             ReassignUserViewModel VM = new ReassignUserViewModel(allUsers);
 
             return VM;
+        }
+
+        public async Task PostReassignUserAsync(string role, string userId)
+        {
+            // ====== Query user and the roles of that user ====== 
+            ApplicationUser user = _users.Users.First(u => u.Id == userId);
+            ICollection<string> roleUser = await _users.GetRolesAsync(user);
+
+            // ====== Validation to see if a user has a current role or not ======
+            if (roleUser.Count == 0)
+            {
+                await _users.AddToRoleAsync(user, role);
+            } 
+            else
+            {
+                await _users.RemoveFromRoleAsync(user, roleUser.First());
+                await _users.AddToRoleAsync(user, role);
+            }
         }
 
     }

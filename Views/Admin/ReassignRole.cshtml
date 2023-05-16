@@ -3,7 +3,7 @@
 <form asp-action="ReassignRole" asp-controller="Admin">
     <div class="form-group">
 	<label class="control-label">Choose a User</label>
-	<select name="userId" asp-items=@Model.UserList></select>
+	<select name="userId" asp-items="@Model.UserList"></select>
 	<span class="text-danger"></span>
 </div>
 
