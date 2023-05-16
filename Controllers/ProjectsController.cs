@@ -305,6 +305,16 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> Delete(int? id)
         {
+            /*
+            try
+            {
+                return View(_projectBL.GetProject(id));
+            } catch (Exception ex)
+            {
+                return NotFound();
+            }
+
+            */
             if (id == null || _context.Projects == null)
             {
                 return NotFound();
@@ -326,6 +336,17 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            /*
+            try
+            {
+                _projectBL.DeleteProject(id);
+                return RedirectToAction(nameof(Index));
+            } catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            */
+
             if (_context.Projects == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Projects'  is null.");
