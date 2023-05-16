@@ -33,7 +33,8 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
         public async Task<List<SelectListItem>> GetDevelopersAsSelectList()
         {
             List<ApplicationUser> allDevelopers = (List<ApplicationUser>)await _users.GetUsersInRoleAsync("Developer");
-
+            
+            
             List<SelectListItem> developers = new();
 
             allDevelopers.ForEach(developer =>
