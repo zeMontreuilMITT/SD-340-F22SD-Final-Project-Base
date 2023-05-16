@@ -3,7 +3,7 @@ using SD_340_W22SD_Final_Project_Group6.Models;
 
 namespace SD_340_W22SD_Final_Project_Group6.Data
 {
-    public class UserRepository : IRepository<ApplicationUser>
+    public class UserRepository
     {
         private UserManager<ApplicationUser> _users;
 
@@ -12,29 +12,9 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
             _users = users;
         }
 
-        void IRepository<ApplicationUser>.Create(ApplicationUser entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IRepository<ApplicationUser>.Delete(int? id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ApplicationUser Get(string? id)
+        public ApplicationUser? GetUser(string? id)
         {
             return _users.Users.First(u => u.Id == id);
-        }
-
-        ICollection<ApplicationUser> IRepository<ApplicationUser>.GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        void IRepository<ApplicationUser>.Update(ApplicationUser entity)
-        {
-            throw new NotImplementedException();
         }
     }
 }
