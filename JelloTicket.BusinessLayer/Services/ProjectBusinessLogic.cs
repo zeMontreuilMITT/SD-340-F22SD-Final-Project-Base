@@ -21,15 +21,18 @@ namespace JelloTicket.BusinessLayer.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly HelperMethods _helperMethods;
         private readonly UserManagerBusinessLogic _userManagerBusinessLogic;
+        private readonly IRepository<UserProject> _userProjectRepository;
 
         public ProjectBusinessLogic(IRepository<Project> projectRepository
             , UserManager<ApplicationUser> userManager
-            , UserManagerBusinessLogic userManagerBusinessLogic)
+            , UserManagerBusinessLogic userManagerBusinessLogic
+            , IRepository<UserProject> userProjectRepository)
         {
             _projectRepository = projectRepository;
             _userManager = userManager;
             _helperMethods = new HelperMethods();
             _userManagerBusinessLogic = userManagerBusinessLogic;
+            _userProjectRepository = userProjectRepository;
         }
 
         public ICollection<Project> GetProjectsWithAssociations()
@@ -77,7 +80,8 @@ namespace JelloTicket.BusinessLayer.Services
             {
                 return projects.Where(p => p.AssignedTo
                     .Select(projectUser => projectUser.UserId).Contains(applicationUser.Id)).ToList();
-            } else
+            }
+            else
             {
                 return SortProjects(sortOrder, sort);
             }
@@ -88,6 +92,49 @@ namespace JelloTicket.BusinessLayer.Services
             return _projectRepository.Get(id);
         }
 
-        public Task 
+        public bool CreateProject(Project project)
+        {
+            try
+            {
+                _projectRepository.Create(project);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        public async Task<bool> BuildProjectModel(List<String> userIds, Project project, ApplicationUser createdBy)
+        {
+            try
+            {
+                foreach (String userId in userIds)
+                {
+                    ApplicationUser currentUser = await _userManager.FindByIdAsync(userId);
+
+                    // build the joining table model
+                    UserProject newUserProject = new UserProject()
+                    {
+                        ApplicationUser = currentUser,
+                        UserId = currentUser.Id,
+                        Project = project
+                    };
+
+                    project.AssignedTo.Add(newUserProject);
+                    project.CreatedBy = createdBy;
+                    _userProjectRepository.Create(newUserProject);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return false;
+        }
     }
 }

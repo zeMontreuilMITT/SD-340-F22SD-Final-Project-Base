@@ -24,14 +24,17 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         private readonly UserManager<ApplicationUser> _users;
         private readonly ProjectBusinessLogic _projectBusinessLogic;
         private readonly UserManagerBusinessLogic _userManagerBusinessLogic;
+        private readonly IRepository<UserProject> _userProjectRepository;
 
         public ProjectsController(IRepository<Project> projectRepo
             , UserManager<ApplicationUser> users
-            , UserManagerBusinessLogic userManagerBusinessLogic)
+            , UserManagerBusinessLogic userManagerBusinessLogic
+            , IRepository<UserProject> userProjectRepository)
         {
-            _projectBusinessLogic = new ProjectBusinessLogic(projectRepo, users, userManagerBusinessLogic);
+            _projectBusinessLogic = new ProjectBusinessLogic(projectRepo, users, userManagerBusinessLogic, userProjectRepository);
             _users = users;
             _userManagerBusinessLogic = userManagerBusinessLogic;
+            _userProjectRepository = userProjectRepository;
         }
         // GET: Projects
         [Authorize]
@@ -79,13 +82,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> CreateAsync()
         {
-            List<ApplicationUser> allUsers = (List<ApplicationUser>)await _users.GetUsersInRoleAsync("Developer");
-
-            List<SelectListItem> users = new List<SelectListItem>();
-            allUsers.ForEach(au =>
-            {
-                users.Add(new SelectListItem(au.UserName, au.Id.ToString()));
-            });
+            List<SelectListItem> users = _userManagerBusinessLogic.UserSelectListItem();
             ViewBag.Users = users;
 
             return View();
@@ -101,22 +98,15 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         {
             if (ModelState.IsValid)
             {
-                string userName = User.Identity.Name;
-
-                ApplicationUser createdBy = _context.Users.First(u => u.UserName == userName);
-                userIds.ForEach((user) =>
+                ApplicationUser createdBy = _userManagerBusinessLogic.GetLoggedInUser(User).Result;
+                
+                if (_projectBusinessLogic.BuildProjectModel(userIds, project, createdBy).Result)
                 {
-                    ApplicationUser currUser = _context.Users.FirstOrDefault(u => u.Id == user);
-                    UserProject newUserProj = new UserProject();
-                    newUserProj.ApplicationUser = currUser;
-                    newUserProj.UserId = currUser.Id;
-                    newUserProj.Project = project;
-                    project.AssignedTo.Add(newUserProj);
-                    _context.UserProjects.Add(newUserProj);
-                });
-                _context.Add(project);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index));
+                } else
+                {
+                    return BadRequest();
+                };
             }
             return View(project);
         }
