@@ -76,50 +76,50 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         //}
 
         //// GET: Projects/Create
-        //[Authorize(Roles = "ProjectManager")]
-        //public async Task<IActionResult> CreateAsync()
-        //{
-        //    List<ApplicationUser> allUsers = (List<ApplicationUser>)await _users.GetUsersInRoleAsync("Developer");
+        [Authorize(Roles = "ProjectManager")]
+        public async Task<IActionResult> CreateAsync()
+        {
+            List<ApplicationUser> allUsers = (List<ApplicationUser>)await _users.GetUsersInRoleAsync("Developer");
 
-        //    List<SelectListItem> users = new List<SelectListItem>();
-        //    allUsers.ForEach(au =>
-        //    {
-        //        users.Add(new SelectListItem(au.UserName, au.Id.ToString()));
-        //    });
-        //    ViewBag.Users = users;
+            List<SelectListItem> users = new List<SelectListItem>();
+            allUsers.ForEach(au =>
+            {
+                users.Add(new SelectListItem(au.UserName, au.Id.ToString()));
+            });
+            ViewBag.Users = users;
 
-        //    return View();
-        //}
+            return View();
+        }
 
         //// POST: Projects/Create
         //// To protect from overposting attacks, enable the specific properties you want to bind to.
         //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //[Authorize(Roles = "ProjectManager")]
-        //public async Task<IActionResult> Create([Bind("Id,ProjectName")] Project project, List<string> userIds)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        string userName = User.Identity.Name;
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "ProjectManager")]
+        public async Task<IActionResult> Create([Bind("Id,ProjectName")] Project project, List<string> userIds)
+        {
+            if (ModelState.IsValid)
+            {
+                string userName = User.Identity.Name;
 
-        //        ApplicationUser createdBy = _context.Users.First(u => u.UserName == userName);
-        //        userIds.ForEach((user) =>
-        //        {
-        //            ApplicationUser currUser = _context.Users.FirstOrDefault(u => u.Id == user);
-        //            UserProject newUserProj = new UserProject();
-        //            newUserProj.ApplicationUser = currUser;
-        //            newUserProj.UserId = currUser.Id;
-        //            newUserProj.Project = project;
-        //            project.AssignedTo.Add(newUserProj);
-        //            _context.UserProjects.Add(newUserProj);
-        //        });
-        //        _context.Add(project);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(project);
-        //}
+                ApplicationUser createdBy = _context.Users.First(u => u.UserName == userName);
+                userIds.ForEach((user) =>
+                {
+                    ApplicationUser currUser = _context.Users.FirstOrDefault(u => u.Id == user);
+                    UserProject newUserProj = new UserProject();
+                    newUserProj.ApplicationUser = currUser;
+                    newUserProj.UserId = currUser.Id;
+                    newUserProj.Project = project;
+                    project.AssignedTo.Add(newUserProj);
+                    _context.UserProjects.Add(newUserProj);
+                });
+                _context.Add(project);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(project);
+        }
 
         //// GET: Projects/Edit/5
         //[Authorize(Roles = "ProjectManager")]
