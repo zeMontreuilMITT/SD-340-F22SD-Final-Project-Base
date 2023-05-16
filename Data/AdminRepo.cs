@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SD_340_W22SD_Final_Project_Group6.Models;
+using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
 
 namespace SD_340_W22SD_Final_Project_Group6.Data
 {
@@ -14,6 +15,24 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
             _userManager = userManager;
         }
 
-        public List<ApplicationUser>
+        public async Task<ProjectManagersAndDevelopersViewModels> GetUsersInRoles()
+        {
+            ProjectManagersAndDevelopersViewModels vm = new ProjectManagersAndDevelopersViewModels();
+
+            List<ApplicationUser> pmUsers = (List<ApplicationUser>)await _userManager.GetUsersInRoleAsync("ProjectManager");
+            List<ApplicationUser> devUsers = (List<ApplicationUser>)await _userManager.GetUsersInRoleAsync("Developer");
+            List<ApplicationUser> allUsers = _context.Users.ToList();
+
+            vm.pms = pmUsers;
+            vm.devs = devUsers;
+            vm.allUsers = allUsers;
+
+            return vm;
+        }
+
+        public async Task<List<ApplicationUser>> GetUsers()
+        {
+
+        }
     }
 }
