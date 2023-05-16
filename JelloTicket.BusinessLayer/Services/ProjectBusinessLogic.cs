@@ -83,13 +83,13 @@ namespace JelloTicket.BusinessLayer.Services
             }
         }
 
-        public async Task<DataLayer.Models.Project> GetProject(int? id)
+        public Project GetProject(int? id)
         {
             Project project = _projectRepository.Get(id);
 
             return project;
         }
 
-        public 
+        public Task 
     }
 }
