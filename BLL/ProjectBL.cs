@@ -29,6 +29,27 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
         }
 
 
+        public Project? GetProject(int? id)
+        {
+            if (id == null) { return null; }
+
+            Project? project = _projectRepo.Get((int)id);
+
+            return project;
+        }
+
+        public void DeleteProject(int id)
+        {
+            // Get project
+            Project project = _projectRepo.Get(id);
+
+            
+            // Delete all tickets on project
+            // delete all user projects referencing project
+            
+
+        }
+
 
         public async Task<List<SelectListItem>> GetDevelopersAsSelectList()
         {
