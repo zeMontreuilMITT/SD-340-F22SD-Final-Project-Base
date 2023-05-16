@@ -50,22 +50,17 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         }
 
         //// GET: Projects/Details/5
-        //public async Task<IActionResult> Details(int? id)
-        //{
-        //    if (id == null || _context.Projects == null)
-        //    {
-        //        return NotFound();
-        //    }
+        public async Task<IActionResult> Details(int? id)
+        {
+            Project project = _projectBusinessLogic.GetProject(id).Result;
 
-        //    var project = await _context.Projects
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (project == null)
-        //    {
-        //        return NotFound();
-        //    }
+            if (project == null)
+            {
+                return NotFound();
+            }
 
-        //    return View(project);
-        //}
+            return View(project);
+        }
 
         //public async Task<IActionResult> RemoveAssignedUser(string id, int projId)
         //{

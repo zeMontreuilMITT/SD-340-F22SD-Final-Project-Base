@@ -9,6 +9,7 @@ using JelloTicket.BusinessLayer.HelperLibrary;
 using Microsoft.AspNetCore.Identity;
 using System.Collections;
 using System.Security.Claims;
+using System.ComponentModel;
 
 namespace JelloTicket.BusinessLayer.Services
 {
@@ -80,6 +81,13 @@ namespace JelloTicket.BusinessLayer.Services
             {
                 return SortProjects(sortOrder, sort);
             }
+        }
+
+        public async Task<DataLayer.Models.Project> GetProject(int? id)
+        {
+            Project project = _projectRepository.Get(id);
+
+            return project;
         }
     }
 }
