@@ -33,4 +33,8 @@
     <ProjectReference Include="..\JelloTicket.DataLayer\JelloTicket.DataLayer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\" />
+  </ItemGroup>
+
 </Project>
