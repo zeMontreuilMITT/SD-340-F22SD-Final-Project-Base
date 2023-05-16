@@ -38,16 +38,26 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             return project;
         }
 
-        public void DeleteProject(int id)
+        public Project DeleteProject(int id)
         {
             // Get project
             Project project = _projectRepo.Get(id);
 
-            
-            // Delete all tickets on project
-            // delete all user projects referencing project
-            
+            List<Ticket> ticketsOnProject = _ticketRepo.GetAll().Where(t => t.ProjectId == id).ToList();
 
+            List<UserProject> userProjectsOnProject = _userProjectRepo.GetAll().Where(up => up.ProjectId == id).ToList();
+
+            foreach(Ticket ticket in ticketsOnProject)
+            {
+                _ticketRepo.Delete(ticket);
+            }
+
+            foreach(UserProject userProject in userProjectsOnProject)
+            {
+                _userProjectRepo.Delete(userProject);
+            }
+
+            return _projectRepo.Delete(project);
         }
 
 
