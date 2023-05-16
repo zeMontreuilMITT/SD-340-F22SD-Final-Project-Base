@@ -40,9 +40,9 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
                 return null;
             }
 
-            ticket.Project = _projectRepo.Get(ticket.Project.Id);
+            ticket.Project = _projectRepo.Get(ticket.ProjectId);
             ticket.TicketWatchers = _ticketWatcherRepo.GetAll().Where(x => x.TicketId == id).ToList();
-            ticket.Owner = _userRepo.Get(int.Parse(ticket.Owner.Id));
+            ticket.Owner = _userRepo.Get(int.Parse(ticket.OwnerId));
             ticket.Comments = _commentRepo.GetAll().Where(x => x.TicketId == id).ToList();
 
             return ticket;
