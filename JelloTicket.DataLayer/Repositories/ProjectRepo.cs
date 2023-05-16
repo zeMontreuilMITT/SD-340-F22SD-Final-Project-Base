@@ -1,5 +1,6 @@
 ﻿using JelloTicket.DataLayer.Data;
 using JelloTicket.DataLayer.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,17 @@ namespace JelloTicket.DataLayer.Repositories
 
         public ICollection<Project> GetAll()
         {
-            return _context.Projects.ToHashSet();
+            ICollection<Project> result = _context.Projects
+                .Include(p => p.CreatedBy)
+                .Include(p => p.AssignedTo)
+                    .ThenInclude(at => at.ApplicationUser)
+                .Include(p => p.Tickets)
+                    .ThenInclude(t => t.Owner)
+                .Include(p => p.Tickets)
+                    .ThenInclude(t => t.TicketWatchers)
+                    .ThenInclude(tw => tw.Watcher).ToList();
+
+            return result;
         }
 
         public void Create(Project project)

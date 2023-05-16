@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
+//using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
 
 namespace SD_340_W22SD_Final_Project_Group6.Controllers
 {
@@ -19,21 +19,21 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             _context = context;
             _users = users;
         }
-        public async Task<IActionResult> Index()
-        {
-            ProjectManagersAndDevelopersViewModels vm = new ProjectManagersAndDevelopersViewModels();
+        //public async Task<IActionResult> Index()
+        //{
+        //    ProjectManagersAndDevelopersViewModels vm = new ProjectManagersAndDevelopersViewModels();
 
-            List<ApplicationUser> pmUsers = (List<ApplicationUser>)await _users.GetUsersInRoleAsync("ProjectManager");
-            List<ApplicationUser> devUsers = (List<ApplicationUser>)await _users.GetUsersInRoleAsync("Developer");
-            List<ApplicationUser> allUsers = _context.Users.ToList();
+        //    List<ApplicationUser> pmUsers = (List<ApplicationUser>)await _users.GetUsersInRoleAsync("ProjectManager");
+        //    List<ApplicationUser> devUsers = (List<ApplicationUser>)await _users.GetUsersInRoleAsync("Developer");
+        //    List<ApplicationUser> allUsers = _context.Users.ToList();
 
 
 
-            vm.pms = (ICollection<Models.ApplicationUser>)pmUsers;
-            vm.devs = (ICollection<Models.ApplicationUser>)devUsers;
-            vm.allUsers = (ICollection<Models.ApplicationUser>)allUsers;
-            return View(vm);
-        }
+        //    vm.pms = (ICollection<Models.ApplicationUser>)pmUsers;
+        //    vm.devs = (ICollection<Models.ApplicationUser>)devUsers;
+        //    vm.allUsers = (ICollection<Models.ApplicationUser>)allUsers;
+        //    return View(vm);
+        //}
 
         public async Task<IActionResult> ReassignRoleAsync()
         {

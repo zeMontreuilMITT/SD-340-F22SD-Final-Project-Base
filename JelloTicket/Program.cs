@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 //using SD_340_W22SD_Final_Project_Group6.Data;
 using JelloTicket.DataLayer.Data;
 using JelloTicket.DataLayer.Models;
+using JelloTicket.BusinessLayer.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +18,8 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddSignInManager();
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IRepository<Project>, ProjectRepo>();
@@ -25,6 +27,9 @@ builder.Services.AddScoped<IRepository<Ticket>, TicketRepo>();
 builder.Services.AddScoped<IRepository<TicketWatcher>, TicketWatcherRepo>();
 builder.Services.AddScoped<IRepository<Comment>, CommentRepo>();
 builder.Services.AddScoped<IRepository<UserProject>, UserProjectRepo>();
+builder.Services.AddScoped<UserManager<ApplicationUser>>();
+builder.Services.AddScoped<SignInManager<ApplicationUser>>();
+builder.Services.AddScoped<UserManagerBusinessLogic>();
 
 var app = builder.Build();
 

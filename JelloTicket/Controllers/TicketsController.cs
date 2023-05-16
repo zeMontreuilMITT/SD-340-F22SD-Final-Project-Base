@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SD_340_W22SD_Final_Project_Group6.Data;
-using SD_340_W22SD_Final_Project_Group6.Models;
+using JelloTicket.DataLayer.Data;
+using JelloTicket.DataLayer.Models;
 using JelloTicket.DataLayer.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

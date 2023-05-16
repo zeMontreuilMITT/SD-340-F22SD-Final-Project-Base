@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using SD_340_W22SD_Final_Project_Group6.Data;
-using SD_340_W22SD_Final_Project_Group6.Models;
+using JelloTicket.DataLayer.Data;
+using JelloTicket.DataLayer.Models;
 using System.Diagnostics;
 
 namespace SD_340_W22SD_Final_Project_Group6.Controllers

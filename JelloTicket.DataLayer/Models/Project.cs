@@ -15,5 +15,9 @@ namespace JelloTicket.DataLayer.Models
         public ICollection<UserProject> AssignedTo { get; set; } = new HashSet<UserProject>();
         public ICollection<Ticket>? Tickets { get; set; } = new HashSet<Ticket>();
 
+        public Project() 
+        {
+
+        }
     }
 }
