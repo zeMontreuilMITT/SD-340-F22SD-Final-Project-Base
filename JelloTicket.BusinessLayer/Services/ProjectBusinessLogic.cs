@@ -85,9 +85,7 @@ namespace JelloTicket.BusinessLayer.Services
 
         public Project GetProject(int? id)
         {
-            Project project = _projectRepository.Get(id);
-
-            return project;
+            return _projectRepository.Get(id);
         }
 
         public Task 
