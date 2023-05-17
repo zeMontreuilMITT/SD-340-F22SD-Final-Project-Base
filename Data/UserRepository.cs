@@ -16,5 +16,10 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
         {
             return _users.Users.First(u => u.Id == userParameter || u.UserName == userParameter);
         }
+
+        public ICollection<ApplicationUser> GetAllUsers()
+        {
+            return _users.Users.ToList();
+        }
     }
 }

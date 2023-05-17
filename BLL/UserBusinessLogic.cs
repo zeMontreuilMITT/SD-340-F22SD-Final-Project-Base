@@ -14,7 +14,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             _userRepository = new UserRepository(_users);
         }
 
-        public ApplicationUser GetUser(string? userParameter)
+        public ApplicationUser Get(string? userParameter)
         {
             if(userParameter == null)
             {
