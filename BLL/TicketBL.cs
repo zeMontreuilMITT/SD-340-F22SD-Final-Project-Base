@@ -45,7 +45,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
             ticket.Project = _projectRepo.Get(ticket.ProjectId);
             ticket.TicketWatchers = _ticketWatcherRepo.GetAll().Where(x => x.TicketId == id).ToList();
-            ticket.Owner = _users.FindByIdAsync(ticket.OwnerId);
+            ticket.Owner = await _users.FindByIdAsync(ticket.OwnerId);
             ticket.Comments = _commentRepo.GetAll().Where(x => x.TicketId == id).ToList();
 
             return ticket;
