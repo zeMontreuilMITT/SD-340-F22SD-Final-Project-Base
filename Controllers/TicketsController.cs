@@ -18,11 +18,13 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ProjectBL _projectBL;
+        private readonly TicketBL _ticketBL;
 
-        public TicketsController(ApplicationDbContext context, ProjectBL projectBL)
+        public TicketsController(ApplicationDbContext context, ProjectBL projectBL, TicketBL ticketBL)
         {
             _context = context;
             _projectBL = projectBL;
+            _ticketBL = ticketBL;
         }
 
         // GET: Tickets
@@ -60,17 +62,20 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
 
         // GET: Tickets/Create
         [Authorize(Roles = "ProjectManager")]
-        public IActionResult Create(int projId)
+        public async Task<IActionResult> Create(int projId)
         {
-            Project currProject = _context.Projects.Include(p => p.AssignedTo).ThenInclude(at => at.ApplicationUser).FirstOrDefault(p => p.Id == projId);
+            //Project currProject = _context.Projects.Include(p => p.AssignedTo).ThenInclude(at => at.ApplicationUser).FirstOrDefault(p => p.Id == projId);
 
-            List<SelectListItem> currUsers = new List<SelectListItem>();
-            currProject.AssignedTo.ToList().ForEach(t =>
-            {
-                currUsers.Add(new SelectListItem(t.ApplicationUser.UserName, t.ApplicationUser.Id.ToString()));
-            });
+            //List<SelectListItem> currUsers = new List<SelectListItem>();
+            //currProject.AssignedTo.ToList().ForEach(t =>
+            //{
+            //    currUsers.Add(new SelectListItem(t.ApplicationUser.UserName, t.ApplicationUser.Id.ToString()));
+            //});
+
+            (Project currProject, List<SelectListItem> currUsers) = await _ticketBL.GetCurrProjectAndUsers(projId);
 
             ViewBag.Projects = currProject;
+
             ViewBag.Users = currUsers;
 
             return View();
@@ -86,14 +91,17 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         public async Task<IActionResult> Create([Bind("Id,Title,Body,RequiredHours,TicketPriority")] Ticket ticket, int projId, string userId)
         {
             if (ModelState.IsValid)
-            { 
-                ticket.Project = await _context.Projects.FirstAsync(p => p.Id == projId);
-                Project currProj = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projId);
-                ApplicationUser owner = _context.Users.FirstOrDefault(u => u.Id == userId);
-                ticket.Owner = owner;
-                _context.Add(ticket);
-                currProj.Tickets.Add(ticket);
-                await _context.SaveChangesAsync();
+            {
+                //ticket.Project = await _context.Projects.FirstAsync(p => p.Id == projId);
+                //Project currProj = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projId);
+                //ApplicationUser owner = _context.Users.FirstOrDefault(u => u.Id == userId);
+                //ticket.Owner = owner;
+                //_context.Add(ticket);
+                //currProj.Tickets.Add(ticket);
+                //await _context.SaveChangesAsync();
+
+                await _ticketBL.CreateTicket(ticket, projId, userId);
+
                 return RedirectToAction("Index","Projects", new { area = ""});
             }
             return View(ticket);

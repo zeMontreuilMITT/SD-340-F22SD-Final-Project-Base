@@ -2,6 +2,8 @@
 using SD_340_W22SD_Final_Project_Group6.Data;
 using SD_340_W22SD_Final_Project_Group6.Models;
 using X.PagedList;
+using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace SD_340_W22SD_Final_Project_Group6.BLL
 {
@@ -52,7 +54,33 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
         }
 
-        
-        
+        public async Task<(Project currProject, List<SelectListItem> currUsers)> GetCurrProjectAndUsers(int projId)
+        {
+            Project currProject =  _projectRepo.Get(projId);
+
+            List<SelectListItem> currUsers = currProject.AssignedTo
+                                                .Select(x => new SelectListItem(x.ApplicationUser.UserName, x.ApplicationUser.Id.ToString()))
+                                                .ToList();
+
+            return(currProject, currUsers);
+        }
+
+        public async Task<Ticket> CreateTicket(Ticket ticket, int projectId, string userId)
+        {
+            ticket.Project =  _projectRepo.Get(projectId);
+
+            Project currProject =  _projectRepo.Get(projectId);
+
+            ApplicationUser owner = await _users.FindByIdAsync(userId);
+
+            ticket.Owner = owner;
+
+            _ticketRepo.Create(ticket);
+
+            currProject.Tickets.Add(ticket);
+
+            return ticket;
+        }
+
     }
 }
