@@ -6,7 +6,7 @@
             public T Create(T entity);
 
             // READ
-            public T? Get(int? id);
+            public T? Get(int id);
             ICollection<T> GetAll();
 
             // UPDATE

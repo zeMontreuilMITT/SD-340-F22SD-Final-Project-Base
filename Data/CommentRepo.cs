@@ -1,4 +1,5 @@
-﻿using SD_340_W22SD_Final_Project_Group6.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using SD_340_W22SD_Final_Project_Group6.Models;
 
 namespace SD_340_W22SD_Final_Project_Group6.Data
 {
@@ -24,14 +25,30 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
             return entity;
         }
 
-        public Comment? Get(int? id)
+        public Comment Get(int id)
         {
-            return _context.Comments.Find(id);
+            return _context.Comments
+                .Include(c => c.CreatedBy)
+                .Include(c => c.Ticket)
+                .ThenInclude(c => c.Owner)
+                .ThenInclude(o => o.Tickets)
+                .Include(c => c.Ticket)
+                .ThenInclude(t => t.Project)
+                .ThenInclude(p => p.AssignedTo)
+                .First( c => c.Id == id);
         }
 
         public ICollection<Comment> GetAll()
         {
-            return _context.Comments.ToList();
+            return _context.Comments
+                .Include(c => c.CreatedBy)
+                .Include(c => c.Ticket)
+                .ThenInclude(c => c.Owner)
+                .ThenInclude(o => o.Tickets)
+                .Include(c => c.Ticket)
+                .ThenInclude(t => t.Project)
+                .ThenInclude(p => p.AssignedTo)
+                .ToList();
         }
 
         public Comment Update(Comment entity)
