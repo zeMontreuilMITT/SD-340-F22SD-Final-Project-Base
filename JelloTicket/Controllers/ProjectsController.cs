@@ -150,32 +150,11 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             {
                 try
                 {
-                    //userIds.ForEach((user) =>
-                    //{
-                    //    ApplicationUser currUser = _context.Users.FirstOrDefault(u => u.Id == user);
-                    //    UserProject newUserProj = new UserProject();
-                    //    newUserProj.ApplicationUser = currUser;
-                    //    newUserProj.UserId = currUser.Id;
-                    //    newUserProj.Project = project;
-                    //    project.AssignedTo.Add(newUserProj);
-                    //});
-                    //_context.Update(project);
-                    //await _context.SaveChangesAsync();
-
                     await _projectBusinessLogic.EditProjectModel(userIds, project);
                 }
                 catch (Exception ex)
                 {
-                    //    if (!ProjectExists(project.Id))
-                    //    {
-                    //        return NotFound();
-                    //    }
-                    //    else
-                    //    {
-                    //        throw;
-                    //    }
                     Console.WriteLine(ex.Message);
-                    
                 }
                 return RedirectToAction("Index");
             }
