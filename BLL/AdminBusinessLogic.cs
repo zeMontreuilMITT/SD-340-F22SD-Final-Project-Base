@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using SD_340_W22SD_Final_Project_Group6.Data;
 using SD_340_W22SD_Final_Project_Group6.Models;
 using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
@@ -17,7 +18,8 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
         public async Task<ProjectManagersAndDevelopersViewModels> Index()
         {
-             var users = await ;
+            List<ApplicationUser> allUsers = await _userManager.Users.ToListAsync();
+            List<ApplicationUser> pmUsers = await _userManager.
 
             return users;
         }
