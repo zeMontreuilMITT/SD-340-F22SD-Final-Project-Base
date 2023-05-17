@@ -18,7 +18,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Models
 
         [Range(1,999)]
         [DisplayName("Required Hours :")]
-        public int RequiredHours { get; set; }
+        public int? RequiredHours { get; set; }
 
         [ForeignKey("ApplicationUser")]
         [DisplayName("Owner :")]

@@ -14,6 +14,15 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddScoped<UserManager<ApplicationUser>>();
+
+
+builder.Services.AddScoped<IRepository<Ticket>, TicketsRepository>();
+builder.Services.AddScoped<ITicketRepository, TicketsRepository>();
+builder.Services.AddScoped<IRepository<Comment>, CommentsRepository>();
+builder.Services.AddScoped<IRepository<TicketWatcher>, TicketWatchersRepository>();
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();

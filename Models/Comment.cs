@@ -12,6 +12,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Models
         public string Description { get; set; }
         public ApplicationUser CreatedBy { get; set; }
 
+        public int? TicketId { get; set; }
         public Ticket Ticket { get; set; }
 
     }

@@ -32,4 +32,12 @@
     <Folder Include="Data\Migrations\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="Views\Tickets\Create.cshtml" />
+    <None Include="Views\Tickets\Delete.cshtml" />
+    <None Include="Views\Tickets\Details.cshtml" />
+    <None Include="Views\Tickets\Edit.cshtml" />
+    <None Include="Views\Tickets\Index.cshtml" />
+  </ItemGroup>
+
 </Project>
