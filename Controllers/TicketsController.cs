@@ -62,7 +62,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
 
         // GET: Tickets/Create
         [Authorize(Roles = "ProjectManager")]
-        public async Task<IActionResult> Create(int projId)
+        public IActionResult Create(int projId)
         {
             //Project currProject = _context.Projects.Include(p => p.AssignedTo).ThenInclude(at => at.ApplicationUser).FirstOrDefault(p => p.Id == projId);
 
@@ -72,13 +72,9 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             //    currUsers.Add(new SelectListItem(t.ApplicationUser.UserName, t.ApplicationUser.Id.ToString()));
             //});
 
-            (Project currProject, List<SelectListItem> currUsers) = await _ticketBL.GetCurrProjectAndUsers(projId);
+            CreateTicketViewModel VM = _ticketBL.GetCreateTicketViewModel(projId);
 
-            ViewBag.Projects = currProject;
-
-            ViewBag.Users = currUsers;
-
-            return View();
+            return View(VM);
 
         }
 
@@ -88,7 +84,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "ProjectManager")]
-        public async Task<IActionResult> Create([Bind("Id,Title,Body,RequiredHours,TicketPriority")] Ticket ticket, int projId, string userId)
+        public async Task<IActionResult> Create(CreateTicketViewModel VM, string userId)
         {
             if (ModelState.IsValid)
             {
@@ -100,11 +96,16 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 //currProj.Tickets.Add(ticket);
                 //await _context.SaveChangesAsync();
 
-                await _ticketBL.CreateTicket(ticket, projId, userId);
+                Ticket ticket =  _ticketBL.CreateTicket(VM, userId);
 
-                return RedirectToAction("Index","Projects", new { area = ""});
+                if (ticket != null)
+                {
+                    return RedirectToAction("Index", "Projects", new { area = "" });
+                }
             }
-            return View(ticket);
+
+
+            return View(VM);
         }
 
         // GET: Tickets/Edit/5

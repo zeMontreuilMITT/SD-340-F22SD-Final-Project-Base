@@ -4,6 +4,9 @@ using SD_340_W22SD_Final_Project_Group6.Models;
 using X.PagedList;
 using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace SD_340_W22SD_Final_Project_Group6.BLL
 {
@@ -54,32 +57,48 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
         }
 
-        public async Task<(Project currProject, List<SelectListItem> currUsers)> GetCurrProjectAndUsers(int projId)
+        public CreateTicketViewModel GetCreateTicketViewModel(int projId)
         {
-            Project currProject =  _projectRepo.Get(projId);
+            Project currProject = _projectRepo.Get(projId);
 
-            List<SelectListItem> currUsers = currProject.AssignedTo
-                                                .Select(x => new SelectListItem(x.ApplicationUser.UserName, x.ApplicationUser.Id.ToString()))
-                                                .ToList();
+            List<SelectListItem> currUsers = new List<SelectListItem>();
 
-            return(currProject, currUsers);
+            currProject.AssignedTo.ToList().ForEach(t =>
+            {
+                currUsers.Add(new SelectListItem(t.ApplicationUser.UserName, t.ApplicationUser.Id.ToString()));
+            });
+
+            CreateTicketViewModel VM = new CreateTicketViewModel
+            {
+                SelectedProject = currProject.Id,
+                Projects = new List<SelectListItem>
+            {
+                new SelectListItem(currProject.ProjectName, currProject.Id.ToString())
+            },
+                Users = currUsers
+            };
+
+            return VM;
         }
 
-        public async Task<Ticket> CreateTicket(Ticket ticket, int projectId, string userId)
+        public Ticket CreateTicket (CreateTicketViewModel VM, string userId)
         {
-            ticket.Project =  _projectRepo.Get(projectId);
+            Ticket ticket = new Ticket
+            {
+                Title = VM.Title,
+                Body = VM.Body,
+                RequiredHours = VM.RequiredHours,
+                TicketPriority = VM.Priority
+            };
 
-            Project currProject =  _projectRepo.Get(projectId);
+            ticket.ProjectId = VM.SelectedProject;
 
-            ApplicationUser owner = await _users.FindByIdAsync(userId);
-
-            ticket.Owner = owner;
+            ticket.OwnerId = userId;
 
             _ticketRepo.Create(ticket);
 
-            currProject.Tickets.Add(ticket);
-
             return ticket;
+
         }
 
     }
