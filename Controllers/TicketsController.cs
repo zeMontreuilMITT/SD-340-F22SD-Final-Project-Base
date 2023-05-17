@@ -95,7 +95,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 //_context.Add(ticket);
                 //currProj.Tickets.Add(ticket);
                 //await _context.SaveChangesAsync();
-                //
+                
 
                 Ticket ticket =  _ticketBL.CreateTicket(VM, userId);
 
