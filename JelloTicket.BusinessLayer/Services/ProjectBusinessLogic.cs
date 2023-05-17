@@ -136,5 +136,34 @@ namespace JelloTicket.BusinessLayer.Services
 
             return false;
         }
+
+        public async Task<bool> EditProjectModel(List<String> userIds, Project project)
+        {
+            try
+            {
+                foreach (String userId in userIds)
+                {
+                    ApplicationUser currentUser = await _userManager.FindByIdAsync(userId);
+
+                    // build the joining table model
+                    UserProject newUserProject = new UserProject()
+                    {
+                        ApplicationUser = currentUser,
+                        UserId = currentUser.Id,
+                        Project = project
+                    };
+
+                    project.AssignedTo.Add(newUserProject);
+                    _userProjectRepository.Update(newUserProject);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return false;
+        }
     }
 }

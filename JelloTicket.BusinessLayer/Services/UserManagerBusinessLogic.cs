@@ -46,5 +46,18 @@ namespace JelloTicket.BusinessLayer.Services
 
             return selectListItems;
         }
+
+        public List<SelectListItem> AllUserSelectListItem()
+        {
+            List<ApplicationUser> users = _users.Users.ToList();
+
+            List<SelectListItem> selectListItems = new List<SelectListItem>();
+            foreach (ApplicationUser user in users)
+            {
+                selectListItems.Add(new SelectListItem(user.UserName, user.Id.ToString()));
+            }
+
+            return selectListItems;
+        }
     }
 }

@@ -111,77 +111,76 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             return View(project);
         }
 
-        //// GET: Projects/Edit/5
-        //[Authorize(Roles = "ProjectManager")]
-        //public async Task<IActionResult> Edit(int? id)
-        //{
-        //    if (id == null || _context.Projects == null)
-        //    {
-        //        return NotFound();
-        //    }
+        // GET: Projects/Edit/5
+        [Authorize(Roles = "ProjectManager")]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-        //    var project = await _context.Projects.Include(p => p.AssignedTo).FirstAsync(p => p.Id == id);
-        //    if (project == null)
-        //    {
-        //        return NotFound();
-        //    }
+            Project project = _projectBusinessLogic.GetProject(id);
 
-        //    List<ApplicationUser> results = _context.Users.ToList();
+            if (project == null)
+            {
+                return NotFound();
+            }
+            
+            // populate the select list
+            ViewBag.Users = _userManagerBusinessLogic.AllUserSelectListItem();
 
-        //    List<SelectListItem> currUsers = new List<SelectListItem>();
-        //    results.ForEach(r =>
-        //    {
-        //        currUsers.Add(new SelectListItem(r.UserName, r.Id.ToString()));
-        //    });
-        //    ViewBag.Users = currUsers;
-
-        //    return View(project);
-        //}
+            return View(project);
+        }
 
         //// POST: Projects/Edit/5
         //// To protect from overposting attacks, enable the specific properties you want to bind to.
         //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //[Authorize(Roles = "ProjectManager")]
-        //public async Task<IActionResult> Edit(int id, List<string> userIds, [Bind("Id,ProjectName")] Project project)
-        //{
-        //    if (id != project.Id)
-        //    {
-        //        return NotFound();
-        //    }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "ProjectManager")]
+        public async Task<IActionResult> Edit(int id, List<string> userIds, [Bind("Id,ProjectName")] Project project)
+        {
+            if (id != project.Id)
+            {
+                return NotFound();
+            }
 
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            userIds.ForEach((user) =>
-        //            {
-        //                ApplicationUser currUser = _context.Users.FirstOrDefault(u => u.Id == user);
-        //                UserProject newUserProj = new UserProject();
-        //                newUserProj.ApplicationUser = currUser;
-        //                newUserProj.UserId = currUser.Id;
-        //                newUserProj.Project = project;
-        //                project.AssignedTo.Add(newUserProj);
-        //            });
-        //            _context.Update(project);
-        //            await _context.SaveChangesAsync();
-        //        }
-        //        catch (DbUpdateConcurrencyException)
-        //        {
-        //            if (!ProjectExists(project.Id))
-        //            {
-        //                return NotFound();
-        //            }
-        //            else
-        //            {
-        //                throw;
-        //            }
-        //        }
-        //        return RedirectToAction(nameof(Edit), new { id = id });
-        //    }
-        //    return View(project);
-        //}
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    //userIds.ForEach((user) =>
+                    //{
+                    //    ApplicationUser currUser = _context.Users.FirstOrDefault(u => u.Id == user);
+                    //    UserProject newUserProj = new UserProject();
+                    //    newUserProj.ApplicationUser = currUser;
+                    //    newUserProj.UserId = currUser.Id;
+                    //    newUserProj.Project = project;
+                    //    project.AssignedTo.Add(newUserProj);
+                    //});
+                    //_context.Update(project);
+                    //await _context.SaveChangesAsync();
+
+                    await _projectBusinessLogic.EditProjectModel(userIds, project);
+                }
+                catch (Exception ex)
+                {
+                    //    if (!ProjectExists(project.Id))
+                    //    {
+                    //        return NotFound();
+                    //    }
+                    //    else
+                    //    {
+                    //        throw;
+                    //    }
+                    Console.WriteLine(ex.Message);
+                    
+                }
+                return RedirectToAction("Index");
+            }
+            return View(project);
+        }
 
         //// GET: Projects/Delete/5
         //[Authorize(Roles = "ProjectManager")]
