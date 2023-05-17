@@ -1,9 +1,9 @@
-﻿@model ICollection<ApplicationUser>
+﻿@model List<SelectListItem>
 
 <form asp-action="ReassignRole" asp-controller="Admin">
     <div class="form-group">
 	<label class="control-label">Choose a User</label>
-	<select name="userId" asp-items=@ViewBag.Users></select>
+	<select name="userId" asp-items=@Model></select>
 	<span class="text-danger"></span>
 </div>
 
