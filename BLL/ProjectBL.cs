@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Identity;
 using SD_340_W22SD_Final_Project_Group6.Data;
 using SD_340_W22SD_Final_Project_Group6.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
+using X.PagedList;
+using System.Security.Claims;
 
 namespace SD_340_W22SD_Final_Project_Group6.BLL
 {
@@ -28,6 +31,63 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             _users = users;
         }
 
+        public async Task<ProjectIndexVM> ProjectIndex(string? sortOrder, int? page, bool? sort, string? userId, ClaimsPrincipal User)
+        {
+            List<SelectListItem> developers = GetDevelopersAsSelectList().Result;
+            List<Project> projects = _projectRepo.GetAll().OrderBy(p => p.ProjectName).ToList();
+            List<UserProject> userProjects = _userProjectRepo.GetAll().ToList();
+
+            ApplicationUser activeUser = GetActiveUser(User);
+            /*
+                Project Values
+                CreatedBy
+                AssignedTo (UserProject) > ApplicationUser
+               
+            */
+
+            
+            if(IsActiveUserDeveloper(User))
+            {
+                foreach(Project project in projects)
+                {
+                    if(userProjects.Any(up => up.ProjectId == project.Id && up.UserId == activeUser.Id))
+                    {
+                        projects.Remove(project);
+                    }
+                }
+            }
+            
+
+            IPagedList<Project>pagedProjects = projects.ToPagedList(page ?? 1, 3);
+            ProjectIndexVM vm = new(developers, pagedProjects );
+            // create vm
+            return vm;
+        }
+
+        public List<Project> RemoveProjectsActiveDeveloperNotAssignedTo(List<Project> projects, ApplicationUser activeDeveloper)
+        {
+            List<UserProject> userProjects = _userProjectRepo.GetAll().Where(up => up.UserId == activeDeveloper.Id).ToList();
+
+            foreach(Project project in projects)
+            {
+                if(!userProjects.Any(up => up.ProjectId == project.Id))
+                {
+                    projects.Remove(project);
+                }
+            }
+
+            return projects;
+        }
+        public ApplicationUser GetActiveUser(ClaimsPrincipal User)
+        {
+            List<ApplicationUser> users = _userRepo.GetAll().ToList();
+
+            return users.First(u => u.UserName == User.Identity.Name);
+        }
+        public bool IsActiveUserDeveloper(ClaimsPrincipal User)
+        {
+            return User.IsInRole("Developer");
+        }
 
         public Project? GetProject(int? id)
         {
