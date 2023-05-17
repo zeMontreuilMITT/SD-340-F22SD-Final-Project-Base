@@ -63,11 +63,13 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
             List<SelectListItem> currUsers = new List<SelectListItem>();
 
-            currProject.AssignedTo.ToList().ForEach(t =>
-            {
-                currUsers.Add(new SelectListItem(t.ApplicationUser.UserName, t.ApplicationUser.Id.ToString()));
-            });
+            List<UserProject> userProjects = _userProjectRepo.GetAll().Where(x => x.ProjectId == projId).ToList();
 
+            foreach (UserProject userProject in userProjects)
+            {
+                currUsers.Add(new SelectListItem(userProject.ApplicationUser.UserName, userProject.ApplicationUser.Id.ToString()));
+            }
+                
             CreateTicketViewModel VM = new CreateTicketViewModel
             {
                 SelectedProject = currProject.Id,
