@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using SD_340_W22SD_Final_Project_Group6.BLL;
 using SD_340_W22SD_Final_Project_Group6.Data;
 using SD_340_W22SD_Final_Project_Group6.Models;
 using System.Net;
@@ -23,6 +24,7 @@ builder.Services.AddScoped<IRepository<Ticket>, TicketRepo>();
 builder.Services.AddScoped<IRepository<TicketWatcher>, TicketWatcherRepo>();
 builder.Services.AddScoped<IRepository<UserProject>, UserProjectRepo>();
 builder.Services.AddScoped<UserRepo>();
+builder.Services.AddScoped<ProjectBL>();
 
 var app = builder.Build();
 
