@@ -98,33 +98,6 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
 
         // GET: Tickets/Edit/5
         [Authorize(Roles = "ProjectManager")]
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.Tickets == null)
-            {
-                return NotFound();
-            }
-
-            var ticket = await _context.Tickets.Include(t => t.Owner).FirstAsync(t => t.Id == id);
-      
-            if (ticket == null)
-            {
-                return NotFound();
-            }
-
-            List<ApplicationUser> results = _context.Users.Where(u => u != ticket.Owner).ToList();
-
-            List<SelectListItem> currUsers = new List<SelectListItem>();
-            results.ForEach(r =>
-            {
-                currUsers.Add(new SelectListItem(r.UserName, r.Id.ToString()));
-            });
-            ViewBag.Users = currUsers;
-
-            return View(ticket);
-        }
-
-        [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> RemoveAssignedUser(string id, int ticketId)
         {
             if (id == null)
