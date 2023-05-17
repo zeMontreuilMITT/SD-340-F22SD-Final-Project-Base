@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
 using X.PagedList;
 using System.Security.Claims;
+using System.Linq;
 
 namespace SD_340_W22SD_Final_Project_Group6.BLL
 {
@@ -35,28 +36,17 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
         {
             List<SelectListItem> developers = GetDevelopersAsSelectList().Result;
             List<Project> projects = _projectRepo.GetAll().OrderBy(p => p.ProjectName).ToList();
-            List<UserProject> userProjects = _userProjectRepo.GetAll().ToList();
 
             ApplicationUser activeUser = GetActiveUser(User);
-            /*
-                Project Values
-                CreatedBy
-                AssignedTo (UserProject) > ApplicationUser
-               
-            */
-
             
             if(IsActiveUserDeveloper(User))
             {
-                foreach(Project project in projects)
-                {
-                    if(userProjects.Any(up => up.ProjectId == project.Id && up.UserId == activeUser.Id))
-                    {
-                        projects.Remove(project);
-                    }
-                }
+                projects = RemoveProjectsActiveDeveloperNotAssignedTo(projects, activeUser);
             }
+
+            projects = AttachTicketsToProjects(projects);
             
+
 
             IPagedList<Project>pagedProjects = projects.ToPagedList(page ?? 1, 3);
             ProjectIndexVM vm = new(developers, pagedProjects );
@@ -68,15 +58,16 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
         {
             List<UserProject> userProjects = _userProjectRepo.GetAll().Where(up => up.UserId == activeDeveloper.Id).ToList();
 
+            List<Project> projectsAssigned = new List<Project>();
             foreach(Project project in projects)
             {
-                if(!userProjects.Any(up => up.ProjectId == project.Id))
+                if(userProjects.Any(up => up.ProjectId == project.Id))
                 {
-                    projects.Remove(project);
+                    projectsAssigned.Add(project);
                 }
             }
 
-            return projects;
+            return projectsAssigned;
         }
         public ApplicationUser GetActiveUser(ClaimsPrincipal User)
         {
@@ -88,6 +79,52 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
         {
             return User.IsInRole("Developer");
         }
+
+        public List<Project> AttachTicketsToProjects(List<Project> projects)
+        {
+            List<Ticket> tickets = _ticketRepo.GetAll().ToList();
+            List<Project> result = new List<Project>();
+            foreach (Project project in projects)
+            {
+                project.Tickets = tickets.Where(t => t.ProjectId == project.Id).ToList();
+
+
+                result.Add(project);
+            }
+
+            return result;
+
+        }
+
+        public List<Ticket> AttachOwnerToTickets(List<Ticket> tickets)
+        {
+            List<ApplicationUser> users = _userRepo.GetAll().ToList();
+            List<Ticket> result = new List<Ticket>();
+            foreach (Ticket ticket in tickets)
+            {
+                ticket.Owner = users.FirstOrDefault(o => o.Id == ticket.OwnerId);
+                result.Add(ticket);
+            }
+            return result;
+        }
+
+        public List<Ticket> AttachWatchersToTickets(List<Ticket> tickets)
+        {
+            List<ApplicationUser> users = _userRepo.GetAll().ToList();
+            List<TicketWatcher> ticketWatchers = _ticketWatcherRepo.GetAll().ToList();
+            List<Ticket> result = new List<Ticket>();
+
+            foreach(Ticket ticket in tickets)
+            {
+
+                ticket.TicketWatchers = ticketWatchers.Where(tw => tw.TicketId == ticket.Id).ToList();
+
+                
+            }
+
+            return result;
+        }
+        
 
         public Project? GetProject(int? id)
         {
