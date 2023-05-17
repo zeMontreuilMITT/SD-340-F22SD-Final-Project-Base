@@ -14,13 +14,19 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
     {
         private readonly AdminBusinessLogic _adminBusinessLogic;
 
-        public AdminController(AdminBusinessLogic adminBusinessLogic)
+        public AdminController(AdminRepo adminRepo)
         {
-            _adminBusinessLogic = adminBusinessLogic;
+            _adminBusinessLogic = new AdminBusinessLogic(adminRepo);
         }
         public async Task<IActionResult> Index()
         {
-            return View(_adminBusinessLogic.Index());
+            try
+            {
+                return View(await _adminBusinessLogic.Index());
+            } catch
+            {
+                return NotFound();
+            }
         }
 
         public async Task<IActionResult> ReassignRoleAsync()

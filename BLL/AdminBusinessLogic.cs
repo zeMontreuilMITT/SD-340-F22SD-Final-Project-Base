@@ -1,20 +1,23 @@
-﻿using SD_340_W22SD_Final_Project_Group6.Data;
+﻿using Microsoft.AspNetCore.Identity;
+using SD_340_W22SD_Final_Project_Group6.Data;
+using SD_340_W22SD_Final_Project_Group6.Models;
 using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
 
 namespace SD_340_W22SD_Final_Project_Group6.BLL
 {
     public class AdminBusinessLogic
     {
-        private readonly AdminRepo _adminRepo;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public AdminBusinessLogic(AdminRepo adminRepo)
+        public AdminBusinessLogic(UserManager<ApplicationUser> userManager)
         {
-            _adminRepo = adminRepo;
+            _userManager = userManager;
         }
 
         public async Task<ProjectManagersAndDevelopersViewModels> Index()
         {
-             var users = await _adminRepo.GetUsersInRoles();
+             var users = await ;
 
             return users;
         }
