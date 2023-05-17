@@ -1,4 +1,5 @@
-﻿using SD_340_W22SD_Final_Project_Group6.Data;
+﻿using Microsoft.AspNetCore.Identity;
+using SD_340_W22SD_Final_Project_Group6.Data;
 using SD_340_W22SD_Final_Project_Group6.Models;
 using X.PagedList;
 
@@ -12,8 +13,9 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
         private IRepository<TicketWatcher> _ticketWatcherRepo;
         private IRepository<UserProject> _userProjectRepo;
         private UserRepo _userRepo;
+        private readonly UserManager<ApplicationUser> _users;
 
-        public TicketBL(IRepository<Project> projectRepo, IRepository<Ticket> ticketRepo, IRepository<Comment> commentRepo, IRepository<TicketWatcher> ticketWatcherRepo, IRepository<UserProject> userProjectRepo, UserRepo userRepo)
+        public TicketBL(IRepository<Project> projectRepo, IRepository<Ticket> ticketRepo, IRepository<Comment> commentRepo, IRepository<TicketWatcher> ticketWatcherRepo, IRepository<UserProject> userProjectRepo, UserRepo userRepo, UserManager<ApplicationUser> users)
         {
             _projectRepo = projectRepo;
             _ticketRepo = ticketRepo;
@@ -21,6 +23,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             _ticketWatcherRepo = ticketWatcherRepo;
             _userProjectRepo = userProjectRepo;
             _userRepo = userRepo;
+            _users = users;
         }
         public async Task<ICollection<Ticket>> GetAllTickets()
         {
@@ -42,7 +45,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
             ticket.Project = _projectRepo.Get(ticket.ProjectId);
             ticket.TicketWatchers = _ticketWatcherRepo.GetAll().Where(x => x.TicketId == id).ToList();
-            ticket.Owner = _userRepo.Get(int.Parse(ticket.OwnerId));
+            ticket.Owner = _users.FindByIdAsync(ticket.OwnerId);
             ticket.Comments = _commentRepo.GetAll().Where(x => x.TicketId == id).ToList();
 
             return ticket;
