@@ -42,13 +42,14 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
                 projects = RemoveProjectsActiveDeveloperNotAssignedTo(projects, activeUser);
             }
 
-            projects = AttachTicketsToProjects(projects);
+            List<ProjectIndexVM.BasicProjectData> formattedProjects = await FormatProjectsForIndexVM(projects, activeUser);
             
+            // SortOrder sort and filter still needs to be done here
 
-
-            IPagedList<Project>pagedProjects = projects.ToPagedList(page ?? 1, 3);
+            IPagedList<ProjectIndexVM.BasicProjectData>pagedProjects = formattedProjects.ToPagedList(page ?? 1, 3);
+            
             ProjectIndexVM vm = new(developers, pagedProjects );
-            // create vm
+            
             return vm;
         }
 
@@ -78,6 +79,76 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             return User.IsInRole("Developer");
         }
 
+        public bool isUserWatchingOrOwner(Ticket ticket, ApplicationUser user)
+        {
+            if(ticket.OwnerId == user.Id)
+            {
+                return true;
+            }
+
+            TicketWatcher? ticketWatcher = _ticketWatcherRepo.GetAll().FirstOrDefault(tw => tw.WatcherId == user.Id && tw.TicketId == ticket.Id);
+
+            if(ticketWatcher != null)
+            {
+                return true;
+            }
+            
+            return false;
+
+        }
+        public async Task<List<ProjectIndexVM.BasicProjectData>> FormatProjectsForIndexVM(ICollection<Project> projects, ApplicationUser activeUser)
+        {
+            List<ProjectIndexVM.BasicProjectData> basicProjectData = new();
+            
+            foreach(Project project in projects)
+            {
+                List<ProjectIndexVM.BasicTicketData> basicTicketData = new();
+                List<Ticket> ticketsOnProject = _ticketRepo.GetAll().Where(t => t.ProjectId == project.Id).ToList();
+
+                foreach(Ticket ticket in ticketsOnProject)
+                {
+                    
+                    ProjectIndexVM.BasicTicketData basicTicket = new ProjectIndexVM.BasicTicketData
+                    {
+                        Id = ticket.Id,
+                        Title = ticket.Title,
+                        OwnerName = GetUserNameFromId(ticket.OwnerId),
+                        RequiredHours = ticket.RequiredHours,
+                        Priority = ticket.TicketPriority.ToString(),
+                        Watching = isUserWatchingOrOwner(ticket, activeUser),
+                        Completed = ticket.Completed
+                    };
+
+                    basicTicketData.Add(basicTicket);
+                }
+
+                ProjectIndexVM.BasicProjectData basicProject = new ProjectIndexVM.BasicProjectData
+                {
+                    Id = project.Id,
+                    Name = project.ProjectName,
+                    CreatedBy = GetUserNameFromId(project.CreatedById),
+                    AssignedTo = GetUsersOnProject(project),
+                    Tickets = basicTicketData
+                };
+                basicProjectData.Add(basicProject);
+            }
+
+            return basicProjectData;
+        }
+
+        public string GetUserNameFromId(string id)
+        {
+            return _users.FindByIdAsync(id).Result.UserName;
+        }
+
+        public List<string> GetUsersOnProject(Project project)
+        {
+            List<UserProject> userProjects = _userProjectRepo.GetAll().Where(up => up.ProjectId == project.Id).ToList();
+
+            return userProjects.Select(up => GetUserNameFromId(up.UserId)).ToList();
+        }
+
+        /*
         public List<Project> AttachTicketsToProjects(List<Project> projects)
         {
             List<Ticket> tickets = _ticketRepo.GetAll().ToList();
@@ -122,7 +193,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
             return result;
         }
-        
+        */
 
         public Project? GetProject(int? id)
         {
