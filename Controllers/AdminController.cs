@@ -12,7 +12,6 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
-        private readonly ApplicationDbContext _context;
         private readonly AdminBusinessLogic _adminBusinessLogic;
 
         public AdminController(UserManager<ApplicationUser> users)
