@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 //using SD_340_W22SD_Final_Project_Group6.Data;
 using JelloTicket.DataLayer.Data;
 using JelloTicket.DataLayer.Models;
+using JelloTicket.BusinessLayer.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

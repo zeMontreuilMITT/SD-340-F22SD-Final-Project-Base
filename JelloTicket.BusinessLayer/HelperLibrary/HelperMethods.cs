@@ -12,7 +12,7 @@ namespace JelloTicket.BusinessLayer.HelperLibrary
     public class HelperMethods
     {
         private readonly IRepository<Comment> _commentRepository;
-        private readonly IRepository<Ticket> _ticketRepository;
+        private readonly HelperMethods _helperMethods;
 
         public ICollection<Comment> GetCommentsByTicketId(int? ticketId)
         {
