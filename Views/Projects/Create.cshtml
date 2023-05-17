@@ -1,6 +1,7 @@
-﻿@model SD_340_W22SD_Final_Project_Group6.Models.Project
+﻿@using Microsoft.AspNetCore.Identity;
+@model SD_340_W22SD_Final_Project_Group6.Models.Project
 
-
+@inject UserManager<ApplicationUser> UserManager 
 
 @{
     ViewData["Title"] = "Create";
@@ -29,6 +30,8 @@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn" style="background-color: #E4BCB9" />
             </div>
+
+            <input asp-for="CreatedById" type="hidden" value="@UserManager.GetUserId(User)" class="form-control" />
         </form>
     </div>
 </div>

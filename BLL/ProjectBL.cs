@@ -1,6 +1,4 @@
-﻿
-
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using SD_340_W22SD_Final_Project_Group6.Data;
 using SD_340_W22SD_Final_Project_Group6.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -47,12 +45,12 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
             List<UserProject> userProjectsOnProject = _userProjectRepo.GetAll().Where(up => up.ProjectId == id).ToList();
 
-            foreach(Ticket ticket in ticketsOnProject)
+            foreach (Ticket ticket in ticketsOnProject)
             {
                 _ticketRepo.Delete(ticket);
             }
 
-            foreach(UserProject userProject in userProjectsOnProject)
+            foreach (UserProject userProject in userProjectsOnProject)
             {
                 _userProjectRepo.Delete(userProject);
             }
@@ -64,8 +62,8 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
         public async Task<List<SelectListItem>> GetDevelopersAsSelectList()
         {
             List<ApplicationUser> allDevelopers = (List<ApplicationUser>)await _users.GetUsersInRoleAsync("Developer");
-            
-            
+
+
             List<SelectListItem> developers = new();
 
             allDevelopers.ForEach(developer =>
@@ -74,6 +72,15 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             });
 
             return developers;
+        }
+
+        public void RemoveUserFromProject(string userId, int projectId)
+        {
+            UserProject? currentUserProject = _userProjectRepo.GetAll().FirstOrDefault(up => up.UserId == userId && up.ProjectId == projectId);
+            if (currentUserProject != null)
+            {
+                _userProjectRepo.Delete(currentUserProject);
+            }
         }
 
     }
