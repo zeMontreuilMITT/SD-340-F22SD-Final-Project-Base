@@ -14,9 +14,9 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
     {
         private readonly AdminBusinessLogic _adminBusinessLogic;
 
-        public AdminController(AdminRepo adminRepo)
+        public AdminController(UserManager<ApplicationUser> userManager)
         {
-            _adminBusinessLogic = new AdminBusinessLogic(adminRepo);
+            _adminBusinessLogic = new AdminBusinessLogic(userManager);
         }
         public async Task<IActionResult> Index()
         {
@@ -31,34 +31,35 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
 
         public async Task<IActionResult> ReassignRoleAsync()
         {
-            List<ApplicationUser> allUsers = _context.Users.ToList();
-
-            List<SelectListItem> users = new List<SelectListItem>();
-            allUsers.ForEach(u =>
+            try
             {
-                users.Add(new SelectListItem(u.UserName, u.Id.ToString()));
-            });
-            ViewBag.Users = users;
+                return View(_adminBusinessLogic.ReassignRoleAsync());
+            } catch
+            {
+                return BadRequest();
+            }
 
-            return View(allUsers);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ReassignRole(string role, string userId)
         {
-
-            ApplicationUser user = _users.Users.First(u => u.Id == userId);
-            ICollection<string> roleUser = await _users.GetRolesAsync(user);
-            if (roleUser.Count == 0)
+            try
             {
-                await _users.AddToRoleAsync(user, role);
-                return RedirectToAction("Index", "Admin", new { area = "" });
-            } else
+                bool tf = await _adminBusinessLogic.ReassignRole(role, userId);
+                if (tf)
+                {
+                    return RedirectToAction("Index", "Admin", new { area = "" });
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Admin", new { area = "" });
+                }
+            }
+            catch
             {
-                await _users.RemoveFromRoleAsync(user, roleUser.First());
-                await _users.AddToRoleAsync(user, role);
-                return RedirectToAction("Index", "Admin", new { area = "" });
+                return NotFound();
             }
         }
     }

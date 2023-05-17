@@ -19,7 +19,6 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IRepository<Ticket>, TicketRepo>();
 builder.Services.AddScoped<IRepository<Project>, ProjectRepo>();
-builder.Services.AddScoped<AdminRepo>();
 
 var app = builder.Build();
 
