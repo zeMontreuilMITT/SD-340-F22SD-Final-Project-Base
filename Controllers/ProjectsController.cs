@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using SD_340_W22SD_Final_Project_Group6.BLL;
 using SD_340_W22SD_Final_Project_Group6.Data;
 using SD_340_W22SD_Final_Project_Group6.Models;
+using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
 using X.PagedList;
 using X.PagedList.Mvc;
 
@@ -33,6 +34,20 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [Authorize]
         public async Task<IActionResult> Index(string? sortOrder, int? page, bool? sort, string? userId)
         {
+            try
+            {
+                
+               ProjectIndexVM x =  await _projectBL.ProjectIndex(sortOrder, page, sort, userId, User);
+                return View(x);
+
+            } catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return RedirectToAction("Index", "Home");
+            }
+
+            //return RedirectToAction("Index", "Home");
+            /*
             List<Project> SortedProjs = new List<Project>();
             List<ApplicationUser> allUsers = (List<ApplicationUser>)await _users.GetUsersInRoleAsync("Developer");
 
@@ -150,6 +165,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             }
             X.PagedList.IPagedList<Project> projList = AssinedProject.ToPagedList(page ?? 1, 3);
             return View(projList);
+            */
         }
 
         // GET: Projects/Details/5
