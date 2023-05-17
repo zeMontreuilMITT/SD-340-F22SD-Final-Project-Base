@@ -155,13 +155,8 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         // GET: Projects/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Projects == null)
-            {
-                return NotFound();
-            }
+            var project = _projectBL.GetProject(id);
 
-            var project = await _context.Projects
-                .FirstOrDefaultAsync(m => m.Id == id);
             if (project == null)
             {
                 return NotFound();
@@ -176,9 +171,8 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             {
                 return NotFound();
             }
-            UserProject currUserProj = await _context.UserProjects.FirstAsync(up => up.ProjectId == projId && up.UserId == id);
-            _context.UserProjects.Remove(currUserProj);
-            await _context.SaveChangesAsync();
+
+            _projectBL.RemoveUserFromProject(id, projId);
 
             return RedirectToAction("Edit", new { id = projId });
         }
@@ -205,7 +199,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "ProjectManager")]
-        public async Task<IActionResult> Create([Bind("Id,ProjectName")] Project project, List<string> userIds)
+        public async Task<IActionResult> Create([Bind("Id,CreatedById,ProjectName")] Project project, List<string> userIds)
         {
             if (ModelState.IsValid)
             {
@@ -217,7 +211,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                     ApplicationUser currUser = _context.Users.FirstOrDefault(u => u.Id == user);
                     UserProject newUserProj = new UserProject();
                     newUserProj.ApplicationUser = currUser;
-                    newUserProj.UserId = currUser.Id;
+                    newUserProj.UserId = currUser.Id;                    
                     newUserProj.Project = project;
                     project.AssignedTo.Add(newUserProj);
                     _context.UserProjects.Add(newUserProj);
@@ -262,7 +256,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "ProjectManager")]
-        public async Task<IActionResult> Edit(int id, List<string> userIds, [Bind("Id,ProjectName")] Project project)
+        public async Task<IActionResult> Edit(int id, List<string> userIds, [Bind("Id,CreatedById,ProjectName")] Project project)
         {
             if (id != project.Id)
             {
