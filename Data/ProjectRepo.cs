@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
 using SD_340_W22SD_Final_Project_Group6.Models;
 
 namespace SD_340_W22SD_Final_Project_Group6.Data
@@ -21,7 +22,13 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
 
         public Project Get(int? id)
         {
-            return _context.Projects.Find(id);
+            return _context.Projects
+                .Include(p => p.CreatedBy)
+                .Include(p => p.AssignedTo)
+                .ThenInclude(p => p.ApplicationUser)
+                .Include(p => p.Tickets)
+                .ThenInclude(t => t.Owner)
+                .First(p => p.Id == id);
         }
 
 
@@ -41,7 +48,13 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
 
         public ICollection<Project> GetAll()
         {
-            return _context.Projects.ToList();
+            return _context.Projects
+                .Include(p => p.CreatedBy)
+                .Include(p => p.AssignedTo)
+                .ThenInclude(p => p.ApplicationUser)
+                .Include(p => p.Tickets)
+                .ThenInclude(t => t.Owner)
+                .ToList();
         }
     }
 }

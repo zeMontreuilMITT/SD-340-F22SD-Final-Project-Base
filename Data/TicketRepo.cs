@@ -1,4 +1,5 @@
-﻿using SD_340_W22SD_Final_Project_Group6.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using SD_340_W22SD_Final_Project_Group6.Models;
 
 namespace SD_340_W22SD_Final_Project_Group6.Data
 {
@@ -25,14 +26,28 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
             return entity;
         }
 
-        public Ticket Get(int? id)
+        public Ticket Get(int id)
         {
-            return _context.Tickets.Find(id);
+            return _context.Tickets
+                .Include(t => t.Project)
+                .ThenInclude(p => p.AssignedTo)
+                .Include(t => t.Owner)
+                .Include(t => t.TicketWatchers)
+                .ThenInclude(tw => tw.Watcher)
+                .Include(t => t.Comments)
+                .ThenInclude(c => c.CreatedBy)
+                .First(t => t.Id == id);
         }
 
         public ICollection<Ticket> GetAll()
         {
-            return _context.Tickets.ToList();
+            return _context.Tickets
+                .Include(t => t.Project)
+                .ThenInclude(p => p.AssignedTo)
+                .Include(t => t.Owner)
+                .Include(t => t.TicketWatchers)
+                .ThenInclude(tw => tw.Watcher)
+                .ToList();
         }
 
         public Ticket Update(Ticket entity)
