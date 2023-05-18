@@ -28,6 +28,8 @@ builder.Services.AddScoped<UserManager<ApplicationUser>>();
 builder.Services.AddScoped<SignInManager<ApplicationUser>>();
 builder.Services.AddScoped<UserManagerBusinessLogic>();
 builder.Services.AddScoped<ProjectBusinessLogic>();
+builder.Services.AddScoped<AdminBusinessLogic>();
+builder.Services.AddScoped<IUserRepo<ApplicationUser>, UserRepo>();
 
 var app = builder.Build();
 

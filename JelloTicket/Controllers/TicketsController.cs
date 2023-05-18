@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
+using JelloTicket.BusinessLayer.ViewModels;
 
 namespace SD_340_W22SD_Final_Project_Group6.Controllers
 {

@@ -1,5 +1,7 @@
-﻿using JelloTicket.DataLayer.Data;
+﻿using JelloTicket.BusinessLayer.Services;
+using JelloTicket.DataLayer.Data;
 using JelloTicket.DataLayer.Models;
+using JelloTicket.DataLayer.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,27 +15,20 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _users;
+        private readonly AdminBusinessLogic _adminBusinessLogic;
 
-        public AdminController(ApplicationDbContext context, UserManager<ApplicationUser> users)
+        public AdminController(ApplicationDbContext context
+            , UserManager<ApplicationUser> users
+            , AdminBusinessLogic adminBusinessLogic)
         {
             _context = context;
             _users = users;
+            _adminBusinessLogic = adminBusinessLogic;
         }
-        //public async Task<IActionResult> Index()
-        //{
-        //    ProjectManagersAndDevelopersViewModels vm = new ProjectManagersAndDevelopersViewModels();
-
-        //    List<ApplicationUser> pmUsers = (List<ApplicationUser>)await _users.GetUsersInRoleAsync("ProjectManager");
-        //    List<ApplicationUser> devUsers = (List<ApplicationUser>)await _users.GetUsersInRoleAsync("Developer");
-        //    List<ApplicationUser> allUsers = _context.Users.ToList();
-
-
-
-        //    vm.pms = (ICollection<Models.ApplicationUser>)pmUsers;
-        //    vm.devs = (ICollection<Models.ApplicationUser>)devUsers;
-        //    vm.allUsers = (ICollection<Models.ApplicationUser>)allUsers;
-        //    return View(vm);
-        //}
+        public async Task<IActionResult> Index()
+        {
+            return View(_adminBusinessLogic.BuildPMAndDeveloperViewModel());
+        }
 
         public async Task<IActionResult> ReassignRoleAsync()
         {

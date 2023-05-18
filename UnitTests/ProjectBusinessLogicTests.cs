@@ -30,6 +30,8 @@ namespace UnitTests
             new ApplicationUser{UserName = "Tom"},
         };
 
+        // spooky magic I did not write!
+        // https://stackoverflow.com/questions/49165810/how-to-mock-usermanager-in-net-core-testing
         public static Mock<UserManager<TUser>> MockUserManager<TUser>(List<TUser> ls) where TUser : class
         {
             var store = new Mock<IUserStore<TUser>>();
