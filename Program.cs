@@ -19,6 +19,8 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IRepository<Ticket>, TicketRepo>();
 builder.Services.AddScoped<IRepository<Project>, ProjectRepo>();
+builder.Services.AddScoped<IRepository<UserProject>, UserProjectRepo>();
+builder.Services.AddScoped<IRepository<Comment>, CommentRepo>();
 
 var app = builder.Build();
 
