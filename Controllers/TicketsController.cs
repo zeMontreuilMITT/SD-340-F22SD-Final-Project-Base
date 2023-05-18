@@ -71,10 +71,10 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 return View(VM);
             } catch
             {
-                 
-            }
+				return NotFound();
+			}
 
-            return NotFound();
+            
             
 
         }
@@ -92,7 +92,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             try
             {
                 
-              Ticket ticket = _ticketBL.CreateTicket(VM, userId);
+              Ticket ticket = await _ticketBL.CreateTicket(VM, userId);
 
               return View(VM);
                 
@@ -100,9 +100,6 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             {
                 return RedirectToAction("Index", "Projects", new { area = "" });
             }
-
-            
-
 
         }
 

@@ -81,10 +81,10 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             
         }
 
-        public Ticket CreateTicket (CreateTicketViewModel VM, string userId)
+        public async Task<Ticket> CreateTicket (CreateTicketViewModel VM, string userId)
         {
             
-                Ticket ticket = new Ticket
+            Ticket ticket = new Ticket
             {
                 Title = VM.Title,
                 Body = VM.Body,
@@ -96,7 +96,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
             ticket.OwnerId = userId;
 
-            _ticketRepo.Create(ticket);
+			 _ticketRepo.Create(ticket);
 
             return ticket;
 

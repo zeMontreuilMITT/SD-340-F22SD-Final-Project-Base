@@ -23,7 +23,7 @@
 			</div>
 			<div class="form-group">
 				<label asp-for="Body" class="control-label"></label>
-				<textarea asp-for="Body" id="mytextarea" required="required">Enter Text Here</textarea>
+				<textarea asp-for="Body" id="mytextarea" required="true">Enter Text Here</textarea>
 				<span asp-validation-for="Body" class="text-danger"></span>
 			</div>
 			<div class="row">
@@ -50,7 +50,7 @@
 					</div>
 					<div class="form-group">
 						<label asp-for="Users" class="control-label"></label>
-						<select name="userId" asp-for="Users" asp-items=@Model.Users></select>
+						<select name="userId" asp-for="Users" asp-items="Model.Users"></select>
 						<span asp-validation-for="Users" class="text-danger"></span>
 					</div>
 				</div>
