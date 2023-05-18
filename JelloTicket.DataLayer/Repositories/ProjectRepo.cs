@@ -20,7 +20,16 @@ namespace JelloTicket.DataLayer.Repositories
 
         public Project Get(int? id)
         {
-            return (Project)_context.Projects.FirstOrDefault(t => t.Id == id);
+            return (Project)_context.Projects
+                .Include(p => p.CreatedBy)
+                .Include(p => p.AssignedTo)
+                    .ThenInclude(at => at.ApplicationUser)
+                .Include(p => p.Tickets)
+                    .ThenInclude(t => t.Owner)
+                .Include(p => p.Tickets)
+                    .ThenInclude(t => t.TicketWatchers)
+                    .ThenInclude(tw => tw.Watcher)
+                .FirstOrDefault(t => t.Id == id);
         }
 
         public ICollection<Project> GetAll()

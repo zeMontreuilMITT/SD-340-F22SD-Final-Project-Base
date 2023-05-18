@@ -25,16 +25,19 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         private readonly ProjectBusinessLogic _projectBusinessLogic;
         private readonly UserManagerBusinessLogic _userManagerBusinessLogic;
         private readonly IRepository<UserProject> _userProjectRepository;
+        private readonly IRepository<Ticket> _ticketRepository;
 
         public ProjectsController(IRepository<Project> projectRepo
             , UserManager<ApplicationUser> users
             , UserManagerBusinessLogic userManagerBusinessLogic
-            , IRepository<UserProject> userProjectRepository)
+            , IRepository<UserProject> userProjectRepository
+            , IRepository<Ticket> ticketRepository)
         {
-            _projectBusinessLogic = new ProjectBusinessLogic(projectRepo, users, userManagerBusinessLogic, userProjectRepository);
+            _projectBusinessLogic = new ProjectBusinessLogic(projectRepo, users, userManagerBusinessLogic, userProjectRepository, ticketRepository);
             _users = users;
             _userManagerBusinessLogic = userManagerBusinessLogic;
             _userProjectRepository = userProjectRepository;
+            _ticketRepository = ticketRepository;
         }
         // GET: Projects
         [Authorize]
@@ -162,57 +165,37 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         }
 
         //// GET: Projects/Delete/5
-        //[Authorize(Roles = "ProjectManager")]
-        //public async Task<IActionResult> Delete(int? id)
-        //{
-        //    if (id == null || _context.Projects == null)
-        //    {
-        //        return NotFound();
-        //    }
+        [Authorize(Roles = "ProjectManager")]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-        //    var project = await _context.Projects
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (project == null)
-        //    {
-        //        return NotFound();
-        //    }
+            Project project = _projectBusinessLogic.GetProject(id);
+            if (project == null)
+            {
+                return NotFound();
+            }
 
-        //    return View(project);
-        //}
+            return View(project);
+        }
 
         //// POST: Projects/Delete/5
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //[Authorize(Roles = "ProjectManager")]
-        //public async Task<IActionResult> DeleteConfirmed(int id)
-        //{
-        //    if (_context.Projects == null)
-        //    {
-        //        return Problem("Entity set 'ApplicationDbContext.Projects'  is null.");
-        //    }
-        //    var project = await _context.Projects.Include(p => p.Tickets).FirstAsync(p => p.Id == id);
-        //    if (project != null)
-        //    {
-        //        List<Ticket> tickets = project.Tickets.ToList();
-        //        tickets.ForEach(ticket =>
-        //        {
-        //            _context.Tickets.Remove(ticket);
-        //        });
-        //        await _context.SaveChangesAsync();
-        //        List<UserProject> userProjects = _context.UserProjects.Where(up => up.ProjectId == project.Id).ToList();
-        //        userProjects.ForEach(userProj =>
-        //        {
-        //            _context.UserProjects.Remove(userProj);
-        //        });
-
-        //        _context.Projects.Remove(project);
-
-
-        //    }
-
-        //    await _context.SaveChangesAsync();
-        //    return RedirectToAction(nameof(Index));
-        //}
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "ProjectManager")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            if (_projectBusinessLogic.DeleteProjectAndAssociations(id).Result)
+            {
+                return RedirectToAction("Index");
+            } else
+            {
+                return BadRequest("ERROR: Project not found");
+            }
+        }
 
         //private bool ProjectExists(int id)
         //{

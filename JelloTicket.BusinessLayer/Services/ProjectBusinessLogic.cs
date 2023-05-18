@@ -26,13 +26,15 @@ namespace JelloTicket.BusinessLayer.Services
         public ProjectBusinessLogic(IRepository<Project> projectRepository
             , UserManager<ApplicationUser> userManager
             , UserManagerBusinessLogic userManagerBusinessLogic
-            , IRepository<UserProject> userProjectRepository)
+            , IRepository<UserProject> userProjectRepository
+            , IRepository<Ticket> ticketRepository)
         {
             _projectRepository = projectRepository;
             _userManager = userManager;
             _helperMethods = new HelperMethods();
             _userManagerBusinessLogic = userManagerBusinessLogic;
             _userProjectRepository = userProjectRepository;
+            _ticketRepository = ticketRepository;
         }
 
         public ICollection<Project> GetProjectsWithAssociations()
@@ -164,6 +166,34 @@ namespace JelloTicket.BusinessLayer.Services
             }
 
             return false;
+        }
+
+        public async Task<bool> DeleteProjectAndAssociations(int? projectId)
+        {
+            Project project = _projectRepository.Get(projectId);
+
+            if (project == null)
+            {
+                return false;
+            }
+
+            foreach(Ticket ticket in project.Tickets)
+            {
+                int ticketId = ticket.Id;
+                _ticketRepository.Delete(ticketId);
+            }
+
+            // clear many to many table
+            List<UserProject> userProjects = _userProjectRepository.GetAll()
+                .Where(up => up.ProjectId == projectId).ToList();
+
+            foreach(UserProject userProject in userProjects)
+            {
+                _userProjectRepository.Delete(userProject.Id);
+            }
+
+            _projectRepository.Delete(projectId);
+            return true;
         }
     }
 }
