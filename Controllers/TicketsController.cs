@@ -58,7 +58,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             return View(ticket);
         }
 
-        // GET: Tickets/Create
+        // GET: Tickets/Create  // Regan 
         [Authorize(Roles = "ProjectManager")]
         public IActionResult Create(int projId)
         {
@@ -77,7 +77,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
 
         }
 
-        // POST: Tickets/Create
+        // POST: Tickets/Create // Regan 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]

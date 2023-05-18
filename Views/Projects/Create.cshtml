@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity;
-@model SD_340_W22SD_Final_Project_Group6.Models.Project
+@model SD_340_W22SD_Final_Project_Group6.Models.ViewModel.CreateProjectVM
 
 @inject UserManager<ApplicationUser> UserManager 
 
@@ -17,21 +17,21 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="ProjectName" class="control-label"></label>
-                <input asp-for="ProjectName" class="form-control" />
-                <span asp-validation-for="ProjectName" class="text-danger"></span>
+                <label asp-for="Project.ProjectName" class="control-label"></label>
+                <input asp-for="Project.ProjectName" class="form-control" />
+                <span asp-validation-for="Project.ProjectName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <p>Assigned User</p>
 				<label class="control-label"></label>
-                 <select name="userIds" asp-for="AssignedTo" asp-items=@ViewBag.Users></select>
+                 <select name="userIds" asp-for="Project.AssignedTo" asp-items=@Model.DeveloperUsers></select>
 				<span class="text-danger"></span>
 			</div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn" style="background-color: #E4BCB9" />
             </div>
 
-            <input asp-for="CreatedById" type="hidden" value="@UserManager.GetUserId(User)" class="form-control" />
+            <input asp-for="Project.CreatedById" type="hidden" value="@UserManager.GetUserId(User)" class="form-control" />
         </form>
     </div>
 </div>
