@@ -81,7 +81,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
 
         // POST: Tickets/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "ProjectManager")]
