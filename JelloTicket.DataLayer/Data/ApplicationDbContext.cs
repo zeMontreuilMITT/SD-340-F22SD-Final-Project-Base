@@ -10,11 +10,14 @@ namespace JelloTicket.DataLayer.Data
             : base(options)
         {
         }
-        public DbSet<JelloTicket.DataLayer.Models.Ticket> Tickets { get; set; }
-        public DbSet<JelloTicket.DataLayer.Models.Project> Projects { get; set; }
-        public DbSet<JelloTicket.DataLayer.Models.Comment> Comments { get; set; }
-        public DbSet<JelloTicket.DataLayer.Models.UserProject> UserProjects { get; set; }
-        public DbSet<JelloTicket.DataLayer.Models.TicketWatcher> TicketWatchers { get; set; }
+
+        public ApplicationDbContext(): base() { }
+
+        public virtual DbSet<Ticket> Tickets { get; set; }
+        public virtual DbSet<Project> Projects { get; set; }
+        public virtual DbSet<Comment> Comments { get; set; }
+        public virtual DbSet<UserProject> UserProjects { get; set; }
+        public virtual DbSet<TicketWatcher> TicketWatchers { get; set; }
 
     }
 }

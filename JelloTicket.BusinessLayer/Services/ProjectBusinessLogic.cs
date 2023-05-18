@@ -89,7 +89,7 @@ namespace JelloTicket.BusinessLayer.Services
             }
         }
 
-        public Project GetProject(int? id)
+        public virtual Project GetProject(int? id)
         {
             return _projectRepository.Get(id);
         }

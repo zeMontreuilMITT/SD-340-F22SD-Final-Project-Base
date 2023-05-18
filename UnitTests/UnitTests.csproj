@@ -31,6 +31,7 @@
   <ItemGroup>
     <ProjectReference Include="..\JelloTicket.BusinessLayer\JelloTicket.BusinessLayer.csproj" />
     <ProjectReference Include="..\JelloTicket.DataLayer\JelloTicket.DataLayer.csproj" />
+    <ProjectReference Include="..\JelloTicket\JelloTicket.csproj" />
   </ItemGroup>
 
 </Project>

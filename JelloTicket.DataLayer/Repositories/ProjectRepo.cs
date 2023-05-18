@@ -18,7 +18,7 @@ namespace JelloTicket.DataLayer.Repositories
             _context = context;
         }
 
-        public Project Get(int? id)
+        public virtual Project Get(int? id)
         {
             return (Project)_context.Projects
                 .Include(p => p.CreatedBy)
