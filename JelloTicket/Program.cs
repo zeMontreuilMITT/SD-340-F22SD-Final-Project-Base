@@ -26,6 +26,12 @@ builder.Services.AddScoped<IRepository<Ticket>, TicketRepo>();
 builder.Services.AddScoped<IRepository<TicketWatcher>, TicketWatcherRepo>();
 builder.Services.AddScoped<IRepository<Comment>, CommentRepo>();
 builder.Services.AddScoped<IRepository<UserProject>, UserProjectRepo>();
+builder.Services.AddScoped<UserManager<ApplicationUser>>();
+builder.Services.AddScoped<SignInManager<ApplicationUser>>();
+builder.Services.AddScoped<UserManagerBusinessLogic>();
+builder.Services.AddScoped<ProjectBusinessLogic>();
+//builder.Services.AddScoped<AdminBusinessLogic>();
+//builder.Services.AddScoped<IUserRepo<ApplicationUser>, UserRepo>();
 
 var app = builder.Build();
 

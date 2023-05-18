@@ -25,11 +25,13 @@ namespace JelloTicket.BusinessLayer.Services
 
         public TicketBusinessLogic(IRepository<Ticket> ticketRepository
             , IRepository<DataLayer.Models.Project> projectRepository
+            , IRepository<Comment> commentRepository
             , UserManager<ApplicationUser> userManager
             , UserManagerBusinessLogic userManagerBusinessLogic)
         {
             _ticketRepository = ticketRepository;
             _projectRepository = projectRepository;
+            _commentRepository = commentRepository;
             _userManager = userManager;
             _userManagerBusinessLogic = userManagerBusinessLogic;
         }
@@ -81,36 +83,6 @@ namespace JelloTicket.BusinessLayer.Services
             if (currentTicket != null)
             {
                     currentTicket.Owner = applicationUser;
-            }
-        }
-
-        public async Task<Comment> MakeCommentToTask(int TaskId, string? TaskText)
-        {
-            if (TaskId != null || TaskText != null)
-            {
-                try
-                {
-                    Comment newComment = new Comment();
-                    
-                    ApplicationUser applicationUser = _userManager.Users.FirstOrDefault(u => u.UserName == userName);
-                    Ticket ticket = _ticketRepository.Get(TaskId);
-
-                    newComment.CreatedBy = applicationUser;
-                    newComment.Description = TaskText;
-                    newComment.Ticket = ticket;
-                    applicationUser.Comments.Add(newComment);
-                    _commentRepository.Create(newComment);
-                    ticket.Comments.Add(newComment);
-
-                    int Id = TaskId;
-
-
-                    return RedirectToAction("Details", new { Id });
-                }
-                catch (Exception ex)
-                {
-                    return RedirectToAction("Error", "Home");
-                }
             }
         }
 
