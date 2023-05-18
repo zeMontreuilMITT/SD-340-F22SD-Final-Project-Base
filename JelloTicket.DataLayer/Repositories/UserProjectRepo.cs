@@ -10,7 +10,7 @@ namespace JelloTicket.DataLayer.Repositories
 {
     public class UserProjectRepo : IRepository<UserProject>
     {
-        private ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
         public UserProjectRepo(ApplicationDbContext context)
         {
