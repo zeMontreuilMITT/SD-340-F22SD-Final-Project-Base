@@ -31,9 +31,10 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             , UserManager<ApplicationUser> users
             , UserManagerBusinessLogic userManagerBusinessLogic
             , IRepository<UserProject> userProjectRepository
-            , IRepository<Ticket> ticketRepository)
+            , IRepository<Ticket> ticketRepository
+            , ProjectBusinessLogic projectBusinessLogic)
         {
-            _projectBusinessLogic = new ProjectBusinessLogic(projectRepo, users, userManagerBusinessLogic, userProjectRepository, ticketRepository);
+            _projectBusinessLogic = projectBusinessLogic;
             _users = users;
             _userManagerBusinessLogic = userManagerBusinessLogic;
             _userProjectRepository = userProjectRepository;

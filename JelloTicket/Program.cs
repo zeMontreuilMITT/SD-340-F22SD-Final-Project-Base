@@ -1,9 +1,6 @@
 using JelloTicket.DataLayer.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
-//using SD_340_W22SD_Final_Project_Group6.Models;
-//using SD_340_W22SD_Final_Project_Group6.Data;
 using JelloTicket.DataLayer.Data;
 using JelloTicket.DataLayer.Models;
 using JelloTicket.BusinessLayer.Services;
@@ -30,6 +27,7 @@ builder.Services.AddScoped<IRepository<UserProject>, UserProjectRepo>();
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
 builder.Services.AddScoped<SignInManager<ApplicationUser>>();
 builder.Services.AddScoped<UserManagerBusinessLogic>();
+builder.Services.AddScoped<ProjectBusinessLogic>();
 
 var app = builder.Build();
 
