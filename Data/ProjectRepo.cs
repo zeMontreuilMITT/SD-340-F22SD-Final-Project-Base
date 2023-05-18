@@ -20,7 +20,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
             return entity;
         }
 
-        public Project Get(int? id)
+        public Project Get(int id)
         {
             return _context.Projects
                 .Include(p => p.CreatedBy)
@@ -28,6 +28,9 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
                 .ThenInclude(p => p.ApplicationUser)
                 .Include(p => p.Tickets)
                 .ThenInclude(t => t.Owner)
+                .Include(p => p.Tickets)
+                .ThenInclude(t => t.TicketWatchers)
+                .ThenInclude(tw => tw.Watcher)
                 .First(p => p.Id == id);
         }
 
@@ -54,6 +57,9 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
                 .ThenInclude(p => p.ApplicationUser)
                 .Include(p => p.Tickets)
                 .ThenInclude(t => t.Owner)
+                .Include(p => p.Tickets)
+                .ThenInclude(t => t.TicketWatchers)
+                .ThenInclude(tw => tw.Watcher)
                 .ToList();
         }
     }
