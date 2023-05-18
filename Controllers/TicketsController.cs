@@ -64,17 +64,18 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [Authorize(Roles = "ProjectManager")]
         public IActionResult Create(int projId)
         {
-            //Project currProject = _context.Projects.Include(p => p.AssignedTo).ThenInclude(at => at.ApplicationUser).FirstOrDefault(p => p.Id == projId);
+            try
+            {
+                CreateTicketViewModel VM = _ticketBL.GetCreateTicketViewModel(projId);
 
-            //List<SelectListItem> currUsers = new List<SelectListItem>();
-            //currProject.AssignedTo.ToList().ForEach(t =>
-            //{
-            //    currUsers.Add(new SelectListItem(t.ApplicationUser.UserName, t.ApplicationUser.Id.ToString()));
-            //});
+                return View(VM);
+            } catch
+            {
+                 
+            }
 
-            CreateTicketViewModel VM = _ticketBL.GetCreateTicketViewModel(projId);
-
-            return View(VM);
+            return NotFound();
+            
 
         }
 
@@ -84,29 +85,25 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "ProjectManager")]
-        public async Task<IActionResult> Create(CreateTicketViewModel VM, string userId)
+		
+		public async Task<IActionResult> Create([Bind("Title, Body, RequiredHours, SelectedProject, Priority")]CreateTicketViewModel VM, string userId)
         {
-            if (ModelState.IsValid)
+
+            try
             {
-                //ticket.Project = await _context.Projects.FirstAsync(p => p.Id == projId);
-                //Project currProj = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projId);
-                //ApplicationUser owner = _context.Users.FirstOrDefault(u => u.Id == userId);
-                //ticket.Owner = owner;
-                //_context.Add(ticket);
-                //currProj.Tickets.Add(ticket);
-                //await _context.SaveChangesAsync();
                 
+              Ticket ticket = _ticketBL.CreateTicket(VM, userId);
 
-                Ticket ticket =  _ticketBL.CreateTicket(VM, userId);
-
-                if (ticket != null)
-                {
-                    return RedirectToAction("Index", "Projects", new { area = "" });
-                }
+              return View(VM);
+                
+            } catch
+            {
+                return RedirectToAction("Index", "Projects", new { area = "" });
             }
 
+            
 
-            return View(VM);
+
         }
 
         // GET: Tickets/Edit/5

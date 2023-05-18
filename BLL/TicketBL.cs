@@ -73,20 +73,18 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             CreateTicketViewModel VM = new CreateTicketViewModel
             {
                 SelectedProject = currProject.Id,
-                Projects = new List<SelectListItem>
-            {
-                new SelectListItem(currProject.ProjectName, currProject.Id.ToString())
-            },
+				ProjectName = currProject.ProjectName,
                 Users = currUsers
             };
 
             return VM;
-            //
+            
         }
 
         public Ticket CreateTicket (CreateTicketViewModel VM, string userId)
         {
-            Ticket ticket = new Ticket
+            
+                Ticket ticket = new Ticket
             {
                 Title = VM.Title,
                 Body = VM.Body,
