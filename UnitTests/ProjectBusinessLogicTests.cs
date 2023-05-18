@@ -8,6 +8,7 @@ using JelloTicket.BusinessLayer.Services;
 using Microsoft.EntityFrameworkCore;
 using JelloTicket.DataLayer.Data;
 using Microsoft.AspNetCore.Identity;
+using System.Runtime.InteropServices;
 
 namespace UnitTests
 {
@@ -17,6 +18,7 @@ namespace UnitTests
         public ProjectBusinessLogic projectBL { get; set; }
         public IQueryable<Project> data { get; set; }
         public IQueryable<ApplicationUser> users { get; set; }
+        private Mock<IRepository<Project>> _projectRepositoryMock;
 
         private readonly UserManager<ApplicationUser> _userManager = MockUserManager<ApplicationUser>(_users).Object;
 
@@ -67,6 +69,7 @@ namespace UnitTests
 
             // i am literally too lazy to put types here please understand
             var projectRepositoryMock = new Mock<IRepository<Project>>();
+            _projectRepositoryMock = projectRepositoryMock;
 
             var userManagerBusinessLogic = new Mock<UserManagerBusinessLogic>();
             var userProjectRepository = new Mock<UserProjectRepo>();
@@ -90,12 +93,45 @@ namespace UnitTests
         [TestMethod]
         public void GetProject_ReturnsProjectFromId()
         {
-            // 
+            // Arrange 
             Project realProject = data.First();
+
+            // Act
             Project returnedProject = projectBL.GetProject(realProject.Id);
+
             // Assert
             Assert.AreEqual(realProject, returnedProject);
+        }
 
+        [TestMethod]
+        public void CreateProject_ReturnsTrue_OnSuccessfulCreation()
+        {
+            // Arrange
+            Project project = new Project{
+                Id = 1,
+                ProjectName= "Test",
+            };
+
+            // Act
+            bool result = projectBL.CreateProject(project);
+
+            // Assert
+            Assert.IsTrue(result);
+            _projectRepositoryMock.Verify(pr => pr.Create(project), Times.Once);
+        }
+
+        [TestMethod]
+        public void CreateProject_ReturnsFalse_OnException()
+        {
+            // Arrange
+            Project project = new Project();
+            _projectRepositoryMock.Setup(pr => pr.Create(project)).Throws(new Exception());
+
+            // Act
+            bool result = projectBL.CreateProject(project);
+
+            // Assert
+            Assert.IsFalse(result);
         }
     }
 }
