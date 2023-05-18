@@ -9,6 +9,9 @@ using Microsoft.EntityFrameworkCore;
 using JelloTicket.DataLayer.Data;
 using Microsoft.AspNetCore.Identity;
 using System.Runtime.InteropServices;
+using Microsoft.CodeAnalysis;
+using Project = JelloTicket.DataLayer.Models.Project;
+using Microsoft.Build.Evaluation;
 
 namespace UnitTests
 {
@@ -83,9 +86,8 @@ namespace UnitTests
                 ticketRepository.Object
             );
 
-            projectRepositoryMock.Setup(pr => pr.Get(It.IsAny<int>()))
-                .Returns((int projectId) => data.FirstOrDefault(p => p.Id == projectId));
-
+            _projectRepositoryMock.Setup(pr => pr.Get(It.IsAny<int>()))
+                .Returns(project);
         }
 
         
@@ -111,12 +113,20 @@ namespace UnitTests
                 Id = 1,
                 ProjectName= "Test",
             };
+            _projectRepositoryMock.Setup(pr => pr.Create(It.IsAny<Project>()))
+                .Callback<Project>(p => project.Id = 1);
+
+            //_projectRepositoryMock.Setup(pr => pr.Get(It.IsAny<int>()))
+            //    .Returns(project);
 
             // Act
             bool result = projectBL.CreateProject(project);
+            Project returnedProject = projectBL.GetProject(project.Id);
 
             // Assert
             Assert.IsTrue(result);
+            // assert if the creation was successful
+            Assert.AreEqual(project, returnedProject);
             _projectRepositoryMock.Verify(pr => pr.Create(project), Times.Once);
         }
 
