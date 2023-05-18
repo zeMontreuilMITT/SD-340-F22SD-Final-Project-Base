@@ -24,6 +24,8 @@ namespace JelloTicket.BusinessLayer.Services
             _users = users;
         }
 
+        public UserManagerBusinessLogic() { }
+
         public async Task<ApplicationUser> GetLoggedInUser(ClaimsPrincipal user)
         {
             return await _users.GetUserAsync(user);

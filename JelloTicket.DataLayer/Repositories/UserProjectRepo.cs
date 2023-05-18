@@ -17,6 +17,8 @@ namespace JelloTicket.DataLayer.Repositories
             _context = context;
         }
 
+        public UserProjectRepo() { }
+
         public UserProject Get(int? id)
         {
             return (UserProject)_context.UserProjects.Where(t => t.Id == id);

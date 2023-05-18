@@ -18,6 +18,8 @@ namespace JelloTicket.DataLayer.Repositories
             _context = context;
         }
 
+        public ProjectRepo() { }
+
         public virtual Project Get(int? id)
         {
             return (Project)_context.Projects

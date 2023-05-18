@@ -17,6 +17,8 @@ namespace JelloTicket.DataLayer.Repositories
             _context = context;
         }
 
+        public TicketWatcherRepo() { }
+
         public TicketWatcher Get(int? id)
         {
             return (TicketWatcher)_context.Tickets.Where(t => t.Id == id);
