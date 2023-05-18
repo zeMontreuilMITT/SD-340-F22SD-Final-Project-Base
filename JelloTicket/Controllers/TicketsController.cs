@@ -169,33 +169,33 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         //    return View(ticket);
         //}
 
-        //[HttpPost]
-        //public async Task<IActionResult> CommentTask(int TaskId, string? TaskText)
-        //{
-        //    _ticketBusinessLogic.MakeCommentToTask(TaskId, TaskText);
+        [HttpPost]
+        public async Task<IActionResult> CommentTask(int TaskId, string? TaskText)
+        {
+            _ticketBusinessLogic.MakeCommentToTask(TaskId, TaskText);
+            string userName = User.Identity.Name;
+            return RedirectToAction("Details", new { TaskId });
+        }
 
-        //    return RedirectToAction("Details", new { TaskId });
-        //}
+        public async Task<IActionResult> UpdateHrs(int id, int hrs)
+        {
+            if (id != null || hrs != null)
+            {
+                try
+                {
+                    Ticket ticket = _ticketBusinessLogic.GetTicketById(id);
+                    ticket.RequiredHours = hrs;
+                    _ticketBusinessLogic.Save();
+                    return RedirectToAction("Details", new { id });
 
-        //public async Task<IActionResult> UpdateHrs(int id, int hrs)
-        //{
-        //    if (id != null || hrs != null)
-        //    {
-        //        try
-        //        {
-        //            Ticket ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
-        //            ticket.RequiredHours = hrs;
-        //            await _context.SaveChangesAsync();
-        //            return RedirectToAction("Details", new { id });
-
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            return RedirectToAction("Error", "Home");
-        //        }
-        //    }
-        //    return RedirectToAction("Index");
-        //}
+                }
+                catch (Exception ex)
+                {
+                    return RedirectToAction("Error", "Home");
+                }
+            }
+            return RedirectToAction("Index");
+        }
 
         //public async Task<IActionResult> AddToWatchers(int id)
         //{
@@ -253,94 +253,93 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         //    return RedirectToAction("Index");
         //}
 
-        //public async Task<IActionResult> MarkAsCompleted(int id)
-        //{
-        //    if (id != null)
-        //    {
-        //        try
-        //        {
-        //            Ticket ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
-        //            ticket.Completed = true;
+        public async Task<IActionResult> MarkAsCompleted(int id)
+        {
+            if (id != null)
+            {
+                try
+                {
+                    Ticket ticket = _ticketBusinessLogic.GetTicketById(id);
+                    ticket.Completed = true;
 
-        //            await _context.SaveChangesAsync();
-        //            return RedirectToAction("Details", new { id });
+                    _ticketBusinessLogic.Save();
+                    return RedirectToAction("Details", new { id });
+                }
+                catch (Exception ex)
+                {
+                    return RedirectToAction("Error", "Home");
+                }
+            }
+            return RedirectToAction("Index");
+        }
 
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            return RedirectToAction("Error", "Home");
-        //        }
-        //    }
-        //    return RedirectToAction("Index");
-        //}
+        public async Task<IActionResult> UnMarkAsCompleted(int id)
+        {
+            if (id != null)
+            {
+                try
+                {
+                    Ticket ticket = _ticketBusinessLogic.GetTicketById(id);
+                    ticket.Completed = false;
 
-        //public async Task<IActionResult> UnMarkAsCompleted(int id)
-        //{
-        //    if (id != null)
-        //    {
-        //        try
-        //        {
-        //            Ticket ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
-        //            ticket.Completed = false;
+                    _ticketBusinessLogic.Save();
+                    return RedirectToAction("Details", new { id });
 
-        //            await _context.SaveChangesAsync();
-        //            return RedirectToAction("Details", new { id });
-
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            return RedirectToAction("Error", "Home");
-        //        }
-        //    }
-        //    return RedirectToAction("Index");
-        //}
+                }
+                catch (Exception ex)
+                {
+                    return RedirectToAction("Error", "Home");
+                }
+            }
+            return RedirectToAction("Index");
+        }
 
 
         //// GET: Tickets/Delete/5
-        //[Authorize(Roles = "ProjectManager")]
-        //public async Task<IActionResult> Delete(int? id)
-        //{
-        //    if (id == null || _context.Tickets == null)
-        //    {
-        //        return NotFound();
-        //    }
+        [Authorize(Roles = "ProjectManager")]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null || _context.Tickets == null)
+            {
+                return NotFound();
+            }
 
-        //    var ticket = await _context.Tickets.Include(t => t.Project)
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (ticket == null)
-        //    {
-        //        return NotFound();
-        //    }
+            var ticket = await _context.Tickets.Include(t => t.Project)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (ticket == null)
+            {
+                return NotFound();
+            }
 
-        //    return View(ticket);
-        //}
+            return View(ticket);
+        }
 
-        //// POST: Tickets/Delete/5
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //[Authorize(Roles = "ProjectManager")]
-        //public async Task<IActionResult> DeleteConfirmed(int id, int projId)
-        //{
-        //    if (_context.Tickets == null)
-        //    {
-        //        return Problem("Entity set 'ApplicationDbContext.Tickets'  is null.");
-        //    }
-        //    var ticket = await _context.Tickets.Include(t => t.Project).FirstAsync(p => p.Id == id);
-        //    Project currProj = await _context.Projects.FirstAsync(p => p.Id.Equals(projId));
-        //    if (ticket != null)
-        //    {
-        //        currProj.Tickets.Remove(ticket);
-        //        _context.Tickets.Remove(ticket);
-        //    }
+        // POST: Tickets/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "ProjectManager")]
+        public async Task<IActionResult> DeleteConfirmed(int id, int projId)
+        {
+            if (_context.Tickets == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Tickets'  is null.");
+            }
+            var ticket = await _context.Tickets.Include(t => t.Project).FirstAsync(p => p.Id == id);
+            Project currProj = await _context.Projects.FirstAsync(p => p.Id.Equals(projId));
+            if (ticket != null)
+            {
+                currProj.Tickets.Remove(ticket);
+                _context.Tickets.Remove(ticket);
+            }
 
-        //    await _context.SaveChangesAsync();
-        //    return RedirectToAction("Index", "Projects");
-        //}
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index", "Projects");
+        }
 
-        //private bool TicketExists(int id)
-        //{
-        //  return (_context.Tickets?.Any(e => e.Id == id)).GetValueOrDefault();
-        //}
+        private bool TicketExists(int id)
+        {
+            return (_context.Tickets?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
 
     }
 }

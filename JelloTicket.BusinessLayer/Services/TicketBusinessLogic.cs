@@ -81,34 +81,39 @@ namespace JelloTicket.BusinessLayer.Services
             }
         }
 
-        //public async Task<Comment> MakeCommentToTask(int TaskId, string? TaskText)
-        //{
-        //    if (TaskId != null || TaskText != null)
-        //    {
-        //        try
-        //        {
-        //            Comment newComment = new Comment();
-        //            string userName = _userManager;
-        //            ApplicationUser applicationUser = _userManager.Users.FirstOrDefault(u => u.UserName == userName);
-        //            Ticket ticket = _ticketRepository.Get(TaskId);
+        public async Task<Comment> MakeCommentToTask(int TaskId, string? TaskText)
+        {
+            if (TaskId != null || TaskText != null)
+            {
+                try
+                {
+                    Comment newComment = new Comment();
+                    
+                    ApplicationUser applicationUser = _userManager.Users.FirstOrDefault(u => u.UserName == userName);
+                    Ticket ticket = _ticketRepository.Get(TaskId);
 
-        //            newComment.CreatedBy = applicationUser;
-        //            newComment.Description = TaskText;
-        //            newComment.Ticket = ticket;
-        //            applicationUser.Comments.Add(newComment);
-        //            _commentRepository.Create(newComment);
-        //            ticket.Comments.Add(newComment);
+                    newComment.CreatedBy = applicationUser;
+                    newComment.Description = TaskText;
+                    newComment.Ticket = ticket;
+                    applicationUser.Comments.Add(newComment);
+                    _commentRepository.Create(newComment);
+                    ticket.Comments.Add(newComment);
 
-        //            int Id = TaskId;
+                    int Id = TaskId;
 
-        //            return RedirectToAction("Details", new{ Id });
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            return RedirectToAction("Error", "Home");
-        //        }
-        //    }
-        //}
 
+                    return RedirectToAction("Details", new { Id });
+                }
+                catch (Exception ex)
+                {
+                    return RedirectToAction("Error", "Home");
+                }
+            }
+        }
+
+        public void Save()
+        {
+            _ticketRepository.Save();
+        }
     }
 }

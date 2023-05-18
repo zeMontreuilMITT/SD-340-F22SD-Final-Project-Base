@@ -44,5 +44,10 @@ namespace JelloTicket.DataLayer.Repositories
             _context.UserProjects.Remove(_context.UserProjects.First(t => t.Id == id));
             _context.SaveChanges();
         }
+
+        public void Save()
+        {
+            _context.SaveChanges();
+        }
     }
 }
