@@ -135,7 +135,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         {
             try
             {
-                return View(_projectBLL.DeleteGet((int)id));
+                return View(await _projectBLL.DeleteGet((int)id));
             } catch
             {
                 return NotFound();
