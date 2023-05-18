@@ -21,12 +21,14 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         private readonly UserManager<ApplicationUser> _users;
         private readonly TicketBusinessLogic _ticketBusinessLogic;
         private readonly UserManagerBusinessLogic _userManagerBusinessLogic;
+        private readonly ProjectBusinessLogic _projectBusinessLogic;
 
         public TicketsController(IRepository<Ticket> ticketRepo
+            , IRepository<Project> projectRepo
             , UserManager<ApplicationUser> users
             , UserManagerBusinessLogic userManagerBusinessLogic)
         {
-            _ticketBusinessLogic = new TicketBusinessLogic(ticketRepo, users, userManagerBusinessLogic);
+            _ticketBusinessLogic = new TicketBusinessLogic(ticketRepo, projectRepo, users, userManagerBusinessLogic);
             _users = users;
             _userManagerBusinessLogic = userManagerBusinessLogic;
         }
@@ -261,7 +263,6 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 {
                     Ticket ticket = _ticketBusinessLogic.GetTicketById(id);
                     ticket.Completed = true;
-
                     _ticketBusinessLogic.Save();
                     return RedirectToAction("Details", new { id });
                 }
@@ -281,10 +282,8 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 {
                     Ticket ticket = _ticketBusinessLogic.GetTicketById(id);
                     ticket.Completed = false;
-
                     _ticketBusinessLogic.Save();
                     return RedirectToAction("Details", new { id });
-
                 }
                 catch (Exception ex)
                 {
@@ -299,13 +298,13 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Tickets == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets.Include(t => t.Project)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Ticket ticket = _ticketBusinessLogic.GetTicketById(id);
+
             if (ticket == null)
             {
                 return NotFound();
@@ -320,27 +319,30 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> DeleteConfirmed(int id, int projId)
         {
-            if (_context.Tickets == null)
+            Ticket ticket = _ticketBusinessLogic.GetTicketById(id);
+
+            Project project = _projectBusinessLogic.GetProject(projId);
+
+            if (ticket == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Tickets'  is null.");
             }
-            var ticket = await _context.Tickets.Include(t => t.Project).FirstAsync(p => p.Id == id);
-            Project currProj = await _context.Projects.FirstAsync(p => p.Id.Equals(projId));
+
             if (ticket != null)
             {
-                currProj.Tickets.Remove(ticket);
-                _context.Tickets.Remove(ticket);
+                project.Tickets.Remove(ticket);
+                _ticketBusinessLogic.RemoveTicket(ticket);
             }
 
-            await _context.SaveChangesAsync();
+            _ticketBusinessLogic.Save();
+            
             return RedirectToAction("Index", "Projects");
         }
 
         private bool TicketExists(int id)
         {
-            return (_context.Tickets?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_ticketBusinessLogic.DoesTicketExist(id));
         }
-
     }
 }
 

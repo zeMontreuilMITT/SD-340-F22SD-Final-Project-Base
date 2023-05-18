@@ -49,5 +49,10 @@ namespace JelloTicket.DataLayer.Repositories
         {
             _context.SaveChanges();
         }
+
+        public bool Exists(int id)
+        {
+            return _context.UserProjects.Any(up => up.Id == id);
+        }
     }
 }

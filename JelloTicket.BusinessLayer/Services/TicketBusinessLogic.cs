@@ -17,16 +17,19 @@ namespace JelloTicket.BusinessLayer.Services
     public class TicketBusinessLogic
     {
         private readonly IRepository<Ticket> _ticketRepository;
+        private readonly IRepository<DataLayer.Models.Project> _projectRepository;
         private readonly IRepository<Comment> _commentRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly HelperMethods _helperMethods;
         private readonly UserManagerBusinessLogic _userManagerBusinessLogic;
 
         public TicketBusinessLogic(IRepository<Ticket> ticketRepository
+            , IRepository<DataLayer.Models.Project> projectRepository
             , UserManager<ApplicationUser> userManager
             , UserManagerBusinessLogic userManagerBusinessLogic)
         {
             _ticketRepository = ticketRepository;
+            _projectRepository = projectRepository;
             _userManager = userManager;
             _userManagerBusinessLogic = userManagerBusinessLogic;
         }
@@ -114,6 +117,17 @@ namespace JelloTicket.BusinessLayer.Services
         public void Save()
         {
             _ticketRepository.Save();
+        }
+
+        public void RemoveTicket(Ticket ticket)
+        {
+            int ticketId = ticket.Id;
+            _ticketRepository.Delete(ticketId);
+        }
+
+        public bool DoesTicketExist(int id)
+        {
+            return _ticketRepository.Exists(id);
         }
     }
 }
