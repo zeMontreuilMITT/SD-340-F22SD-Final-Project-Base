@@ -203,6 +203,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             });
             ProjectEditVM vm = new ProjectEditVM();
             vm.Project = project;
+            vm.ProjectName = project.ProjectName;
             vm.CurrUsers = currUsers;
 
             return vm;
@@ -210,15 +211,26 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
         public async void EditPost(int id, List<string> userIds, ProjectEditVM projectEditVM)
         {
+            Project project = _projectRepo.Get(id);
+
+            if (project.ProjectName !=  projectEditVM.ProjectName)
+            {
+                project.ProjectName = projectEditVM.ProjectName;
+            }
+
             userIds.ForEach((user) =>
             {
                 ApplicationUser currUser = _userManager.Users.FirstOrDefault(u => u.Id == user);
                 UserProject newUserProj = new UserProject();
                 newUserProj.ApplicationUser = currUser;
                 newUserProj.UserId = currUser.Id;
-                newUserProj.Project = projectEditVM.Project;
-                projectEditVM.Project.AssignedTo.Add(newUserProj);
+                newUserProj.Project = project;
+                newUserProj.ProjectId = project.Id;
+                _userProjectRepo.Create(newUserProj);
+                project.AssignedTo.Add(newUserProj);
             });
+            _projectRepo.Update(project);
+
         }
 
         public async Task<Project> DeleteGet(int id)
