@@ -1,4 +1,5 @@
 ﻿using JelloTicket.DataLayer.Models;
+using Microsoft.Extensions.FileSystemGlobbing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,14 @@ namespace JelloTicket.BusinessLayer.ViewModels
 {
     public class TicketIndex
     {
-        public List<Ticket> tickets = new List<Ticket>();
-        public List<Project> projects = new List<Project>();
-        public List<ApplicationUser> Owners = new List<ApplicationUser>();
+      
+            public Ticket Ticket { get; set; }
+            public Project Project { get; set; }
+            public IEnumerable<ApplicationUser> TicketWatchers { get; set; }
+            public ApplicationUser Owner { get; set; }
+            public IEnumerable<Comment> Comments { get; set; }
+            public ApplicationUser CommentCreator { get; set; }
+        
+
     }
 }

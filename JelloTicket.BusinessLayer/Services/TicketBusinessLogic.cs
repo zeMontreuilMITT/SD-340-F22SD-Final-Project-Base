@@ -16,6 +16,7 @@ using JelloTicket.BusinessLayer.ViewModels;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using Microsoft.Extensions.Options;
 
 namespace JelloTicket.BusinessLayer.Services
 {
@@ -76,7 +77,7 @@ namespace JelloTicket.BusinessLayer.Services
 
             return (ticket);
         }
-       
+
         public void RemoveUser(string userId, int ticketId)
         {
             if (userId == null)
@@ -87,10 +88,10 @@ namespace JelloTicket.BusinessLayer.Services
             Ticket currentTicket = _ticketRepository.Get(ticketId);
 
             ApplicationUser applicationUser = _userManager.Users.FirstOrDefault(u => u.Id == userId);
-            
+
             if (currentTicket != null)
             {
-                    currentTicket.Owner = applicationUser;
+                currentTicket.Owner = applicationUser;
             }
         }
 
@@ -177,21 +178,25 @@ namespace JelloTicket.BusinessLayer.Services
             return ticket;
 
         }
-
         public IResult GetTickets()
         {
 
             List<Ticket> tickets = _ticketRepository.GetAll().ToList();
+            List<Project> projects = _projectRepository.GetAll().ToList();
 
-            foreach (Ticket ticket in tickets)
-            {
-                int projId = ticket.ProjectId;
-                Project project = _projectRepository.GetAll().FirstOrDefault(p => p.Id == projId);
-                ticket.Project = project;
-                List<Comment> comments = _commentRepository.GetAll().Where(c => c.TicketId == ticket.Id).ToList();
+            List<TicketIndex> ticketData = tickets
+                .Select(t => new TicketIndex
+                {
 
-                ticket.Comments = comments;
-            }
+                    Ticket = t,
+                    Project = projects.FirstOrDefault(p =>p.Id == t.ProjectId),
+                    TicketWatchers = t.TicketWatchers.Select(tw => tw.Watcher),
+                    Owner = t.Owner,
+                    Comments = t.Comments,
+                    CommentCreator = t.Comments.Select(c => c.CreatedBy).FirstOrDefault()
+                })
+                .ToList();
+
             JsonSerializerOptions options = new JsonSerializerOptions
             {
                 ReferenceHandler = ReferenceHandler.Preserve,
@@ -199,13 +204,16 @@ namespace JelloTicket.BusinessLayer.Services
             };
 
 
-            string jsonResult = JsonSerializer.Serialize(tickets, options);
+            string jsonResult = JsonSerializer.Serialize(ticketData, options);
             Object jsonObject = JsonSerializer.Deserialize<object>(jsonResult);
 
             return Results.Ok(jsonObject);
 
-
         }
+
+
+
+
 
         public TicketEditVM EditGet(Ticket ticket)
         {

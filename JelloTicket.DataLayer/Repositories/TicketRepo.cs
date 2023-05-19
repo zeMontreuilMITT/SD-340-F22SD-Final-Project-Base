@@ -34,13 +34,7 @@ namespace JelloTicket.DataLayer.Repositories
 
         public ICollection<Ticket> GetAll()
         {
-            return _context.Tickets
-                .Include(t => t.Project)
-                .Include(t => t.TicketWatchers)
-                    .ThenInclude(tw => tw.Watcher)
-                .Include(u => u.Owner)
-                .Include(t => t.Comments)
-                    .ThenInclude(c => c.CreatedBy).ToHashSet();
+            return _context.Tickets.ToList();
         }
 
         public void Create(Ticket ticket)

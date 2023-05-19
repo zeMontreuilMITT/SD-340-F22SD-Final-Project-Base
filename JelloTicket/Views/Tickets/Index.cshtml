@@ -1,4 +1,4 @@
-﻿@model IEnumerable<JelloTicket.DataLayer.Models.Ticket>
+﻿@model IEnumerable<JelloTicket.BusinessLayer.ViewModels.TicketIndex>
 
 @{
     ViewData["Title"] = "Index";
@@ -14,15 +14,15 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Title)
+                @Html.DisplayNameFor(model => model.Ticket.Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Body)
+                @Html.DisplayNameFor(model => model.Ticket.Body)
             </th>
             <th>
                 Required Hours
             </th>
-            <th>@Html.DisplayNameFor(model => model.Project)</th>
+            <th>@Html.DisplayNameFor(model => model.Ticket.Project)</th>
                         <th>Developer Count</th>
         </tr>
     </thead>
@@ -30,13 +30,13 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Title)
+                @Html.DisplayFor(modelItem => item.Ticket.Title)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Body)
+                    @Html.DisplayFor(modelItem => item.Ticket.Body)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.RequiredHours)
+                    @Html.DisplayFor(modelItem => item.Ticket.RequiredHours)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Project.ProjectName)
@@ -46,9 +46,9 @@
             </td>
 
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.Ticket.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Ticket.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Ticket.Id">Delete</a>
             </td>
         </tr>
 }
