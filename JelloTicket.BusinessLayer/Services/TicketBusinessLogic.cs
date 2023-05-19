@@ -178,42 +178,11 @@ namespace JelloTicket.BusinessLayer.Services
             return ticket;
 
         }
-        public IResult GetTickets()
+        public ICollection<Ticket> GetTickets()
         {
-
             List<Ticket> tickets = _ticketRepository.GetAll().ToList();
-            List<Project> projects = _projectRepository.GetAll().ToList();
-
-            List<TicketIndex> ticketData = tickets
-                .Select(t => new TicketIndex
-                {
-
-                    Ticket = t,
-                    Project = projects.FirstOrDefault(p =>p.Id == t.ProjectId),
-                    TicketWatchers = t.TicketWatchers.Select(tw => tw.Watcher),
-                    Owner = t.Owner,
-                    Comments = t.Comments,
-                    CommentCreator = t.Comments.Select(c => c.CreatedBy).FirstOrDefault()
-                })
-                .ToList();
-
-            JsonSerializerOptions options = new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.Preserve,
-                MaxDepth = 0
-            };
-
-
-            string jsonResult = JsonSerializer.Serialize(ticketData, options);
-            Object jsonObject = JsonSerializer.Deserialize<object>(jsonResult);
-
-            return Results.Ok(jsonObject);
-
+            return tickets;
         }
-
-
-
-
 
         public TicketEditVM EditGet(Ticket ticket)
         {
