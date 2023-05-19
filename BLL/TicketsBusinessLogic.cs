@@ -1,14 +1,8 @@
-﻿using AspNetCore;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SD_340_W22SD_Final_Project_Group6.Data;
 using SD_340_W22SD_Final_Project_Group6.Models;
 using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
-using System.Data;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using SelectListItem = Microsoft.AspNetCore.Mvc.Rendering.SelectListItem;
 
 namespace SD_340_W22SD_Final_Project_Group6.BLL
@@ -151,7 +145,6 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             ticket.TicketWatchers.Add(newTickWatch);
 
             _ticketWatcherRepo.Create(newTickWatch);
-            await _userManager.UpdateAsync(user);
             _ticketRepo.Update(ticket);
         }
 

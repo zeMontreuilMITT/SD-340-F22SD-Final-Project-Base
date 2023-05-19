@@ -41,7 +41,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         {
             try
             {
-                return View(_ticketBLL.Details((int)id));
+                return View(await _ticketBLL.Details((int)id));
             } catch
             {
                 return NotFound();
@@ -87,7 +87,8 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 _ticketBLL.CreatePost(ticket, projId, userId);
                 return RedirectToAction("Index","Projects", new { area = ""});
             }
-            return View(ticket);
+            TicketCreateVM vm = await _ticketBLL.Create(projId);
+            return View(vm);
         }
 
         // GET: Tickets/Edit/5
@@ -134,7 +135,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             try
             {
                 _ticketBLL.CommentTask(taskId, taskText);
-                return RedirectToAction("Details", new {taskId});
+                return RedirectToAction("Details", new {id = taskId});
 
             }
             catch
