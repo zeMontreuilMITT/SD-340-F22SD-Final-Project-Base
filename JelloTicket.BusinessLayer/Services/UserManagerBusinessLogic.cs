@@ -50,18 +50,5 @@ namespace JelloTicket.BusinessLayer.Services
         {
             return _users;
         }
-
-        //public ApplicationUser GetUserByUserName(string userName)
-        //{
-        //    List<SelectListItem> selectListItems = new List<SelectListItem>();
-        //    List<ApplicationUser> users = GetAllDeveloperUsers().Result;
-
-        //    foreach (ApplicationUser user in users)
-        //    {
-        //        selectListItems.Add(new SelectListItem(user.UserName, user.Id.ToString()));
-        //    }
-
-        //    return _users.Get(u => u.UserName == userName);
-        //}
     }
 }

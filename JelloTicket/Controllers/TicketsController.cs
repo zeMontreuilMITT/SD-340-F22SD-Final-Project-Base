@@ -186,35 +186,36 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         //}
 
         //[HttpPost]
-        //public async Task<IActionResult> CommentTask(int TaskId, string? TaskText)
-        //{
-        //    if (TaskId != null || TaskText != null)
-        //    {
-        //        try
-        //        {
-        //            Comment newComment = new Comment();
-        //            string userName = User.Identity.Name;
-        //            ApplicationUser user = _userManagerBusinessLogic.GetUserByUserName(userName);
-        //            Ticket ticket = _ticketBusinessLogic.GetTicketById(TaskId);
+        public async Task<IActionResult> CommentTask(int TaskId, string? TaskText)
+        {
+            if (TaskId != null || TaskText != null)
+            {
+                try
+                {
+                    Comment newComment = new Comment();
+                    ApplicationUser user = _userManagerBusinessLogic.GetLoggedInUser(User).Result;
+                    Ticket ticket = _ticketBusinessLogic.GetTicketById(TaskId);
 
-        //            newComment.CreatedBy = user;
-        //            newComment.Description = TaskText;
-        //            newComment.Ticket = ticket;
-        //            user.Comments.Add(newComment);
-        //            _commentRepo.Create(newComment);
-        //            ticket.Comments.Add(newComment);
+                    newComment.CreatedBy = user;
+                    newComment.Description = TaskText;
+                    newComment.Ticket = ticket;
+                    user.Comments.Add(newComment);
+                    _commentRepo.Create(newComment);
+                    ticket.Comments.Add(newComment);
 
-        //            int Id = TaskId;
-        //            _commentRepo.Save();
-        //            return RedirectToAction("Details", new { Id });
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            return RedirectToAction("Error", "Home");
-        //        }
-        //    }
-        //    return RedirectToAction("Index");
-        //}
+                    int Id = TaskId;
+                    _commentRepo.Save();
+
+                    return RedirectToAction("Details", new { Id });
+                }
+                catch (Exception ex)
+                {
+                    return RedirectToAction("Error", "Home");
+                }
+            }
+            return RedirectToAction("Index");
+        }
+
 
         public async Task<IActionResult> UpdateHrs(int id, int hrs)
         {
