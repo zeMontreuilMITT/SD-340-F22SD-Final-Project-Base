@@ -3,6 +3,11 @@ using SD_340_W22SD_Final_Project_Group6.Data;
 using SD_340_W22SD_Final_Project_Group6.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
+using X.PagedList;
+using System.Security.Claims;
+using System.Linq;
+
 
 namespace SD_340_W22SD_Final_Project_Group6.BLL
 {
@@ -27,6 +32,170 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             _users = users;
         }
 
+        public async Task<ProjectIndexVM> ProjectIndex(string? sortOrder, int? page, bool? sort, string? userId, ClaimsPrincipal User)
+        {
+            List<SelectListItem> developers = GetDevelopersAsSelectList().Result;
+            List<Project> projects = _projectRepo.GetAll().OrderBy(p => p.ProjectName).ToList();
+
+            ApplicationUser activeUser = GetActiveUser(User);
+            
+            if(IsActiveUserDeveloper(User))
+            {
+                projects = RemoveProjectsActiveDeveloperNotAssignedTo(projects, activeUser);
+            }
+
+            List<ProjectIndexVM.BasicProjectData> formattedProjects = await FormatProjectsForIndexVM(projects, activeUser);
+            
+            // SortOrder sort and filter still needs to be done here
+
+            IPagedList<ProjectIndexVM.BasicProjectData>pagedProjects = formattedProjects.ToPagedList(page ?? 1, 3);
+            
+            ProjectIndexVM vm = new(developers, pagedProjects );
+            
+            return vm;
+        }
+
+        public List<Project> RemoveProjectsActiveDeveloperNotAssignedTo(List<Project> projects, ApplicationUser activeDeveloper)
+        {
+            List<UserProject> userProjects = _userProjectRepo.GetAll().Where(up => up.UserId == activeDeveloper.Id).ToList();
+
+            List<Project> projectsAssigned = new List<Project>();
+            foreach(Project project in projects)
+            {
+                if(userProjects.Any(up => up.ProjectId == project.Id))
+                {
+                    projectsAssigned.Add(project);
+                }
+            }
+
+            return projectsAssigned;
+        }
+        public ApplicationUser GetActiveUser(ClaimsPrincipal User)
+        {
+            List<ApplicationUser> users = _userRepo.GetAll().ToList();
+
+            return users.First(u => u.UserName == User.Identity.Name);
+        }
+        public bool IsActiveUserDeveloper(ClaimsPrincipal User)
+        {
+            return User.IsInRole("Developer");
+        }
+
+        public bool isUserWatchingOrOwner(Ticket ticket, ApplicationUser user)
+        {
+            if(ticket.OwnerId == user.Id)
+            {
+                return true;
+            }
+
+            TicketWatcher? ticketWatcher = _ticketWatcherRepo.GetAll().FirstOrDefault(tw => tw.WatcherId == user.Id && tw.TicketId == ticket.Id);
+
+            if(ticketWatcher != null)
+            {
+                return true;
+            }
+            
+            return false;
+
+        }
+        public async Task<List<ProjectIndexVM.BasicProjectData>> FormatProjectsForIndexVM(ICollection<Project> projects, ApplicationUser activeUser)
+        {
+            List<ProjectIndexVM.BasicProjectData> basicProjectData = new();
+            
+            foreach(Project project in projects)
+            {
+                List<ProjectIndexVM.BasicTicketData> basicTicketData = new();
+                List<Ticket> ticketsOnProject = _ticketRepo.GetAll().Where(t => t.ProjectId == project.Id).ToList();
+
+                foreach(Ticket ticket in ticketsOnProject)
+                {
+                    
+                    ProjectIndexVM.BasicTicketData basicTicket = new ProjectIndexVM.BasicTicketData
+                    {
+                        Id = ticket.Id,
+                        Title = ticket.Title,
+                        OwnerName = GetUserNameFromId(ticket.OwnerId),
+                        RequiredHours = ticket.RequiredHours,
+                        Priority = ticket.TicketPriority.ToString(),
+                        Watching = isUserWatchingOrOwner(ticket, activeUser),
+                        Completed = ticket.Completed
+                    };
+
+                    basicTicketData.Add(basicTicket);
+                }
+
+                ProjectIndexVM.BasicProjectData basicProject = new ProjectIndexVM.BasicProjectData
+                {
+                    Id = project.Id,
+                    Name = project.ProjectName,
+                    CreatedBy = GetUserNameFromId(project.CreatedById),
+                    AssignedTo = GetUsersOnProject(project),
+                    Tickets = basicTicketData
+                };
+                basicProjectData.Add(basicProject);
+            }
+
+            return basicProjectData;
+        }
+
+        public string GetUserNameFromId(string id)
+        {
+            return _users.FindByIdAsync(id).Result.UserName;
+        }
+
+        public List<string> GetUsersOnProject(Project project)
+        {
+            List<UserProject> userProjects = _userProjectRepo.GetAll().Where(up => up.ProjectId == project.Id).ToList();
+
+            return userProjects.Select(up => GetUserNameFromId(up.UserId)).ToList();
+        }
+
+        /*
+        public List<Project> AttachTicketsToProjects(List<Project> projects)
+        {
+            List<Ticket> tickets = _ticketRepo.GetAll().ToList();
+            List<Project> result = new List<Project>();
+            foreach (Project project in projects)
+            {
+                project.Tickets = tickets.Where(t => t.ProjectId == project.Id).ToList();
+
+
+                result.Add(project);
+            }
+
+            return result;
+
+        }
+
+        public List<Ticket> AttachOwnerToTickets(List<Ticket> tickets)
+        {
+            List<ApplicationUser> users = _userRepo.GetAll().ToList();
+            List<Ticket> result = new List<Ticket>();
+            foreach (Ticket ticket in tickets)
+            {
+                ticket.Owner = users.FirstOrDefault(o => o.Id == ticket.OwnerId);
+                result.Add(ticket);
+            }
+            return result;
+        }
+
+        public List<Ticket> AttachWatchersToTickets(List<Ticket> tickets)
+        {
+            List<ApplicationUser> users = _userRepo.GetAll().ToList();
+            List<TicketWatcher> ticketWatchers = _ticketWatcherRepo.GetAll().ToList();
+            List<Ticket> result = new List<Ticket>();
+
+            foreach(Ticket ticket in tickets)
+            {
+
+                ticket.TicketWatchers = ticketWatchers.Where(tw => tw.TicketId == ticket.Id).ToList();
+
+                
+            }
+
+            return result;
+        }
+        */
 
         public Project? GetProject(int? id)
         {
