@@ -1,4 +1,4 @@
-﻿@model SD_340_W22SD_Final_Project_Group6.Models.Ticket
+﻿@model SD_340_W22SD_Final_Project_Group6.Models.ViewModel.TicketCreateVM
 
 
 @{
@@ -8,7 +8,7 @@
 
 <h1>Create</h1>
 
-<h4>Ticket for @ViewBag.Projects.ProjectName</h4>
+<h4>Ticket for @Model.Project.ProjectName</h4>
 <hr />
 <div class="row">
 	<div>
@@ -35,8 +35,8 @@
 					</div>
 					<div class="form-group">
 						<label asp-for="Project" class="control-label"></label>
-						<input type="hidden" value="@ViewBag.Projects.Id" name="projId" />
-						<p style="font-weight: bold; display: inline">@ViewBag.Projects.ProjectName</p>
+						<input type="hidden" value="@Model.Project.Id" name="projId" />
+						<p style="font-weight: bold; display: inline">@Model.Project.ProjectName</p>
 						<span asp-validation-for="Project" class="text-danger"></span>
 					</div>
 
@@ -50,7 +50,7 @@
 					</div>
 					<div class="form-group">
 						<label asp-for="Owner" class="control-label"></label>
-						<select name="userId" asp-for="Owner" asp-items=@ViewBag.Users></select>
+						<select name="userId" asp-for="Owner" asp-items=@Model.Users></select>
 						<span asp-validation-for="Owner" class="text-danger"></span>
 					</div>
 				</div>
