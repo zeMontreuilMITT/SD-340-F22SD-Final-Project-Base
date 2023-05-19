@@ -6,9 +6,9 @@ namespace SD_340_W22SD_Final_Project_Group6.Models.ViewModel
     {
         public Project CurrProject { get; set; }
         public List<SelectListItem> CurrUsers { get; set; }
-        public Ticket TicketViewModel { get; set; }
+        public Ticket Ticket { get; set; }
 
-        public TicketVM(int projId, List<ApplicationUser> users)
+        public TicketVM(int projId, List<ApplicationUser> users, Ticket ticket)
         {
             CurrProject = new Project { Id = projId };
             CurrUsers = new List<SelectListItem>();
@@ -16,8 +16,10 @@ namespace SD_340_W22SD_Final_Project_Group6.Models.ViewModel
             {
                 CurrUsers.Add(new SelectListItem(user.UserName, user.Id));
             });
-            TicketViewModel = new Ticket();
+            Ticket = ticket;
         }
+
+        public TicketVM() { }
 
 
     }
