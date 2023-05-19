@@ -297,7 +297,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> Delete(int? id)
         {
-            /*
+            
             try
             {
                 return View(_projectBL.GetProject(id));
@@ -305,21 +305,6 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             {
                 return NotFound();
             }
-
-            */
-            if (id == null || _context.Projects == null)
-            {
-                return NotFound();
-            }
-
-            var project = await _context.Projects
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (project == null)
-            {
-                return NotFound();
-            }
-
-            return View(project);
         }
 
         // POST: Projects/Delete/5
@@ -328,7 +313,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            /*
+            
             try
             {
                 _projectBL.DeleteProject(id);
@@ -337,34 +322,9 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            */
 
-            if (_context.Projects == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Projects'  is null.");
-            }
-            var project = await _context.Projects.Include(p => p.Tickets).FirstAsync(p => p.Id == id);
-            if (project != null)
-            {
-                List<Ticket> tickets = project.Tickets.ToList();
-                tickets.ForEach(ticket =>
-                {
-                    _context.Tickets.Remove(ticket);
-                });
-                await _context.SaveChangesAsync();
-                List<UserProject> userProjects = _context.UserProjects.Where(up => up.ProjectId == project.Id).ToList();
-                userProjects.ForEach(userProj =>
-                {
-                    _context.UserProjects.Remove(userProj);
-                });
+            
 
-                _context.Projects.Remove(project);
-
-
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
         private bool ProjectExists(int id)

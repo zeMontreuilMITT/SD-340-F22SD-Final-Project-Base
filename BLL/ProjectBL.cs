@@ -150,52 +150,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             return userProjects.Select(up => GetUserNameFromId(up.UserId)).ToList();
         }
 
-        /*
-        public List<Project> AttachTicketsToProjects(List<Project> projects)
-        {
-            List<Ticket> tickets = _ticketRepo.GetAll().ToList();
-            List<Project> result = new List<Project>();
-            foreach (Project project in projects)
-            {
-                project.Tickets = tickets.Where(t => t.ProjectId == project.Id).ToList();
-
-
-                result.Add(project);
-            }
-
-            return result;
-
-        }
-
-        public List<Ticket> AttachOwnerToTickets(List<Ticket> tickets)
-        {
-            List<ApplicationUser> users = _userRepo.GetAll().ToList();
-            List<Ticket> result = new List<Ticket>();
-            foreach (Ticket ticket in tickets)
-            {
-                ticket.Owner = users.FirstOrDefault(o => o.Id == ticket.OwnerId);
-                result.Add(ticket);
-            }
-            return result;
-        }
-
-        public List<Ticket> AttachWatchersToTickets(List<Ticket> tickets)
-        {
-            List<ApplicationUser> users = _userRepo.GetAll().ToList();
-            List<TicketWatcher> ticketWatchers = _ticketWatcherRepo.GetAll().ToList();
-            List<Ticket> result = new List<Ticket>();
-
-            foreach(Ticket ticket in tickets)
-            {
-
-                ticket.TicketWatchers = ticketWatchers.Where(tw => tw.TicketId == ticket.Id).ToList();
-
-                
-            }
-
-            return result;
-        }
-        */
+        
 
         public Project? GetProject(int? id)
         {
