@@ -23,18 +23,25 @@ namespace JelloTicket.BusinessLayer.Services
         public ProjectBusinessLogic(IRepository<Project> projectRepository
             , UserManager<ApplicationUser> userManager
             , UserManagerBusinessLogic userManagerBusinessLogic
-            , IRepository<UserProject> userProjectRepository)
+            , IRepository<UserProject> userProjectRepository
+            , IRepository<Ticket> ticketRepository)
         {
             _projectRepository = projectRepository;
             _userManager = userManager;
             _helperMethods = new HelperMethods();
             _userManagerBusinessLogic = userManagerBusinessLogic;
             _userProjectRepository = userProjectRepository;
+            _ticketRepository = ticketRepository;
         }
 
         public Project GetProject(int? id)
         {
             return _projectRepository.Get(id);
+        }
+
+        public bool DoesTicketExist(int id)
+        {
+            return _projectRepository.Exists(id);
         }
 
     }
