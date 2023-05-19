@@ -168,7 +168,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             */
         }
 
-        // GET: Projects/Details/5
+        // GET: Projects/Details/5 //RAG
         public async Task<IActionResult> Details(int? id)
         {
             var project = _projectBL.GetProject(id);
@@ -181,7 +181,8 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             return View(project);
         }
 
-        public async Task<IActionResult> RemoveAssignedUser(string id, int projId)
+        // RAG
+        public async Task<IActionResult> RemoveAssignedUser(string id, int projId)  
         {
             if (id == null)
             {
@@ -193,23 +194,18 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             return RedirectToAction("Edit", new { id = projId });
         }
 
-        // GET: Projects/Create
+        // GET: Projects/Create  //RAG
         [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> CreateAsync()
         {
-            List<ApplicationUser> allUsers = (List<ApplicationUser>)await _users.GetUsersInRoleAsync("Developer");
+            List<SelectListItem> developerUsers = await _projectBL.GetDevelopersAsSelectList();
 
-            List<SelectListItem> users = new List<SelectListItem>();
-            allUsers.ForEach(au =>
-            {
-                users.Add(new SelectListItem(au.UserName, au.Id.ToString()));
-            });
-            ViewBag.Users = users;
+            CreateProjectVM createProjectVM = new CreateProjectVM() { DeveloperUsers = developerUsers };
 
-            return View();
+            return View(createProjectVM);
         }
 
-        // POST: Projects/Create
+        // POST: Projects/Create //RAG
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -219,21 +215,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         {
             if (ModelState.IsValid)
             {
-                string userName = User.Identity.Name;
-
-                ApplicationUser createdBy = _context.Users.First(u => u.UserName == userName);
-                userIds.ForEach((user) =>
-                {
-                    ApplicationUser currUser = _context.Users.FirstOrDefault(u => u.Id == user);
-                    UserProject newUserProj = new UserProject();
-                    newUserProj.ApplicationUser = currUser;
-                    newUserProj.UserId = currUser.Id;                    
-                    newUserProj.Project = project;
-                    project.AssignedTo.Add(newUserProj);
-                    _context.UserProjects.Add(newUserProj);
-                });
-                _context.Add(project);
-                await _context.SaveChangesAsync();
+                _projectBL.CreateProject(project, userIds);
                 return RedirectToAction(nameof(Index));
             }
             return View(project);

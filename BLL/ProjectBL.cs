@@ -2,10 +2,12 @@
 using SD_340_W22SD_Final_Project_Group6.Data;
 using SD_340_W22SD_Final_Project_Group6.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
 using X.PagedList;
 using System.Security.Claims;
 using System.Linq;
+
 
 namespace SD_340_W22SD_Final_Project_Group6.BLL
 {
@@ -249,6 +251,18 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             {
                 _userProjectRepo.Delete(currentUserProject);
             }
+        }
+
+        public void CreateProject(Project project, List<string> associatedUserIds)
+        {
+            associatedUserIds.ForEach((userId) =>
+            {                
+                UserProject newUserProj = new UserProject();
+                newUserProj.UserId = userId;
+                newUserProj.Project = project;
+                project.AssignedTo.Add(newUserProj);
+            });
+            _projectRepo.Create(project);
         }
 
     }
