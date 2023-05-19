@@ -13,17 +13,14 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
-        private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _users;
         private readonly AdminBusinessLogic _adminBusinessLogic;
         private readonly UserManagerBusinessLogic _userManagerBusinessLogic;
 
-        public AdminController(ApplicationDbContext context
-            , UserManager<ApplicationUser> users
+        public AdminController(UserManager<ApplicationUser> users
             , AdminBusinessLogic adminBusinessLogic
             , UserManagerBusinessLogic userManagerBusinessLogic)
         {
-            _context = context;
             _users = users;
             _adminBusinessLogic = adminBusinessLogic;
             _userManagerBusinessLogic = userManagerBusinessLogic;
