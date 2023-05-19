@@ -1,5 +1,6 @@
 ﻿using JelloTicket.DataLayer.Data;
 using JelloTicket.DataLayer.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +46,16 @@ namespace JelloTicket.DataLayer.Repositories
         {
             _context.Tickets.Remove(_context.Tickets.First(t => t.Id == id));
             _context.SaveChanges();
+        }
+
+        public void Save()
+        {
+            _context.SaveChanges();
+        }
+
+        public bool Exists(int id)
+        {
+            return _context.Tickets.Any(t => t.Id == id);
         }
     }
 }

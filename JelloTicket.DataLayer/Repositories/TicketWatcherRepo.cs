@@ -46,5 +46,15 @@ namespace JelloTicket.DataLayer.Repositories
             _context.TicketWatchers.Remove(_context.TicketWatchers.First(t => t.Id == id));
             _context.SaveChanges();
         }
+
+        public void Save()
+        {
+            _context.SaveChanges();
+        }
+
+        public bool Exists(int id)
+        {
+            return _context.TicketWatchers.Any(tw => tw.Id == id);
+        }
     }
 }

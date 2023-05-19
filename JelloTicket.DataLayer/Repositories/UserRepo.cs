@@ -32,6 +32,11 @@ namespace JelloTicket.DataLayer.Repositories
             _context.SaveChanges();
         }
 
+        public bool Exists(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         public ApplicationUser? Get(int? id)
         {
             return _context.Users.Where(u => u.Id == id.ToString()).FirstOrDefault();
@@ -45,6 +50,11 @@ namespace JelloTicket.DataLayer.Repositories
         public IEnumerable<ApplicationUser> GetUsersInRole(string roleName)
         {
             return _userManager.GetUsersInRoleAsync(roleName).Result;
+        }
+
+        public void Save()
+        {
+            throw new NotImplementedException();
         }
 
         public void Update(ApplicationUser entity)

@@ -103,11 +103,12 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             if (ModelState.IsValid)
             {
                 ApplicationUser createdBy = _userManagerBusinessLogic.GetLoggedInUser(User).Result;
-                
+
                 if (_projectBusinessLogic.BuildProjectModel(userIds, project, createdBy).Result)
                 {
                     return RedirectToAction(nameof(Index));
-                } else
+                }
+                else
                 {
                     return BadRequest();
                 };
@@ -130,7 +131,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             {
                 return NotFound();
             }
-            
+
             // populate the select list
             ViewBag.Users = _userManagerBusinessLogic.AllUserSelectListItem();
 
@@ -192,7 +193,8 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             if (_projectBusinessLogic.DeleteProjectAndAssociations(id).Result)
             {
                 return RedirectToAction("Index");
-            } else
+            }
+            else
             {
                 return BadRequest("ERROR: Project not found");
             }

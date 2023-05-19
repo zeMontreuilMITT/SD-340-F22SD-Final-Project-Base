@@ -16,5 +16,9 @@ namespace JelloTicket.DataLayer.Repositories
         void Update(T entity);
 
         void Delete(int? id);
+
+        void Save();
+
+        bool Exists(int id);
     }
 }

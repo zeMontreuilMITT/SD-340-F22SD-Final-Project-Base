@@ -11,39 +11,39 @@ namespace JelloTicket.BusinessLayer.HelperLibrary
 {
     public class HelperMethods
     {
-        private readonly IRepository<Comment> _commentRepository;
-        private readonly IRepository<Ticket> _ticketRepository;
+        //private readonly IRepository<Comment> _commentRepository;
+        //private readonly HelperMethods _helperMethods;
 
-        public ICollection<Comment> GetCommentsByTicketId(int? ticketId)
-        {
-            ICollection<Comment> comments = _commentRepository.GetAll()
-                .Where(c => c.TicketId == ticketId).ToHashSet();
+        //public ICollection<Comment> GetCommentsByTicketId(int? ticketId)
+        //{
+        //    ICollection<Comment> comments = _commentRepository.GetAll()
+        //        .Where(c => c.TicketId == ticketId).ToHashSet();
 
-            return comments;
-        }
+        //    return comments;
+        //}
 
-        public ICollection<Ticket> GetTicketsByProjectId(int? projectId)
-        {
-            ICollection<Ticket> tickets = _ticketRepository.GetAll()
-                .Where(t => t.ProjectId == projectId).ToHashSet();
+        //public ICollection<Ticket> GetTicketsByProjectId(int? projectId)
+        //{
+        //    ICollection<Ticket> tickets = _ticketRepository.GetAll()
+        //        .Where(t => t.ProjectId == projectId).ToHashSet();
 
-            return tickets;
-        }
+        //    return tickets;
+        //}
 
-        public void MarkTicketAsCompleted(int? id)
-        {
-            Ticket repoTicket = _ticketRepository.Get(id);
-            repoTicket.Completed = true;
+        //public void MarkTicketAsCompleted(int? id)
+        //{
+        //    Ticket repoTicket = _ticketRepository.Get(id);
+        //    repoTicket.Completed = true;
 
-            _ticketRepository.Update(repoTicket);
-        }
+        //    _ticketRepository.Update(repoTicket);
+        //}
 
-        public void UnMarkTicketAsCompleted(int? id)
-        {
-            Ticket repoTicket = _ticketRepository.Get(id);
-            repoTicket.Completed = false;
+        //public void UnMarkTicketAsCompleted(int? id)
+        //{
+        //    Ticket repoTicket = _ticketRepository.Get(id);
+        //    repoTicket.Completed = false;
 
-            _ticketRepository.Update(repoTicket);
-        }
+        //    _ticketRepository.Update(repoTicket);
+        //}
     }
 }

@@ -10,7 +10,7 @@ namespace JelloTicket.DataLayer.Repositories
 {
     public class UserProjectRepo : IRepository<UserProject>
     {
-        private ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
         public UserProjectRepo(ApplicationDbContext context)
         {
@@ -45,6 +45,16 @@ namespace JelloTicket.DataLayer.Repositories
         {
             _context.UserProjects.Remove(_context.UserProjects.First(t => t.Id == id));
             _context.SaveChanges();
+        }
+
+        public void Save()
+        {
+            _context.SaveChanges();
+        }
+
+        public bool Exists(int id)
+        {
+            return _context.UserProjects.Any(up => up.Id == id);
         }
     }
 }
