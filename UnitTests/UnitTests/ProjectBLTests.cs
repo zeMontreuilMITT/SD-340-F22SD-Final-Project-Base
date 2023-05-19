@@ -70,6 +70,7 @@ namespace UnitTests
 
             return mgr;
         }
+
         [TestMethod]
         public void TestMethod1()
         {
