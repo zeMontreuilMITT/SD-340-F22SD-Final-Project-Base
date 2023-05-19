@@ -28,12 +28,14 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             , IRepository<Project> projectRepo
             , IRepository<Comment> commentRepo
             , UserManager<ApplicationUser> users
-            , UserManagerBusinessLogic userManagerBusinessLogic)
+            , UserManagerBusinessLogic userManagerBusinessLogic
+            , ProjectBusinessLogic projectBusinessLogic)
         {
             _ticketBusinessLogic = new TicketBusinessLogic(ticketRepo, projectRepo, commentRepo, users, userManagerBusinessLogic);
             _users = users;
             _userManagerBusinessLogic = userManagerBusinessLogic;
             _commentRepo = commentRepo;
+            _projectBusinessLogic = projectBusinessLogic;
         }
 
         // GET: Tickets
