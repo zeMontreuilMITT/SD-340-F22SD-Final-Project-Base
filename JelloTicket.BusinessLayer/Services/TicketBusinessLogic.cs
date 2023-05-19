@@ -11,6 +11,11 @@ using JelloTicket.BusinessLayer.HelperLibrary;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc;
+using Project = JelloTicket.DataLayer.Models.Project;
+using JelloTicket.BusinessLayer.ViewModels;
+using Microsoft.AspNetCore.Http;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace JelloTicket.BusinessLayer.Services
 {
@@ -22,18 +27,21 @@ namespace JelloTicket.BusinessLayer.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly HelperMethods _helperMethods;
         private readonly UserManagerBusinessLogic _userManagerBusinessLogic;
+        private readonly IRepository<UserProject> _userProjectRepo;
 
         public TicketBusinessLogic(IRepository<Ticket> ticketRepository
             , IRepository<DataLayer.Models.Project> projectRepository
             , IRepository<Comment> commentRepository
             , UserManager<ApplicationUser> userManager
-            , UserManagerBusinessLogic userManagerBusinessLogic)
+            , UserManagerBusinessLogic userManagerBusinessLogic
+            , IRepository<UserProject> userProjectRepo)
         {
             _ticketRepository = ticketRepository;
             _projectRepository = projectRepository;
             _commentRepository = commentRepository;
             _userManager = userManager;
             _userManagerBusinessLogic = userManagerBusinessLogic;
+            _userProjectRepo = userProjectRepo;
         }
 
         public Ticket GetTicketById(int? id)
@@ -100,6 +108,156 @@ namespace JelloTicket.BusinessLayer.Services
         public bool DoesTicketExist(int id)
         {
             return _ticketRepository.Exists(id);
+        }
+
+        public TicketCreateVM CreateGet(int projId)
+        {
+            if (projId == null)
+            {
+                throw new Exception("Id is invalid");
+            }
+            else
+            {
+                Project currentProject = _projectRepository.Get(projId);
+
+                if (currentProject == null)
+                {
+                    throw new Exception("Cannot find project with the given id ");
+                }
+                else
+                {
+                    TicketCreateVM vm = new TicketCreateVM();
+                    UserProject userProject = _userProjectRepo.Get(projId);
+
+                    ICollection<UserProject> projects = _userProjectRepo.GetAll();
+
+                    List<string> projectUserIds = projects.Select(p => p.UserId).ToList();
+
+                    List<ApplicationUser> users = _userManager.Users.Where(u => projectUserIds.Contains(u.Id)).ToList();
+
+                    currentProject.AssignedTo = projects;
+
+                    int index = 0;
+                    foreach (UserProject project in projects)
+                    {
+                        if (project.ProjectId == projId)
+                        {
+                            project.ApplicationUser = users[index];
+                            index++;
+                            if (index >= users.Count)
+                            {
+                                index = 0;
+                            }
+                        }
+                    }
+
+                    List<SelectListItem> currUsers = new List<SelectListItem>();
+                    currentProject.AssignedTo.ToList().ForEach(t =>
+                    {
+                        currUsers.Add(new SelectListItem(t.ApplicationUser.UserName, t.ApplicationUser.Id.ToString()));
+                    });
+
+                    vm.project = currentProject;
+                    vm.currUsers = currUsers;
+                    return vm;
+
+                }
+            }
+
+        }
+
+        public Ticket CreatePost(int projId, string userId, Ticket ticket)
+        {
+            Project currProj = _projectRepository.Get(projId);
+            ticket.Project = currProj;
+            ApplicationUser owner = _userManager.Users.FirstOrDefault(u => u.Id == userId);
+            ticket.Owner = owner;
+            _ticketRepository.Create(ticket);
+            currProj.Tickets.Add(ticket);
+            return ticket;
+
+        }
+
+        public IResult GetTickets()
+        {
+
+            List<Ticket> tickets = _ticketRepository.GetAll().ToList();
+
+            foreach (Ticket ticket in tickets)
+            {
+                int projId = ticket.ProjectId;
+                Project project = _projectRepository.GetAll().FirstOrDefault(p => p.Id == projId);
+                ticket.Project = project;
+                List<Comment> comments = _commentRepository.GetAll().Where(c => c.TicketId == ticket.Id).ToList();
+
+                ticket.Comments = comments;
+            }
+            JsonSerializerOptions options = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve,
+                MaxDepth = 0
+            };
+
+
+            string jsonResult = JsonSerializer.Serialize(tickets, options);
+            Object jsonObject = JsonSerializer.Deserialize<object>(jsonResult);
+
+            return Results.Ok(jsonObject);
+
+
+        }
+
+        public TicketEditVM EditGet(Ticket ticket)
+        {
+            TicketEditVM vm = new TicketEditVM();
+            vm.ticket = ticket;
+            IEnumerable<SelectListItem> remainingUsers = users(ticket);
+            vm.Users = remainingUsers;
+            return vm;
+        }
+        //public Ticket GetTicketById(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        throw new NullReferenceException("Id is NUll");
+        //    }
+        //    else
+        //    {
+        //        Ticket ticket = _ticketRepository.Get(id);
+        //        if (ticket == null)
+        //        {
+        //            throw new Exception("ticket with given id is not found");
+        //        }
+        //        else
+        //        {
+        //            // Only return the Ticket for the HTTP GET method
+        //            return ticket;
+        //        }
+        //    }
+        //}
+
+        public IEnumerable<SelectListItem> users(Ticket ticket)
+        {
+            List<ApplicationUser> results = _userManager.Users.Where(u => u != ticket.Owner).ToList();
+
+            List<SelectListItem> currUsers = new List<SelectListItem>();
+            results.ForEach(r =>
+            {
+                currUsers.Add(new SelectListItem(r.UserName, r.Id.ToString()));
+            }); return currUsers;
+        }
+        // forum submission is taken and submitted to db
+        public TicketEditVM EditTicket(TicketEditVM ticketVM, int id, string userId)
+        {
+            if (id != ticketVM.ticket.Id)
+            {
+                throw new Exception("Not Found");
+            }
+            ApplicationUser currUser = _userManager.Users.FirstOrDefault(u => u.Id == userId);
+            ticketVM.ticket.Owner = currUser;
+            // business logic for editing the ticket here
+            _ticketRepository.Update(ticketVM.ticket);
+            return ticketVM;
         }
     }
 }

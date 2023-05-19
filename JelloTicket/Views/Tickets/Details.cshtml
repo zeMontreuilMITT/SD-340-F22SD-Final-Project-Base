@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@using JelloTicket.DataLayer.Models
 @model JelloTicket.DataLayer.Models.Ticket
+@using JelloTicket.DataLayer.Models
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
@@ -182,15 +182,16 @@
 				Completed
 			</dt>
 			<dd class="col-sm-10">
-				@if(Model.Completed == false)
+				@if (Model.Completed == false)
 				{
 					<a asp-action="MarkAsCompleted" asp-controller="Tickets" asp-route-id="@Model.Id" class="btn" style="background-color: #E4BCB9">Mark As Completed</a>
-				} else
+				}
+				else
 				{
 					<span>True</span>
 					<a asp-action="UnMarkAsCompleted" asp-controller="Tickets" asp-route-id="@Model.Id" class="btn" style="background-color: #E4BCB9">Remove Completed</a>
 				}
-				
+
 			</dd>
 
 			<h5>Comments</h5>

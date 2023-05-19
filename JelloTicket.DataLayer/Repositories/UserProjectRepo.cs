@@ -21,7 +21,7 @@ namespace JelloTicket.DataLayer.Repositories
 
         public UserProject Get(int? id)
         {
-            return (UserProject)_context.UserProjects.Where(t => t.Id == id);
+            return (UserProject)_context.UserProjects.First(t => t.Id == id);
         }
 
         public ICollection<UserProject> GetAll()
