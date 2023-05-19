@@ -22,12 +22,25 @@ namespace JelloTicket.DataLayer.Repositories
 
         public Ticket Get(int? id)
         {
-            return (Ticket)_context.Tickets.FirstOrDefault(t => t.Id == id);
+            return (Ticket)_context.Tickets
+                .Include(t => t.Project)
+                .Include(t => t.TicketWatchers)
+                    .ThenInclude(tw => tw.Watcher)
+                .Include(u => u.Owner)
+                .Include(t => t.Comments)
+                    .ThenInclude(c => c.CreatedBy)
+                .FirstOrDefault(t => t.Id == id);
         }
 
         public ICollection<Ticket> GetAll()
         {
-            return _context.Tickets.ToHashSet();
+            return _context.Tickets
+                .Include(t => t.Project)
+                .Include(t => t.TicketWatchers)
+                    .ThenInclude(tw => tw.Watcher)
+                .Include(u => u.Owner)
+                .Include(t => t.Comments)
+                    .ThenInclude(c => c.CreatedBy).ToHashSet();
         }
 
         public void Create(Ticket ticket)

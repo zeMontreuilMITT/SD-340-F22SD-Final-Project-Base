@@ -21,7 +21,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         private readonly TicketBusinessLogic _ticketBusinessLogic;
         private readonly ProjectBusinessLogic _projectBusinessLogic;
         private readonly UserManager<ApplicationUser> _users;
-        private readonly CommentRepo _commentRepo;
+        private readonly IRepository<Comment> _commentRepo;
         private readonly UserManagerBusinessLogic _userManagerBusinessLogic;
         
         public TicketsController(IRepository<Ticket> ticketRepo
@@ -33,6 +33,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             _ticketBusinessLogic = new TicketBusinessLogic(ticketRepo, projectRepo, commentRepo, users, userManagerBusinessLogic);
             _users = users;
             _userManagerBusinessLogic = userManagerBusinessLogic;
+            _commentRepo = commentRepo;
         }
 
         // GET: Tickets
