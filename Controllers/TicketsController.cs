@@ -18,11 +18,13 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ProjectBL _projectBL;
+        private readonly TicketBL _ticketBL;
 
-        public TicketsController(ApplicationDbContext context, ProjectBL projectBL)
+        public TicketsController(ApplicationDbContext context, ProjectBL projectBL, TicketBL ticketBL)
         {
             _context = context;
             _projectBL = projectBL;
+            _ticketBL = ticketBL;
         }
 
         // GET: Tickets
@@ -62,41 +64,43 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [Authorize(Roles = "ProjectManager")]
         public IActionResult Create(int projId)
         {
-            Project currProject = _context.Projects.Include(p => p.AssignedTo).ThenInclude(at => at.ApplicationUser).FirstOrDefault(p => p.Id == projId);
-
-            List<SelectListItem> currUsers = new List<SelectListItem>();
-            currProject.AssignedTo.ToList().ForEach(t =>
+            try
             {
-                currUsers.Add(new SelectListItem(t.ApplicationUser.UserName, t.ApplicationUser.Id.ToString()));
-            });
+                CreateTicketViewModel VM = _ticketBL.GetCreateTicketViewModel(projId);
 
-            ViewBag.Projects = currProject;
-            ViewBag.Users = currUsers;
+                return View(VM);
+            } catch
+            {
+				return NotFound();
+			}
 
-            return View();
+            
+            
 
         }
 
         // POST: Tickets/Create // Regan 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "ProjectManager")]
-        public async Task<IActionResult> Create([Bind("Id,Title,Body,RequiredHours,TicketPriority")] Ticket ticket, int projId, string userId)
+		
+		public async Task<IActionResult> Create([Bind("Title, Body, RequiredHours, SelectedProject, Priority")]CreateTicketViewModel VM, string userId)
         {
-            if (ModelState.IsValid)
-            { 
-                ticket.Project = await _context.Projects.FirstAsync(p => p.Id == projId);
-                Project currProj = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projId);
-                ApplicationUser owner = _context.Users.FirstOrDefault(u => u.Id == userId);
-                ticket.Owner = owner;
-                _context.Add(ticket);
-                currProj.Tickets.Add(ticket);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Index","Projects", new { area = ""});
+
+            try
+            {
+                
+              Ticket ticket = await _ticketBL.CreateTicket(VM, userId);
+
+              return View(VM);
+                
+            } catch
+            {
+                return RedirectToAction("Index", "Projects", new { area = "" });
             }
-            return View(ticket);
+
         }
 
         // GET: Tickets/Edit/5

@@ -2,6 +2,11 @@
 using SD_340_W22SD_Final_Project_Group6.Data;
 using SD_340_W22SD_Final_Project_Group6.Models;
 using X.PagedList;
+using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace SD_340_W22SD_Final_Project_Group6.BLL
 {
@@ -52,7 +57,50 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
         }
 
-        
-        
+        public CreateTicketViewModel GetCreateTicketViewModel(int projId)
+        {
+            Project currProject = _projectRepo.Get(projId);
+
+            List<SelectListItem> currUsers = new List<SelectListItem>();
+
+            List<UserProject> userProjects = _userProjectRepo.GetAll().Where(x => x.ProjectId == projId).ToList();
+
+            foreach (UserProject userProject in userProjects)
+            {
+                currUsers.Add(new SelectListItem(userProject.ApplicationUser.UserName, userProject.ApplicationUser.Id.ToString()));
+            }
+                
+            CreateTicketViewModel VM = new CreateTicketViewModel
+            {
+                SelectedProject = currProject.Id,
+				ProjectName = currProject.ProjectName,
+                Users = currUsers
+            };
+
+            return VM;
+            
+        }
+
+        public async Task<Ticket> CreateTicket (CreateTicketViewModel VM, string userId)
+        {
+            
+            Ticket ticket = new Ticket
+            {
+                Title = VM.Title,
+                Body = VM.Body,
+                RequiredHours = VM.RequiredHours,
+                TicketPriority = VM.Priority
+            };
+
+            ticket.ProjectId = VM.SelectedProject;
+
+            ticket.OwnerId = userId;
+
+			 _ticketRepo.Create(ticket);
+
+            return ticket;
+
+        }
+
     }
 }
