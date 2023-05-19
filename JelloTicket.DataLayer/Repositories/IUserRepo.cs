@@ -19,5 +19,7 @@ namespace JelloTicket.DataLayer.Repositories
         void Delete(int? id);
 
         IEnumerable<ApplicationUser> GetUsersInRole(string roleName);
+
+        T? GetByStringId(string? id);
     }
 }

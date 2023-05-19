@@ -39,12 +39,17 @@ namespace JelloTicket.DataLayer.Repositories
 
         public ApplicationUser? Get(int? id)
         {
-            return _context.Users.Where(u => u.Id == id.ToString()).FirstOrDefault();
+            return _context.Users.First(u => u.Id == id.ToString());
         }
 
         public ICollection<ApplicationUser> GetAll()
         {
             return _context.Users.ToList();
+        }
+
+        public ApplicationUser? GetByStringId(string? id)
+        {
+            return _context.Users.First(u => u.Id == id);
         }
 
         public IEnumerable<ApplicationUser> GetUsersInRole(string roleName)
