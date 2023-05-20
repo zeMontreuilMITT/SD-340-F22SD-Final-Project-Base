@@ -7,6 +7,12 @@ namespace SD_340_W22SD_Final_Project_Group6.Models.ViewModel
         public Ticket Ticket { get; set; }
         public List<SelectListItem> Users { get; set; }
 
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Body { get; set; }
+        public int RequiredHours { get; set; }
+        public ApplicationUser Owner { get; set; }
+
         public TicketEditVM(Ticket ticket, List<ApplicationUser> users)
         {
             Ticket = ticket;
@@ -17,5 +23,6 @@ namespace SD_340_W22SD_Final_Project_Group6.Models.ViewModel
             });
         }
 
+        public TicketEditVM() { }
     }
 }

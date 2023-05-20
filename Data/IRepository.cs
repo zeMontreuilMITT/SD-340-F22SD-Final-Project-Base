@@ -3,17 +3,17 @@
         public interface IRepository<T> where T : class
         {
             // CREATE
-            public T Create(T entity);
+            public Task<T> Create(T entity);
 
             // READ
-            public T? Get(int id);
-            ICollection<T> GetAll();
+            public Task<T?> Get(int id);
+            public Task<ICollection<T>> GetAll();
 
             // UPDATE
-            public T Update(T entity);
+            public Task<T> Update(T entity);
 
             // DELETE
-            public T Delete(T entity);
+            public Task<T> Delete(T entity);
         }
 
 }

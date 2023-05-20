@@ -50,7 +50,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
 
             try
             {
-                Project project = _projectBLL.Details((int)id);
+                Project project = await _projectBLL.Details((int)id);
 
                 return View(project);
             } catch

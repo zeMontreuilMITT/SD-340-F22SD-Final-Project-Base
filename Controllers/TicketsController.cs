@@ -91,8 +91,22 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             return View(vm);
         }
 
-        // GET: Tickets/Edit/5
-        [Authorize(Roles = "ProjectManager")]
+		// GET: Tickets/Edit/5
+		[Authorize(Roles = "ProjectManager")]
+		public async Task<IActionResult> Edit(int? id)
+		{
+			try
+            {
+			    return View(await _ticketBLL.Edit((int) id));
+            } catch
+            {
+                return NotFound();
+            }
+
+		}
+
+		// GET: Tickets/Edit/5
+		[Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> RemoveAssignedUser(string id, int ticketId)
         {
             if (id == null)
@@ -120,13 +134,13 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         {
             try
             {
-                _ticketBLL.Edit(id, userId, ticket);
+                Ticket currTicket = await _ticketBLL.EditPost(id, userId, ticket);
+                return RedirectToAction(nameof(Edit), new {id = currTicket.Id});
             }
             catch (DbUpdateConcurrencyException)
             {
                 return NotFound();
             }
-            return RedirectToAction(nameof(Edit), new {id = ticket.Id});
         }
 
         [HttpPost]

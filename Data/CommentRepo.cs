@@ -11,23 +11,23 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
         {
             _context = context;
         }
-        public Comment Create(Comment entity)
+        public async Task<Comment> Create(Comment entity)
         {
             _context.Add(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return entity;
         }
 
-        public Comment Delete(Comment entity)
+        public async Task<Comment> Delete(Comment entity)
         {
             _context.Remove(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return entity;
         }
 
-        public Comment Get(int id)
+        public async Task<Comment> Get(int id)
         {
-            return _context.Comments
+            return await _context.Comments
                 .Include(c => c.CreatedBy)
                 .Include(c => c.Ticket)
                 .ThenInclude(c => c.Owner)
@@ -35,12 +35,12 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
                 .Include(c => c.Ticket)
                 .ThenInclude(t => t.Project)
                 .ThenInclude(p => p.AssignedTo)
-                .First( c => c.Id == id);
+                .FirstAsync( c => c.Id == id);
         }
 
-        public ICollection<Comment> GetAll()
+        public async Task<ICollection<Comment>> GetAll()
         {
-            return _context.Comments
+            return await _context.Comments
                 .Include(c => c.CreatedBy)
                 .Include(c => c.Ticket)
                 .ThenInclude(c => c.Owner)
@@ -48,13 +48,13 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
                 .Include(c => c.Ticket)
                 .ThenInclude(t => t.Project)
                 .ThenInclude(p => p.AssignedTo)
-                .ToList();
+                .ToListAsync();
         }
 
-        public Comment Update(Comment entity)
+        public async Task<Comment> Update(Comment entity)
         {
             _context.Comments.Update(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return entity;
         }
     }
