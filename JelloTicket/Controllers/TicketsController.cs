@@ -171,61 +171,22 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             return RedirectToAction("Index", "Projects");
         }
 
-        //public async Task<IActionResult> AddToWatchers(int id)
-        //{
-        //    if (id != null)
-        //    {
-        //        try
-        //        {
-        //            TicketWatcher newTickWatch = new TicketWatcher();
-        //            string userName = User.Identity.Name;
-        //            ApplicationUser user = _context.Users.First(u => u.UserName == userName);
-        //            Ticket ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
+        public async Task<IActionResult> AddToWatchers(int id)
+        {
 
-        //            newTickWatch.Ticket = ticket;
-        //            newTickWatch.Watcher = user;
-        //            user.TicketWatching.Add(newTickWatch);
-        //            ticket.TicketWatchers.Add(newTickWatch);
-        //            _context.Add(newTickWatch);
+            string userName = User.Identity.Name;
+            _ticketBusinessLogic.AddtoWatchers(userName, id);
+            return RedirectToAction("Details", new { id });
 
-        //            await _context.SaveChangesAsync();
-        //            return RedirectToAction("Details", new { id });
+        }
 
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            return RedirectToAction("Error", "Home");
-        //        }
-        //    }
-        //    return RedirectToAction("Index");
-        //}
+        public async Task<IActionResult> UnWatch(int id)
+        {
+            string userName = User.Identity.Name;
+            _ticketBusinessLogic.UnWatch(userName, id);
+            return RedirectToAction("Details", new { id });
 
-        //public async Task<IActionResult> UnWatch(int id)
-        //{
-        //    if (id != null)
-        //    {
-        //        try
-        //        {
-
-        //            string userName = User.Identity.Name;
-        //            ApplicationUser user = _context.Users.First(u => u.UserName == userName);
-        //            Ticket ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
-        //            TicketWatcher currTickWatch = await _context.TicketWatchers.FirstAsync(tw => tw.Ticket.Equals(ticket) && tw.Watcher.Equals(user));
-        //            _context.TicketWatchers.Remove(currTickWatch);
-        //            ticket.TicketWatchers.Remove(currTickWatch);
-        //            user.TicketWatching.Remove(currTickWatch);
-
-        //            await _context.SaveChangesAsync();
-        //            return RedirectToAction("Details", new { id });
-
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            return RedirectToAction("Error", "Home");
-        //        }
-        //    }
-        //    return RedirectToAction("Index");
-        //}
+        }
 
         public async Task<IActionResult> MarkAsCompleted(int id)
         {

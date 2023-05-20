@@ -29,13 +29,15 @@ namespace JelloTicket.BusinessLayer.Services
         private readonly HelperMethods _helperMethods;
         private readonly UserManagerBusinessLogic _userManagerBusinessLogic;
         private readonly IRepository<UserProject> _userProjectRepo;
+        private readonly IRepository<TicketWatcher> _ticketWatcher;
 
         public TicketBusinessLogic(IRepository<Ticket> ticketRepository
             , IRepository<DataLayer.Models.Project> projectRepository
             , IRepository<Comment> commentRepository
             , UserManager<ApplicationUser> userManager
             , UserManagerBusinessLogic userManagerBusinessLogic
-            , IRepository<UserProject> userProjectRepo)
+            , IRepository<UserProject> userProjectRepo
+            , IRepository<TicketWatcher> ticketWatcher)
         {
             _ticketRepository = ticketRepository;
             _projectRepository = projectRepository;
@@ -43,6 +45,7 @@ namespace JelloTicket.BusinessLayer.Services
             _userManager = userManager;
             _userManagerBusinessLogic = userManagerBusinessLogic;
             _userProjectRepo = userProjectRepo;
+            _ticketWatcher = ticketWatcher;
         }
 
         public Ticket GetTicketById(int? id)
@@ -235,6 +238,37 @@ namespace JelloTicket.BusinessLayer.Services
             // business logic for editing the ticket here
             _ticketRepository.Update(ticketVM.ticket);
             return ticketVM;
+        }
+
+        public void AddtoWatchers(string userName, int id)
+        {
+
+            TicketWatcher newTickWatch = new TicketWatcher();
+            if (userName == null)
+            {
+                throw new Exception("UserName is empty:");
+            }
+            ApplicationUser user = _userManager.Users.First(u => u.UserName == userName);
+            Ticket ticket = _ticketRepository.Get(id);
+            newTickWatch.Ticket = ticket;
+            newTickWatch.Watcher = user;
+            user.TicketWatching.Add(newTickWatch);
+            ticket.TicketWatchers.Add(newTickWatch);
+            _ticketWatcher.Create(newTickWatch);
+
+
+        }
+        public void UnWatch(string userName, int id)
+        {
+            ApplicationUser user = _userManager.Users.First(u => u.UserName == userName);
+            Ticket ticket = _ticketRepository.Get(id);
+            List<TicketWatcher> ticketWatchers = _ticketWatcher.GetAll().ToList();
+            TicketWatcher currTickWatch = ticketWatchers.First(tw => tw.Ticket.Equals(ticket) && tw.Watcher.Equals(user));
+
+            _ticketRepository.Delete(currTickWatch.Id);
+            ticket.TicketWatchers.Remove(currTickWatch);
+            user.TicketWatching.Remove(currTickWatch);
+
         }
     }
 }
