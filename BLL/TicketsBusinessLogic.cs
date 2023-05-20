@@ -90,6 +90,23 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             return ticket;
         }
 
+        public async Task<TicketEditVM> Edit(int id)
+        {
+            Ticket ticket = _ticketRepo.Get(id);
+
+            List<ApplicationUser> results = _userManager.Users.Where(u => u != ticket.Owner).ToList();
+			List<SelectListItem> currUsers = new List<SelectListItem>();
+			results.ForEach(r =>
+			{
+				currUsers.Add(new SelectListItem(r.UserName, r.Id.ToString()));
+			});
+
+			TicketEditVM vm = new TicketEditVM();
+            vm.Ticket = ticket;
+            vm.Users = currUsers;
+            return vm;
+        }
+
         public async void RemoveAssignedUser(string id, int ticketId)
         {
             Ticket currTicket = _ticketRepo.Get(ticketId);
@@ -99,7 +116,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             _ticketRepo.Update(currTicket);
         }
 
-        public async void Edit(int id, string userId, Ticket ticket)
+        public async void EditPost(int id, string userId, Ticket ticket)
         {
             ApplicationUser currUser = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             ticket.Owner = currUser;
