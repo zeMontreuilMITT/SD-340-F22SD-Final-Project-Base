@@ -31,7 +31,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             _userRepo = userRepo;
             _users = users;
         }
-
+        
         public async Task<ProjectIndexVM> ProjectIndex(string? sortOrder, int? page, bool? sort, string? userId, ClaimsPrincipal User)
         {
             List<SelectListItem> developers = GetDevelopersAsSelectList().Result;
@@ -54,7 +54,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             
             return vm;
         }
-
+        //RAG Positive Test and fail Test
         public List<Project> RemoveProjectsActiveDeveloperNotAssignedTo(List<Project> projects, ApplicationUser activeDeveloper)
         {
             List<UserProject> userProjects = _userProjectRepo.GetAll().Where(up => up.UserId == activeDeveloper.Id).ToList();
@@ -160,7 +160,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
             return project;
         }
-
+        //Regan Positive and Fail Test
         public Project DeleteProject(int id)
         {
             // Get project
@@ -207,7 +207,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
                 _userProjectRepo.Delete(currentUserProject);
             }
         }
-
+        // Paul Positive and Fail Test
         public void CreateProject(Project project, List<string> associatedUserIds)
         {
             associatedUserIds.ForEach((userId) =>
