@@ -263,7 +263,7 @@ namespace JelloTicket.BusinessLayer.Services
             ApplicationUser user = _userManager.Users.First(u => u.UserName == userName);
             Ticket ticket = _ticketRepository.Get(id);
             List<TicketWatcher> ticketWatchers = _ticketWatcher.GetAll().ToList();
-            TicketWatcher currTickWatch = ticketWatchers.First(tw => tw.Ticket.Equals(ticket) && tw.Watcher.Equals(user));
+            TicketWatcher currTickWatch = ticketWatchers.First(tw => tw.Ticket == ticket && tw.Watcher == user);
 
             _ticketRepository.Delete(currTickWatch.Id);
             ticket.TicketWatchers.Remove(currTickWatch);

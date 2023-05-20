@@ -43,8 +43,12 @@ namespace JelloTicket.DataLayer.Repositories
 
         public void Delete(int? id)
         {
-            _context.TicketWatchers.Remove(_context.TicketWatchers.First(t => t.Id == id));
-            _context.SaveChanges();
+            TicketWatcher tw = _context.TicketWatchers.FirstOrDefault(t => t.Id == id);
+            if (tw != null)
+            {
+                _context.TicketWatchers.Remove(tw);
+                _context.SaveChanges();
+            }
         }
 
         public void Save()

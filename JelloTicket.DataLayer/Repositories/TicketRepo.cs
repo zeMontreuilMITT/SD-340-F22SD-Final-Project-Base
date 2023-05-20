@@ -34,7 +34,9 @@ namespace JelloTicket.DataLayer.Repositories
 
         public ICollection<Ticket> GetAll()
         {
-            return _context.Tickets.ToList();
+            return _context.Tickets
+                .Include(t => t.Project)
+                .ToList();
         }
 
         public void Create(Ticket ticket)
