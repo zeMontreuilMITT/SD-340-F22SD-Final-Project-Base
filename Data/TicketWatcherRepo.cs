@@ -11,40 +11,40 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
         {
             _context = context;
         }
-        public TicketWatcher Create(TicketWatcher entity)
+        public async Task<TicketWatcher> Create(TicketWatcher entity)
         {
             _context.Add(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return entity;
         }
 
-        public TicketWatcher Delete(TicketWatcher entity)
+        public async Task<TicketWatcher> Delete(TicketWatcher entity)
         {
             _context.Remove(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return entity;
         }
 
-        public TicketWatcher Get(int id)
+        public async Task<TicketWatcher> Get(int id)
         {
-            return _context.TicketWatchers
+            return await _context.TicketWatchers
                 .Include(tw => tw.Ticket)
                 .Include(tw => tw.Watcher)
-                .First(tw => tw.Id == id);
+                .FirstAsync(tw => tw.Id == id);
         }
 
-        public ICollection<TicketWatcher> GetAll()
+        public async Task<ICollection<TicketWatcher>> GetAll()
         {
-            return _context.TicketWatchers
+            return await _context.TicketWatchers
                 .Include(tw => tw.Ticket)
                 .Include(tw => tw.Watcher)
-                .ToList();
+                .ToListAsync();
         }
 
-        public TicketWatcher Update(TicketWatcher entity)
+        public async Task<TicketWatcher> Update(TicketWatcher entity)
         {
             _context.TicketWatchers.Update(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return entity;
         }
     }

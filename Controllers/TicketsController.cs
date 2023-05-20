@@ -134,13 +134,13 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         {
             try
             {
-                _ticketBLL.EditPost(id, userId, ticket);
+                Ticket currTicket = await _ticketBLL.EditPost(id, userId, ticket);
+                return RedirectToAction(nameof(Edit), new {id = currTicket.Id});
             }
             catch (DbUpdateConcurrencyException)
             {
                 return NotFound();
             }
-            return RedirectToAction(nameof(Edit), new {id = ticket.Id});
         }
 
         [HttpPost]

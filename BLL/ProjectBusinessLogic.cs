@@ -43,7 +43,8 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
                 users.Add(new SelectListItem(au.UserName, au.Id.ToString()));
             });
             vm.Users = users;
-            SortedProjs = _projectRepo.GetAll().ToList();
+            ICollection<Project> projects = await _projectRepo.GetAll();
+            SortedProjs = projects.ToList();
             switch (sortOrder)
             {
                 case "Priority":
@@ -135,18 +136,19 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             return vm;
         }
 
-        public Project Details(int id)
+        public async Task<Project> Details(int id)
         {
-            Project project = _projectRepo.Get(id);
+            Project project = await _projectRepo.Get(id);
             return project;
         }
 
-        public void RemoveAssignedUser(string id, int projId)
+        public async void RemoveAssignedUser(string id, int projId)
         {
-            UserProject userProject = _userProjectRepo.GetAll()
+            ICollection<UserProject> userProjects = await _userProjectRepo.GetAll();
+            UserProject userProject = userProjects
                 .First(up => up.UserId == id && up.ProjectId == projId);
 
-            _userProjectRepo.Delete(userProject);
+            await _userProjectRepo.Delete(userProject);
             return;
         }
 
@@ -192,7 +194,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
         public async Task<ProjectEditVM> EditGet(int id)
         {
-            var project = _projectRepo.Get(id);
+            var project = await _projectRepo.Get(id);
 
             List<ApplicationUser> results = _userManager.Users.ToList();
 
@@ -211,7 +213,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
         public async void EditPost(int id, List<string> userIds, ProjectEditVM projectEditVM)
         {
-            Project project = _projectRepo.Get(id);
+            Project project = await _projectRepo.Get(id);
 
             if (project.ProjectName !=  projectEditVM.ProjectName)
             {
@@ -235,13 +237,13 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
         public async Task<Project> DeleteGet(int id)
         {
-            Project project = _projectRepo.Get(id);
+            Project project = await _projectRepo.Get(id);
             return project;
         }
 
         public async void DeleteConfirmed(int id)
         {
-            Project project = _projectRepo.Get(id);
+            Project project = await _projectRepo.Get(id);
             if (project != null)
             {
                 List<Ticket> tickets = project.Tickets.ToList();
@@ -249,7 +251,9 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
                 {
                     _ticketRepo.Delete(ticket);
                 });
-                List<UserProject> userProjects = _userProjectRepo.GetAll().Where(up => up.ProjectId == project.Id).ToList();
+                IEnumerable<UserProject> allUserProjects = await _userProjectRepo.GetAll();
+                List<UserProject> userProjects = allUserProjects
+                    .Where(up => up.ProjectId == project.Id).ToList();
                 userProjects.ForEach(userProj =>
                 {
                     _userProjectRepo.Delete(userProj);
@@ -257,16 +261,6 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
                 _projectRepo.Delete(project);
             }
-        }
-
-        private async Task<bool> ProjectExists(int id)
-        {
-            List<Project> projects = await _projectRepo.GetAll().ToListAsync();
-            if (projects.Any(p => p.Id == id))
-            {
-                return true;
-            }
-            return false;
         }
     }
 }

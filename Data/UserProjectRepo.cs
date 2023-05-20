@@ -13,42 +13,42 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
             _context = context;
         }
 
-        public UserProject Create(UserProject entity)
+        public async Task<UserProject> Create(UserProject entity)
         {
             _context.Add(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return entity;
         }
 
-        public UserProject Get(int id)
+        public async Task<UserProject> Get(int id)
         {
-            return _context.UserProjects
+            return await _context.UserProjects
                 .Include(up => up.Project)
                 .Include(up => up.ApplicationUser)
-                .First(up => up.Id == id);
+                .FirstAsync(up => up.Id == id);
         }
 
 
-        public UserProject Update(UserProject entity)
+        public async Task<UserProject> Update(UserProject entity)
         {
             _context.UserProjects.Update(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return entity;
         }
 
-        public UserProject Delete(UserProject entity)
+        public async Task<UserProject> Delete(UserProject entity)
         {
             _context.Remove(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return entity;
         }
 
-        public ICollection<UserProject> GetAll()
+        public async Task<ICollection<UserProject>> GetAll()
         {
-            return _context.UserProjects
+            return await _context.UserProjects
                 .Include(up => up.Project)
                 .Include(up => up.ApplicationUser)
-                .ToList();
+                .ToListAsync();
         }
     }
 }

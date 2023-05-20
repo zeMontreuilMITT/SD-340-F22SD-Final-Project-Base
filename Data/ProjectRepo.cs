@@ -13,16 +13,16 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
             _context = context;
         }
 
-        public Project Create(Project entity)
+        public async Task<Project> Create(Project entity)
         {
             _context.Add(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return entity;
         }
 
-        public Project Get(int id)
+        public async Task<Project> Get(int id)
         {
-            return _context.Projects
+            return await _context.Projects
                 .Include(p => p.CreatedBy)
                 .Include(p => p.AssignedTo)
                 .ThenInclude(p => p.ApplicationUser)
@@ -31,27 +31,27 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
                 .Include(p => p.Tickets)
                 .ThenInclude(t => t.TicketWatchers)
                 .ThenInclude(tw => tw.Watcher)
-                .First(p => p.Id == id);
+                .FirstAsync(p => p.Id == id);
         }
 
 
-        public Project Update(Project entity)
+        public async Task<Project> Update(Project entity)
         {
             _context.Projects.Update(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return entity;
         }
 
-        public Project Delete(Project entity)
+        public async Task<Project> Delete(Project entity)
         {
             _context.Remove(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return entity;
         }
 
-        public ICollection<Project> GetAll()
+        public async Task<ICollection<Project>> GetAll()
         {
-            return _context.Projects
+            return await _context.Projects
                 .Include(p => p.CreatedBy)
                 .Include(p => p.AssignedTo)
                 .ThenInclude(p => p.ApplicationUser)
@@ -60,7 +60,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
                 .Include(p => p.Tickets)
                 .ThenInclude(t => t.TicketWatchers)
                 .ThenInclude(tw => tw.Watcher)
-                .ToList();
+                .ToListAsync();
         }
     }
 }

@@ -36,12 +36,13 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
         public async Task<List<Ticket>> Index()
         {
-            return _ticketRepo.GetAll().ToList();
+            IEnumerable<Ticket> tickets = await _ticketRepo.GetAll();
+            return tickets.ToList();
         }
 
         public async Task<TicketVM> Details(int id)
         {
-            var ticket = _ticketRepo.Get(id);
+            var ticket = await _ticketRepo.Get(id);
 
             List<SelectListItem> currUsers = new List<SelectListItem>();
             ticket.Project.AssignedTo.ToList().ForEach(t =>
@@ -62,7 +63,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
         public async Task<TicketCreateVM> Create(int projId)
         {
-            Project currProject = _projectRepo.Get(projId);
+            Project currProject = await _projectRepo.Get(projId);
 
             List<SelectListItem> currUsers = new List<SelectListItem>();
             currProject.AssignedTo.ToList().ForEach(t =>
@@ -80,7 +81,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
         public async Task<Ticket> CreatePost(Ticket ticket, int projId, string userId)
         {
-            Project currProj = _projectRepo.Get(projId);
+            Project currProj = await _projectRepo.Get(projId);
             ticket.Project = currProj;
             ApplicationUser owner = _userManager.Users.FirstOrDefault(u => u.Id == userId);
             ticket.Owner = owner;
@@ -92,7 +93,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
         public async Task<TicketEditVM> Edit(int id)
         {
-            Ticket ticket = _ticketRepo.Get(id);
+            Ticket ticket = await _ticketRepo.Get(id);
 
             List<ApplicationUser> results = _userManager.Users.Where(u => u != ticket.Owner).ToList();
 			List<SelectListItem> currUsers = new List<SelectListItem>();
@@ -109,20 +110,26 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
         public async void RemoveAssignedUser(string id, int ticketId)
         {
-            Ticket currTicket = _ticketRepo.Get(ticketId);
+            Ticket currTicket = await _ticketRepo.Get(ticketId);
             ApplicationUser currUser = await _userManager.Users.FirstAsync(u => u.Id == id);
             //To be fixed ASAP
             currTicket.Owner = currUser;
             _ticketRepo.Update(currTicket);
         }
 
-        public async void EditPost(int id, string userId, Ticket ticket)
+        public async Task<Ticket> EditPost(int id, string userId, Ticket ticket)
         {
-            ApplicationUser currUser = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            ticket.Owner = currUser;
-            _ticketRepo.Update(ticket);
+            Ticket currTicket = await _ticketRepo.Get(id);
 
-            return;
+            currTicket.Body = ticket.Body;
+            currTicket.Title = ticket.Title;
+            currTicket.RequiredHours = ticket.RequiredHours;
+
+            ApplicationUser currUser = await _userManager.Users.FirstAsync(u => u.Id == userId);
+            currTicket.Owner = currUser;
+            await _ticketRepo.Update(currTicket);
+
+            return currTicket;
         }
 
         public async void CommentTask(int taskId, string taskText)
@@ -130,7 +137,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             Comment newComment = new Comment();
             string userName = _contextAccessor.HttpContext.User.Identity.Name;
             ApplicationUser user = _userManager.Users.First(u => u.UserName == userName);
-            Ticket ticket = _ticketRepo.Get(taskId);
+            Ticket ticket = await _ticketRepo.Get(taskId);
 
             newComment.CreatedBy = user;
             newComment.Description = taskText;
@@ -143,7 +150,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
         public async void UpdateHrs(int id, int hrs)
         {
-            Ticket ticket = _ticketRepo.Get(id);
+            Ticket ticket = await _ticketRepo.Get(id);
             ticket.RequiredHours = hrs;
 
             _ticketRepo.Update(ticket);
@@ -154,7 +161,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             TicketWatcher newTickWatch = new TicketWatcher();
             string userName = _contextAccessor.HttpContext.User.Identity.Name;
             ApplicationUser user = _userManager.Users.First(u => u.UserName == userName);
-            Ticket ticket = _ticketRepo.Get(id);
+            Ticket ticket = await _ticketRepo.Get(id);
 
             newTickWatch.Ticket = ticket;
             newTickWatch.Watcher = user;
@@ -169,38 +176,39 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
         {
             string userName = _contextAccessor.HttpContext.User.Identity.Name;
             ApplicationUser user = _userManager.Users.First(u => u.UserName == userName);
-            Ticket ticket = _ticketRepo.Get(id);
-            TicketWatcher currTickWatch = _ticketWatcherRepo.GetAll().First(tw => tw.Ticket.Equals(ticket) && tw.Watcher.Equals(user));
-            _ticketWatcherRepo.Delete(currTickWatch);
+            Ticket ticket = await _ticketRepo.Get(id);
+            IEnumerable<TicketWatcher> currTickWatchers = await _ticketWatcherRepo.GetAll();
+            TicketWatcher currTickWatch = currTickWatchers.First(tw => tw.Ticket.Equals(ticket) && tw.Watcher.Equals(user));
+			_ticketWatcherRepo.Delete(currTickWatch);
             ticket.TicketWatchers.Remove(currTickWatch);
             _ticketRepo.Update(ticket);
             user.TicketWatching.Remove(currTickWatch);
         }
 
-        public void MarkAsCompleted(int id)
+        public async void MarkAsCompleted(int id)
         {
-            Ticket ticket = _ticketRepo.Get(id);
+            Ticket ticket = await _ticketRepo.Get(id);
             ticket.Completed = true;
             _ticketRepo.Update(ticket);
         }
 
-        public void UnMarkAsCompleted(int id)
+        public async void UnMarkAsCompleted(int id)
         {
-            Ticket ticket = _ticketRepo.Get(id);
+            Ticket ticket = await _ticketRepo.Get(id);
             ticket.Completed = false;
             _ticketRepo.Update(ticket);
         }
 
         public async Task<Ticket> Delete(int id)
         {
-            Ticket ticket = _ticketRepo.Get(id);
+            Ticket ticket = await _ticketRepo.Get(id);
             return ticket;
         }
 
         public async void DeleteConfirmed(int id, int projId)
         {
-            Ticket ticket = _ticketRepo.Get(id);
-            Project currProj = _projectRepo.Get(projId);
+            Ticket ticket = await _ticketRepo.Get(id);
+            Project currProj = await _projectRepo.Get(projId);
             currProj.Tickets.Remove(ticket);
             _projectRepo.Update(currProj);
             _ticketRepo.Delete(ticket);
