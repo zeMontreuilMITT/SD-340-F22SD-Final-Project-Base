@@ -78,13 +78,15 @@ namespace UnitTests
             var userManagerBusinessLogic = new Mock<UserManagerBusinessLogic>();
             var userProjectRepository = new Mock<UserProjectRepo>();
             var ticketRepository = new Mock<IRepository<Ticket>>();
+            var userProjectRepo = new Mock<IUserProjectRepo>();
 
             projectBL = new ProjectBusinessLogic(
                 projectRepositoryMock.Object,
                 _userManager,
                 userManagerBusinessLogic.Object,
                 userProjectRepository.Object,
-                ticketRepository.Object
+                ticketRepository.Object,
+                userProjectRepo.Object
             );
 
             projectRepositoryMock.Setup(pr => pr.Get(It.IsAny<int>()))

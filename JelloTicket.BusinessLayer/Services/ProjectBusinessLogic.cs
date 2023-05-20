@@ -22,12 +22,14 @@ namespace JelloTicket.BusinessLayer.Services
         private readonly HelperMethods _helperMethods;
         private readonly UserManagerBusinessLogic _userManagerBusinessLogic;
         private readonly IRepository<UserProject> _userProjectRepository;
+        private readonly IUserProjectRepo _userProjectRepo;
 
         public ProjectBusinessLogic(IRepository<Project> projectRepository
             , UserManager<ApplicationUser> userManager
             , UserManagerBusinessLogic userManagerBusinessLogic
             , IRepository<UserProject> userProjectRepository
-            , IRepository<Ticket> ticketRepository)
+            , IRepository<Ticket> ticketRepository
+            , IUserProjectRepo userProjectRepo)
         {
             _projectRepository = projectRepository;
             _userManager = userManager;
@@ -35,6 +37,7 @@ namespace JelloTicket.BusinessLayer.Services
             _userManagerBusinessLogic = userManagerBusinessLogic;
             _userProjectRepository = userProjectRepository;
             _ticketRepository = ticketRepository;
+            _userProjectRepo = userProjectRepo;
         }
 
         public ICollection<Project> GetProjectsWithAssociations()
@@ -193,6 +196,18 @@ namespace JelloTicket.BusinessLayer.Services
             }
 
             _projectRepository.Delete(projectId);
+            return true;
+        }
+
+        public async Task<bool> RemoveAssignedUser(string id, int projectId)
+        {
+            UserProject userProject = _userProjectRepo.GetUserProjectByProjectIdAndUSerId(projectId, id).Result;
+            if (userProject == null) 
+            {
+                return false;
+            }
+
+            _userProjectRepository.Delete(userProject.Id);
             return true;
         }
     }

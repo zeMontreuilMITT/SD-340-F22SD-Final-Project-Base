@@ -29,14 +29,9 @@ builder.Services.AddScoped<SignInManager<ApplicationUser>>();
 builder.Services.AddScoped<UserManagerBusinessLogic>();
 builder.Services.AddScoped<ProjectBusinessLogic>();
 builder.Services.AddScoped<TicketBusinessLogic>();
-
-//builder.Services.AddScoped<IUserRepo<ApplicationUser>, UserRepo>();
-builder.Services.AddScoped<UserManager<ApplicationUser>>();
-builder.Services.AddScoped<SignInManager<ApplicationUser>>();
-builder.Services.AddScoped<UserManagerBusinessLogic>();
-builder.Services.AddScoped<ProjectBusinessLogic>();
 builder.Services.AddScoped<AdminBusinessLogic>();
 builder.Services.AddScoped<IUserRepo<ApplicationUser>, UserRepo>();
+builder.Services.AddScoped<IUserProjectRepo, UserProjectRepo>();
 
 var app = builder.Build();
 

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace JelloTicket.DataLayer.Repositories
 {
-    public class UserProjectRepo : IRepository<UserProject>
+    public class UserProjectRepo : IRepository<UserProject>, IUserProjectRepo
     {
         private readonly ApplicationDbContext _context;
 
@@ -55,6 +55,11 @@ namespace JelloTicket.DataLayer.Repositories
         public bool Exists(int id)
         {
             return _context.UserProjects.Any(up => up.Id == id);
+        }
+
+        public async Task<UserProject> GetUserProjectByProjectIdAndUSerId(int projectId, string userId)
+        {
+            return _context.UserProjects.FirstOrDefault(up => up.ProjectId == projectId && up.UserId == userId);
         }
     }
 }
