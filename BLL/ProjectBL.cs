@@ -54,7 +54,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             
             return vm;
         }
-        //RAG Positive Test and fail Test
+        
         public List<Project> RemoveProjectsActiveDeveloperNotAssignedTo(List<Project> projects, ApplicationUser activeDeveloper)
         {
             List<UserProject> userProjects = _userProjectRepo.GetAll().Where(up => up.UserId == activeDeveloper.Id).ToList();
@@ -198,9 +198,14 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
             return developers;
         }
-
+        //RAG Positive Test and fail Test
         public void RemoveUserFromProject(string userId, int projectId)
         {
+            if(userId == null)
+            {
+                throw new ArgumentNullException("userId");
+            }
+
             UserProject? currentUserProject = _userProjectRepo.GetAll().FirstOrDefault(up => up.UserId == userId && up.ProjectId == projectId);
             if (currentUserProject != null)
             {
