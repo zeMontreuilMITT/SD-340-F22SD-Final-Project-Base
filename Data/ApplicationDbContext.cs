@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using SD_340_W22SD_Final_Project_Group6.Models;
 
 namespace SD_340_W22SD_Final_Project_Group6.Data
@@ -10,11 +11,15 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
             : base(options)
         {
         }
-        public DbSet<SD_340_W22SD_Final_Project_Group6.Models.Ticket> Tickets { get; set; }
-        public DbSet<SD_340_W22SD_Final_Project_Group6.Models.Project> Projects { get; set; }
-        public DbSet<SD_340_W22SD_Final_Project_Group6.Models.Comment> Comments { get; set; }
-        public DbSet<SD_340_W22SD_Final_Project_Group6.Models.UserProject> UserProjects { get; set; }
-        public DbSet<SD_340_W22SD_Final_Project_Group6.Models.TicketWatcher> TicketWatchers { get; set; }
+        public virtual DbSet<Ticket> Tickets { get; set; } = default!;
+		public virtual DbSet<Project> Projects { get; set; } = default!;
+		public virtual DbSet<Comment> Comments { get; set; } = default!;
+		public virtual DbSet<UserProject> UserProjects { get; set; } = default!;
+		public virtual DbSet<TicketWatcher> TicketWatchers { get; set; } = default!;
+		public ApplicationDbContext()
+        {
+			Projects = new Mock<DbSet<Project>>().Object;
+		}
 
     }
 }
