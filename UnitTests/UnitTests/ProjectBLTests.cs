@@ -120,11 +120,11 @@ namespace UnitTests
 		}
 
         [TestMethod]
-        public void GetProject__ReturnsIdIsNull()
+        public void GetProject__ReturnsNullWhenArgumentIsNull()
         {
 			int? projectId = null;
 
-			Project project = ProjectBusinessLogic.GetProject(projectId);
+			Project? project = ProjectBusinessLogic.GetProject(projectId);
 
             Assert.IsNull(project);
 		}
