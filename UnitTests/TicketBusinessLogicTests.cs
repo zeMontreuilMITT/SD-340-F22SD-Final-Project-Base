@@ -106,7 +106,18 @@ namespace UnitTests
             ticketRepositoryMock.Setup(tr => tr.Get(It.IsAny<int>()))
                 .Returns((int ticketId) => data.FirstOrDefault(p => p.Id == ticketId));
         }
+        [TestMethod]
+        public void GetProject_ReturnsTicketFromId()
+        {
+            // Arrange 
+            Ticket realTicket = data.First();
 
+            // Act
+            Ticket returnedTicket = ticketBL.GetTicketById(realTicket.Id);
+
+            // Assert
+            Assert.AreEqual(realTicket, returnedTicket);
+        }
 
     }
 }
