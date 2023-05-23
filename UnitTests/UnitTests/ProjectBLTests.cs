@@ -71,8 +71,6 @@ namespace UnitTests
 
             mockContext.Setup(c => c.Projects).Returns(mockProjectDbSet.Object);
 			
-
-
 			ProjectBusinessLogic = new ProjectBL(
                 new ProjectRepo(mockContext.Object),
 				mockTicketRepo.Object,
@@ -103,7 +101,7 @@ namespace UnitTests
 
         [TestMethod]
 
-		public void TestGetProject()
+		public void GetProject_ReturnsProjectWithIdOfArgument()
 		{
 			
 			int projectId = 1;
@@ -116,7 +114,7 @@ namespace UnitTests
 		}
 
         [TestMethod]
-        public void TestGetProject_IdIsNull()
+        public void GetProject__ReturnsIdIsNull()
         {
 			int? projectId = null;
 
@@ -127,7 +125,7 @@ namespace UnitTests
 
         [TestMethod]
 
-        public void TestDeleteProject()
+        public void DeleteProject_ReturnsProjectCountAndProjectIsDeleted()
         {
             int projectIdToDelete = 1;
 
@@ -150,7 +148,7 @@ namespace UnitTests
 		}
 
 		[TestMethod]
-		public void TestDeleteProject_NullProject()
+		public void DeleteProject_ThrowsArgumentNullExceptionOnNoArgument()
 		{
 			int projectIdToDelete = 3;
 
