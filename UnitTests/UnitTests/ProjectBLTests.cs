@@ -34,11 +34,11 @@ namespace UnitTests
 			Mock<DbSet<Ticket>> mockTicketDbSet = new Mock<DbSet<Ticket>>();
 
 			;
-            projectData = new List<Project> {
-                new Project(1, "Project1", _usersData.First(), _usersData.First().Id),
-				new Project(2, "Project2", _usersData.First(), _usersData.First().Id),
-				
-            }.AsQueryable();
+			projectData = new List<Project> {
+				new Project{ Id = 1, ProjectName = "Project1", CreatedById = _usersData.First().Id, CreatedBy = _usersData.First()},
+				new Project{ Id = 2, ProjectName = "Project2", CreatedById = _usersData.First().Id, CreatedBy = _usersData.First()}
+
+			}.AsQueryable();
 
 			mockProjectDbSet.As<IQueryable<Project>>().Setup(m => m.Provider).Returns(projectData.Provider);
 			mockProjectDbSet.As<IQueryable<Project>>().Setup(m => m.Expression).Returns(projectData.Expression);
