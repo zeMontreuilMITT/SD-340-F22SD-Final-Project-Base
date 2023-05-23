@@ -35,10 +35,12 @@ namespace UnitTests
 				new Ticket {Id = 2, Title = "Ticket2", Body = "efgh", RequiredHours = 20, OwnerId = _usersData.First().Id}
 			}.AsQueryable();
 
-			mockTicketDbSet.As<IQueryable<Ticket>>().Setup(m => m.Provider).Returns(ticketData.Provider);
-			mockTicketDbSet.As<IQueryable<Ticket>>().Setup(m => m.Expression).Returns(ticketData.Expression);
-			mockTicketDbSet.As<IQueryable<Ticket>>().Setup(m => m.ElementType).Returns(ticketData.ElementType);
-			mockTicketDbSet.As<IQueryable<Ticket>>().Setup(m => m.GetEnumerator()).Returns(ticketData.GetEnumerator());
+            IQueryable<Ticket> queryableTicketData = ticketData.AsQueryable();
+
+			mockTicketDbSet.As<IQueryable<Ticket>>().Setup(m => m.Provider).Returns(queryableTicketData.Provider);
+			mockTicketDbSet.As<IQueryable<Ticket>>().Setup(m => m.Expression).Returns(queryableTicketData.Expression);
+			mockTicketDbSet.As<IQueryable<Ticket>>().Setup(m => m.ElementType).Returns(queryableTicketData.ElementType);
+			mockTicketDbSet.As<IQueryable<Ticket>>().Setup(m => m.GetEnumerator()).Returns(queryableTicketData.GetEnumerator());
 
 			Mock<ApplicationDbContext> mockContext = new Mock<ApplicationDbContext>();
 
