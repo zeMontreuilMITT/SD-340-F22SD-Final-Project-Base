@@ -17,10 +17,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
 		public virtual DbSet<Comment> Comments { get; set; } = default!;
 		public virtual DbSet<UserProject> UserProjects { get; set; } = default!;
 		public virtual DbSet<TicketWatcher> TicketWatchers { get; set; } = default!;
-        //public ApplicationDbContext()
-        //{
-        //    Projects = new Mock<DbSet<Project>>().Object;
-        //}
+       
 
     }
 }
