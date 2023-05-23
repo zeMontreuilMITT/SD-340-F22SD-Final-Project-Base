@@ -11,11 +11,12 @@ namespace UnitTests
     [TestClass]
     public class ProjectBLTests
     {
-		Mock<DbSet<Project>> mockProjectDbSet = new Mock<DbSet<Project>>();
-
 		public ProjectBL ProjectBusinessLogic { get; set; }
         public IQueryable<Project> projectData { get; set; }
-        
+		public IQueryable<UserProject> userProjectData { get; set; }
+
+		private bool hasRemovedUserProject = false;
+
 
 		private List<ApplicationUser> _usersData = new List<ApplicationUser>
         {
@@ -26,12 +27,29 @@ namespace UnitTests
         [TestInitialize]
         public void Initialize()
         {
-		;
+			Mock<DbSet<Project>> mockProjectDbSet = new Mock<DbSet<Project>>();
+			Mock<DbSet<UserProject>> mockUserProjectDbSet = new Mock<DbSet<UserProject>>();
+			;
             projectData = new List<Project> {
                 new Project(1, "Project1", _usersData.First(), _usersData.First().Id),
 				new Project(2, "Project2", _usersData.First(), _usersData.First().Id),
 				
             }.AsQueryable();
+
+			mockProjectDbSet.As<IQueryable<Project>>().Setup(m => m.Provider).Returns(projectData.Provider);
+			mockProjectDbSet.As<IQueryable<Project>>().Setup(m => m.Expression).Returns(projectData.Expression);
+			mockProjectDbSet.As<IQueryable<Project>>().Setup(m => m.ElementType).Returns(projectData.ElementType);
+			mockProjectDbSet.As<IQueryable<Project>>().Setup(m => m.GetEnumerator()).Returns(projectData.GetEnumerator());
+
+			userProjectData = new List<UserProject> {
+				new UserProject{ Id = 1, ProjectId = projectData.First().Id, UserId = _usersData.First().Id},
+				new UserProject{ Id = 2, ProjectId = projectData.Last().Id, UserId = _usersData.Last().Id},
+			}.AsQueryable();
+
+			mockUserProjectDbSet.As<IQueryable<UserProject>>().Setup(m => m.Provider).Returns(userProjectData.Provider);
+			mockUserProjectDbSet.As<IQueryable<UserProject>>().Setup(m => m.Expression).Returns(userProjectData.Expression);
+			mockUserProjectDbSet.As<IQueryable<UserProject>>().Setup(m => m.ElementType).Returns(userProjectData.ElementType);
+			mockUserProjectDbSet.As<IQueryable<UserProject>>().Setup(m => m.GetEnumerator()).Returns(userProjectData.GetEnumerator());
 
 			List<Ticket> tickets = new List<Ticket>
 			{
@@ -39,19 +57,7 @@ namespace UnitTests
 				new Ticket { Id = 2, ProjectId = 2 }
 			};
 
-			List<UserProject> userProjects = new List<UserProject>
-			{
-				new UserProject { Id = 1, ProjectId = 1 },
-				new UserProject { Id = 2, ProjectId = 2 }
-			};
-
 			Mock<IRepository<Ticket>> mockTicketRepo = new Mock<IRepository<Ticket>>();
-			Mock<IRepository<UserProject>> mockUserProjectRepo = new Mock<IRepository<UserProject>>();
-
-			mockProjectDbSet.As<IQueryable<Project>>().Setup(m => m.Provider).Returns(projectData.Provider);
-            mockProjectDbSet.As<IQueryable<Project>>().Setup(m => m.Expression).Returns(projectData.Expression);
-            mockProjectDbSet.As<IQueryable<Project>>().Setup(m => m.ElementType).Returns(projectData.ElementType);
-            mockProjectDbSet.As<IQueryable<Project>>().Setup(m => m.GetEnumerator()).Returns(projectData.GetEnumerator());
 
 			mockProjectDbSet.Setup(m => m.Find(It.IsAny<object[]>()))
 	                        .Returns<object[]>(ids => projectData.FirstOrDefault(p => p.Id == (int)ids[0]));
@@ -59,7 +65,7 @@ namespace UnitTests
 
 
 			mockTicketRepo.Setup(repo => repo.GetAll()).Returns(tickets.ToList());
-			mockUserProjectRepo.Setup(repo => repo.GetAll()).Returns(userProjects.ToList());
+			//mockUserProjectDbSet.Setup(repo => repo.GetAll()).Returns(userProjectData.ToList());
 			mockProjectDbSet.Setup(m => m.Remove(It.IsAny<Project>())).Returns<Project>(entity =>
 			{
 				var entityEntry = new Mock<EntityEntry<Project>>();
@@ -70,13 +76,15 @@ namespace UnitTests
 			Mock<ApplicationDbContext> mockContext = new Mock<ApplicationDbContext>();
 
             mockContext.Setup(c => c.Projects).Returns(mockProjectDbSet.Object);
-			
+			mockContext.Setup(c => c.UserProjects).Returns(mockUserProjectDbSet.Object);
+			mockContext.Setup(c => c.Remove(It.IsAny<UserProject>())).Callback(() => hasRemovedUserProject = true);
+
 			ProjectBusinessLogic = new ProjectBL(
                 new ProjectRepo(mockContext.Object),
 				mockTicketRepo.Object,
 				new CommentRepo(mockContext.Object),
                 new TicketWatcherRepo(mockContext.Object),
-				mockUserProjectRepo.Object,
+				new UserProjectRepo(mockContext.Object),
 				new UserRepo(mockContext.Object),
                 MockUserManager(_usersData).Object
                 );
