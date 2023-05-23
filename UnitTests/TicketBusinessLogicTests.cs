@@ -14,6 +14,7 @@ using Ticket = JelloTicket.DataLayer.Models.Ticket;
 
 namespace UnitTests
 {
+    [TestClass]
     public class TicketBusinessLogicTests
     {
         public TicketBusinessLogic ticketBL { get; set; }
@@ -105,5 +106,7 @@ namespace UnitTests
             ticketRepositoryMock.Setup(tr => tr.Get(It.IsAny<int>()))
                 .Returns((int ticketId) => data.FirstOrDefault(p => p.Id == ticketId));
         }
+
+
     }
 }
