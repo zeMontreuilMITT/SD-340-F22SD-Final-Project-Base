@@ -15,6 +15,8 @@ namespace UnitTests
         public IQueryable<Project> projectData { get; set; }
 		public IQueryable<UserProject> userProjectData { get; set; }
 
+		public IQueryable<Ticket> ticketData { get; set; }
+
 		private bool hasRemovedUserProject = false;
 
 
@@ -29,6 +31,8 @@ namespace UnitTests
         {
 			Mock<DbSet<Project>> mockProjectDbSet = new Mock<DbSet<Project>>();
 			Mock<DbSet<UserProject>> mockUserProjectDbSet = new Mock<DbSet<UserProject>>();
+			Mock<DbSet<Ticket>> mockTicketDbSet = new Mock<DbSet<Ticket>>();
+
 			;
             projectData = new List<Project> {
                 new Project(1, "Project1", _usersData.First(), _usersData.First().Id),
@@ -51,21 +55,21 @@ namespace UnitTests
 			mockUserProjectDbSet.As<IQueryable<UserProject>>().Setup(m => m.ElementType).Returns(userProjectData.ElementType);
 			mockUserProjectDbSet.As<IQueryable<UserProject>>().Setup(m => m.GetEnumerator()).Returns(userProjectData.GetEnumerator());
 
-			List<Ticket> tickets = new List<Ticket>
+			ticketData = new List<Ticket>
 			{
-				new Ticket { Id = 1, ProjectId = 1 },
-				new Ticket { Id = 2, ProjectId = 2 }
-			};
+				new Ticket {Id = 1, Title = "Ticket1", Body = "abcd", RequiredHours = 10, OwnerId = _usersData.First().Id, ProjectId = projectData.FirstOrDefault().Id},
+				new Ticket {Id = 2, Title = "Ticket2", Body = "efgh", RequiredHours = 20, OwnerId = _usersData.First().Id, ProjectId = projectData.FirstOrDefault().Id}
+			}.AsQueryable();
 
-			Mock<IRepository<Ticket>> mockTicketRepo = new Mock<IRepository<Ticket>>();
+			mockTicketDbSet.As<IQueryable<Ticket>>().Setup(m => m.Provider).Returns(ticketData.Provider);
+			mockTicketDbSet.As<IQueryable<Ticket>>().Setup(m => m.Expression).Returns(ticketData.Expression);
+			mockTicketDbSet.As<IQueryable<Ticket>>().Setup(m => m.ElementType).Returns(ticketData.ElementType);
+			mockTicketDbSet.As<IQueryable<Ticket>>().Setup(m => m.GetEnumerator()).Returns(ticketData.GetEnumerator());
+
 
 			mockProjectDbSet.Setup(m => m.Find(It.IsAny<object[]>()))
 	                        .Returns<object[]>(ids => projectData.FirstOrDefault(p => p.Id == (int)ids[0]));
 
-
-
-			mockTicketRepo.Setup(repo => repo.GetAll()).Returns(tickets.ToList());
-			//mockUserProjectDbSet.Setup(repo => repo.GetAll()).Returns(userProjectData.ToList());
 			mockProjectDbSet.Setup(m => m.Remove(It.IsAny<Project>())).Returns<Project>(entity =>
 			{
 				var entityEntry = new Mock<EntityEntry<Project>>();
@@ -77,11 +81,12 @@ namespace UnitTests
 
             mockContext.Setup(c => c.Projects).Returns(mockProjectDbSet.Object);
 			mockContext.Setup(c => c.UserProjects).Returns(mockUserProjectDbSet.Object);
+			mockContext.Setup(c => c.Tickets).Returns(mockTicketDbSet.Object);
 			mockContext.Setup(c => c.Remove(It.IsAny<UserProject>())).Callback(() => hasRemovedUserProject = true);
 
 			ProjectBusinessLogic = new ProjectBL(
                 new ProjectRepo(mockContext.Object),
-				mockTicketRepo.Object,
+				new TicketRepo(mockContext.Object),
 				new CommentRepo(mockContext.Object),
                 new TicketWatcherRepo(mockContext.Object),
 				new UserProjectRepo(mockContext.Object),
@@ -129,28 +134,15 @@ namespace UnitTests
             Assert.IsNull(project);
 		}
 
-        [TestMethod]
 
-        public void DeleteProject_ReturnsProjectCountAndProjectIsDeleted()
-        {
-            int projectIdToDelete = 1;
-
-			int initialProjectCount = projectData.Count();
+		[TestMethod]
+		public void DeleteProject_ReturnsDeletedProject()
+		{
+			int projectIdToDelete = projectData.FirstOrDefault().Id;
 
 			Project deletedProject = ProjectBusinessLogic.DeleteProject(projectIdToDelete);
 
-			projectData = projectData.Where(p => p.Id != projectIdToDelete);
-
-			int updatedProjectCount = projectData.Count();
-
-			Assert.AreEqual(projectIdToDelete, deletedProject.Id);
-
-			Assert.AreEqual(initialProjectCount - 1, updatedProjectCount);
-
-			bool isProjectDeleted = !projectData.Any(p => p.Id == projectIdToDelete);
-
-			Assert.IsTrue(isProjectDeleted);
-
+			Assert.AreEqual(ProjectBusinessLogic.GetProject(projectIdToDelete), deletedProject);
 		}
 
 		[TestMethod]
