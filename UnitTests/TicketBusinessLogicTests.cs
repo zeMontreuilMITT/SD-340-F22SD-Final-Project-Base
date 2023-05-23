@@ -39,8 +39,8 @@ namespace UnitTests
         // https://stackoverflow.com/questions/49165810/how-to-mock-usermanager-in-net-core-testing
         public static Mock<UserManager<TUser>> MockUserManager<TUser>(List<TUser> ls) where TUser : class
         {
-            var store = new Mock<IUserStore<TUser>>();
-            var mgr = new Mock<UserManager<TUser>>(store.Object, null, null, null, null, null, null, null, null);
+            Mock<IUserStore<TUser>> store = new Mock<IUserStore<TUser>>();
+            Mock<UserManager<TUser>> mgr = new Mock<UserManager<TUser>>(store.Object, null, null, null, null, null, null, null, null);
             mgr.Object.UserValidators.Add(new UserValidator<TUser>());
             mgr.Object.PasswordValidators.Add(new PasswordValidator<TUser>());
 
@@ -78,20 +78,20 @@ namespace UnitTests
             mockContext.Setup(t => t.Tickets).Returns(mockTickets.Object);
 
             // i am literally too lazy to put types here please understand
-            var ticketRepositoryMock = new Mock<IRepository<Ticket>>();
+            Mock<IRepository<Ticket>> ticketRepositoryMock = new Mock<IRepository<Ticket>>();
             _ticketRepositoryMock = ticketRepositoryMock;
 
-            var projectRepositoryMock = new Mock<IRepository<Project>>();
+            Mock<IRepository<Project>> projectRepositoryMock = new Mock<IRepository<Project>>();
             _projectRepositoryMock = projectRepositoryMock;
 
-            var commentRepositoryMock = new Mock<IRepository<Comment>>();
+            Mock<IRepository<Comment>> commentRepositoryMock = new Mock<IRepository<Comment>>();
             _commentRepositoryMock = commentRepositoryMock;
 
-            var userManagerBusinessLogic = new Mock<UserManagerBusinessLogic>();
-            var userProjectRepository = new Mock<UserProjectRepo>();
-            var ticketRepository = new Mock<IRepository<Ticket>>();
-            var userProjectRepo = new Mock<IUserProjectRepo>();
-            var ticketWatcherRepo = new Mock<TicketWatcherRepo>();
+            Mock<UserManagerBusinessLogic> userManagerBusinessLogic = new Mock<UserManagerBusinessLogic>();
+            Mock<UserProjectRepo> userProjectRepository = new Mock<UserProjectRepo>();
+            Mock<IRepository<Ticket>> ticketRepository = new Mock<IRepository<Ticket>>();
+            Mock<IUserProjectRepo> userProjectRepo = new Mock<IUserProjectRepo>();
+            Mock<TicketWatcherRepo> ticketWatcherRepo = new Mock<TicketWatcherRepo>();
 
             ticketBL = new TicketBusinessLogic(
                 ticketRepositoryMock.Object,
@@ -107,7 +107,9 @@ namespace UnitTests
                 .Returns((int ticketId) => data.FirstOrDefault(p => p.Id == ticketId));
         }
         [TestMethod]
-        public void GetProject_ReturnsTicketFromId()
+
+
+        public void GetTicketFromId_Ideal()
         {
             // Arrange 
             Ticket realTicket = data.First();
