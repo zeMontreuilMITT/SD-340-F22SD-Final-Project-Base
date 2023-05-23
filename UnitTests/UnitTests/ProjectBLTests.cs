@@ -111,13 +111,11 @@ namespace UnitTests
 
 		public void GetProject_ReturnsProjectWithIdOfArgument()
 		{
-			
-			int projectId = 1;
 
-			Project project = ProjectBusinessLogic.GetProject(projectId);
+			Project project = ProjectBusinessLogic.GetProject(projectData.FirstOrDefault()?.Id);
 
 
-			Assert.AreEqual(projectId, project.Id);
+			Assert.AreEqual(projectData.First().Id, project.Id);
 			
 		}
 
