@@ -41,7 +41,7 @@ namespace UnitTests
         // https://stackoverflow.com/questions/49165810/how-to-mock-usermanager-in-net-core-testing
         public static Mock<UserManager<TUser>> MockUserManager<TUser>(List<TUser> ls) where TUser : class
         {
-            Mock store = new Mock<IUserStore<TUser>>();
+            Mock<IUserStore<TUser>> store = new Mock<IUserStore<TUser>>();
             Mock<UserManager<TUser>> mgr = new Mock<UserManager<TUser>>(store.Object, null, null, null, null, null, null, null, null);
             mgr.Object.UserValidators.Add(new UserValidator<TUser>());
             mgr.Object.PasswordValidators.Add(new PasswordValidator<TUser>());
