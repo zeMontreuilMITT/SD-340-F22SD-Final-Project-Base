@@ -12,7 +12,7 @@ namespace UnitTests
     public class ProjectBLTests
     {
 		public ProjectBL ProjectBusinessLogic { get; set; }
-    public IQueryable<Project> projectData { get; set; }
+		public IQueryable<Project> projectData { get; set; }
 
 		public IQueryable<UserProject> userProjectData { get; set; }
 
@@ -36,7 +36,7 @@ namespace UnitTests
 			Mock<DbSet<UserProject>> mockUserProjectDbSet = new Mock<DbSet<UserProject>>();
 			Mock<DbSet<Ticket>> mockTicketDbSet = new Mock<DbSet<Ticket>>();
 
-			;
+			
 			projectData = new List<Project> {
 				new Project{ Id = 1, ProjectName = "Project1", CreatedById = _usersData.First().Id, CreatedBy = _usersData.First()},
 				new Project{ Id = 2, ProjectName = "Project2", CreatedById = _usersData.First().Id, CreatedBy = _usersData.First()}
@@ -121,23 +121,16 @@ namespace UnitTests
         }
 
         [TestMethod]
-
-
 		public void GetProject_ReturnsProjectWithIdOfArgument()
 		{
-
 			Project project = ProjectBusinessLogic.GetProject(projectData.FirstOrDefault()?.Id);
-
-
 			Assert.AreEqual(projectData.First().Id, project.Id);
-			
 		}
 
         [TestMethod]
         public void GetProject__ReturnsNullWhenArgumentIsNull()
         {
 			int? projectId = null;
-
 			Project? project = ProjectBusinessLogic.GetProject(projectId);
 
             Assert.IsNull(project);
@@ -163,7 +156,7 @@ namespace UnitTests
 			Assert.ThrowsException<ArgumentNullException>(() => ProjectBusinessLogic.DeleteProject(projectIdToDelete));
 		}
 
-	}
+	
 
         public void RemoveUserFromProject_Should_Delete_UserProject()
         {
