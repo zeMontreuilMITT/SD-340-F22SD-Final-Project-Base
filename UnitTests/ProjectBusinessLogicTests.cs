@@ -96,7 +96,7 @@ namespace UnitTests
         
 
         [TestMethod]
-        public void GetProject_ReturnsProjectFromId()
+        public void GetProject_WithValidId_ReturnsProject()
         {
             // Arrange 
             Project realProject = data.First();
@@ -106,6 +106,15 @@ namespace UnitTests
 
             // Assert
             Assert.AreEqual(realProject, returnedProject);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void GetProject_ProjectNotFound_ThrowsException()
+        {
+            // Act
+            // 9999 not found in database => throws argumentnullexception from business logic
+            Project nullProject = projectBL.GetProject(9999);
         }
 
         [TestMethod]
@@ -148,5 +157,8 @@ namespace UnitTests
             // Assert
             Assert.IsFalse(result);
         }
+
+
+
     }
 }

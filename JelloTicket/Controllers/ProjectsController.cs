@@ -59,14 +59,14 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         //// GET: Projects/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            Project project = _projectBusinessLogic.GetProject(id);
-
-            if (project == null)
+            try
             {
-                return NotFound();
+                Project project = _projectBusinessLogic.GetProject(id);
+                return View(project);
+            } catch (Exception)
+            {
+                return NotFound("Project not found");
             }
-
-            return View(project);
         }
 
         public async Task<IActionResult> RemoveAssignedUser(string id, int projId)

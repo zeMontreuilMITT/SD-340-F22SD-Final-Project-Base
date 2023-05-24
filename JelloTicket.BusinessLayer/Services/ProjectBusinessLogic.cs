@@ -94,7 +94,13 @@ namespace JelloTicket.BusinessLayer.Services
 
         public virtual Project GetProject(int? id)
         {
-            return _projectRepository.Get(id);
+            Project project = _projectRepository.Get(id);
+            if (project == null)
+            {
+                throw new ArgumentNullException("Project not found");
+            }
+
+            return project;
         }
 
         public bool CreateProject(Project project)
