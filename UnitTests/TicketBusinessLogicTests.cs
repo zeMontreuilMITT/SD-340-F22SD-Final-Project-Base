@@ -3,6 +3,7 @@ using JelloTicket.DataLayer.Data;
 using JelloTicket.DataLayer.Models;
 using JelloTicket.DataLayer.Repositories;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using System;
@@ -31,15 +32,16 @@ namespace UnitTests
 
         private static List<ApplicationUser> _users = new List<ApplicationUser>
         {
-            new ApplicationUser{UserName = "Jim"},
-            new ApplicationUser{UserName = "Tom"},
+            new ApplicationUser{UserName = "Jim",Email = "Jim@test.com" },
+            new ApplicationUser{UserName = "Tom",Email = "Tom@test.com"},
+            new ApplicationUser{UserName = "Attrain",Email = "Attrain@test.com"},
         };
-
+   
         // spooky magic I did not write!
         // https://stackoverflow.com/questions/49165810/how-to-mock-usermanager-in-net-core-testing
         public static Mock<UserManager<TUser>> MockUserManager<TUser>(List<TUser> ls) where TUser : class
         {
-            Mock<IUserStore<TUser>> store = new Mock<IUserStore<TUser>>();
+            Mock store = new Mock<IUserStore<TUser>>();
             Mock<UserManager<TUser>> mgr = new Mock<UserManager<TUser>>(store.Object, null, null, null, null, null, null, null, null);
             mgr.Object.UserValidators.Add(new UserValidator<TUser>());
             mgr.Object.PasswordValidators.Add(new PasswordValidator<TUser>());
@@ -56,18 +58,15 @@ namespace UnitTests
         {
             List<Ticket> tasks = new List<Ticket>
             {
-                new Ticket {Id = 1, Title = "Update User Profile", Body = "Implement functionality to update user profiles", RequiredHours = 8, Completed = false },
-                new Ticket {Id = 2, Title = "Fix Login Bug", Body = "Investigate and fix the bug causing login issues for some users", RequiredHours = 6, Completed = true },
+                new Ticket {Id = 1, Title = "Update User Profile", Body = "Implement functionality to update user profiles", RequiredHours = 8, Completed = false,Owner = _users.FirstOrDefault(u=> u.UserName == "Jim") },
+                new Ticket {Id = 2, Title = "Fix Login Bug", Body = "Investigate and fix the bug causing login issues for some users", RequiredHours = 6, Completed = true ,Owner = _users.FirstOrDefault(u=> u.UserName == "Tom")},
                 new Ticket {Id = 3, Title = "Implement Payment Gateway", Body = "Integrate a payment gateway to enable online transactions", RequiredHours = 10, Completed = false },
                 new Ticket {Id = 4, Title = "Improve Search Algorithm", Body = "Optimize the search algorithm to provide faster and more accurate results", RequiredHours = 12, Completed = false }
             };
             data = tasks.AsQueryable();
 
-            List<ApplicationUser> users = new List<ApplicationUser>
-            {
-                new ApplicationUser{UserName = "Jim"}
-            };
-
+            List<ApplicationUser> users = _users;
+            
             Mock<DbSet<Ticket>> mockTickets = new Mock<DbSet<Ticket>>();
             mockTickets.As<IQueryable<Ticket>>().Setup(m => m.Provider).Returns(data.Provider);
             mockTickets.As<IQueryable<Ticket>>().Setup(m => m.ElementType).Returns(data.ElementType);
@@ -77,7 +76,6 @@ namespace UnitTests
             Mock<ApplicationDbContext> mockContext = new Mock<ApplicationDbContext>();
             mockContext.Setup(t => t.Tickets).Returns(mockTickets.Object);
 
-            // i am literally too lazy to put types here please understand
             Mock<IRepository<Ticket>> ticketRepositoryMock = new Mock<IRepository<Ticket>>();
             _ticketRepositoryMock = ticketRepositoryMock;
 
@@ -107,12 +105,12 @@ namespace UnitTests
                 .Returns((int ticketId) => data.FirstOrDefault(p => p.Id == ticketId));
         }
         [TestMethod]
+        [DataRow(1)]
 
-
-        public void GetTicketFromId_Ideal()
+        public void GetTicketFromId_Solution(int id)
         {
             // Arrange 
-            Ticket realTicket = data.First();
+            Ticket realTicket = data.FirstOrDefault(t => t.Id == id);
 
             // Act
             Ticket returnedTicket = ticketBL.GetTicketById(realTicket.Id);
@@ -121,5 +119,27 @@ namespace UnitTests
             Assert.AreEqual(realTicket, returnedTicket);
         }
 
+        [TestMethod]
+        [DataRow(5)]
+        public void GetTicketFromId_Problem(int id)
+        {
+            //id NULL
+            Ticket realTicket = data.FirstOrDefault(t => t.Id == id);
+            Assert.ThrowsException<NullReferenceException>(() => ticketBL.GetTicketById(realTicket?.Id));
+        }
+
+        [TestMethod]
+        [DataRow(1)]
+        public void GetUsersWithoutTicket_Solution(int id)
+        {
+            Ticket checkingTicket = data.FirstOrDefault(t => t.Id == id);
+            IEnumerable<SelectListItem> user = ticketBL.users(checkingTicket);
+
+
+            Assert.ThrowsException<NullReferenceException>(() => ticketBL.GetTicketById(checkingTicket?.Id));
+
+
+
+        }
     }
 }
