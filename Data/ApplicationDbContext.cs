@@ -11,13 +11,17 @@ namespace SD_340_W22SD_Final_Project_Group6.Data
             : base(options)
         {
         }
-        public ApplicationDbContext() : base() { }
-        public virtual DbSet<Ticket> Tickets { get; set; } = default!;
-		public virtual DbSet<Project> Projects { get; set; } = default!;
-		public virtual DbSet<Comment> Comments { get; set; } = default!;
-		public virtual DbSet<UserProject> UserProjects { get; set; } = default!;
-		public virtual DbSet<TicketWatcher> TicketWatchers { get; set; } = default!;
-       
+
+        public ApplicationDbContext()
+            : base()
+        {
+        }
+        public virtual DbSet<SD_340_W22SD_Final_Project_Group6.Models.Ticket> Tickets { get; set; }
+        public virtual DbSet<SD_340_W22SD_Final_Project_Group6.Models.Project> Projects { get; set; }
+        public virtual DbSet<SD_340_W22SD_Final_Project_Group6.Models.Comment> Comments { get; set; }
+        public virtual DbSet<SD_340_W22SD_Final_Project_Group6.Models.UserProject> UserProjects { get; set; }
+        public virtual DbSet<SD_340_W22SD_Final_Project_Group6.Models.TicketWatcher> TicketWatchers { get; set; }
 
     }
+
 }

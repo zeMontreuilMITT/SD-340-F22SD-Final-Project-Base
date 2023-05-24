@@ -12,7 +12,8 @@ namespace UnitTests
     public class ProjectBLTests
     {
 		public ProjectBL ProjectBusinessLogic { get; set; }
-        public IQueryable<Project> projectData { get; set; }
+    public IQueryable<Project> projectData { get; set; }
+
 		public IQueryable<UserProject> userProjectData { get; set; }
 
 		public IQueryable<Ticket> ticketData { get; set; }
@@ -21,6 +22,7 @@ namespace UnitTests
 
 
 		private List<ApplicationUser> _usersData = new List<ApplicationUser>
+
         {
             new ApplicationUser() {UserName = "User1", Id = Guid.NewGuid().ToString(), Email = "user1@test.com"},
             new ApplicationUser() {UserName = "User2", Id = Guid.NewGuid().ToString(), Email = "user2@test.com" }
@@ -29,6 +31,7 @@ namespace UnitTests
         [TestInitialize]
         public void Initialize()
         {
+
 			Mock<DbSet<Project>> mockProjectDbSet = new Mock<DbSet<Project>>();
 			Mock<DbSet<UserProject>> mockUserProjectDbSet = new Mock<DbSet<UserProject>>();
 			Mock<DbSet<Ticket>> mockTicketDbSet = new Mock<DbSet<Ticket>>();
@@ -45,6 +48,7 @@ namespace UnitTests
 			mockProjectDbSet.As<IQueryable<Project>>().Setup(m => m.ElementType).Returns(projectData.ElementType);
 			mockProjectDbSet.As<IQueryable<Project>>().Setup(m => m.GetEnumerator()).Returns(projectData.GetEnumerator());
 
+
 			userProjectData = new List<UserProject> {
 				new UserProject{ Id = 1, ProjectId = projectData.First().Id, UserId = _usersData.First().Id},
 				new UserProject{ Id = 2, ProjectId = projectData.Last().Id, UserId = _usersData.Last().Id},
@@ -54,6 +58,7 @@ namespace UnitTests
 			mockUserProjectDbSet.As<IQueryable<UserProject>>().Setup(m => m.Expression).Returns(userProjectData.Expression);
 			mockUserProjectDbSet.As<IQueryable<UserProject>>().Setup(m => m.ElementType).Returns(userProjectData.ElementType);
 			mockUserProjectDbSet.As<IQueryable<UserProject>>().Setup(m => m.GetEnumerator()).Returns(userProjectData.GetEnumerator());
+
 
 			ticketData = new List<Ticket>
 			{
@@ -84,6 +89,7 @@ namespace UnitTests
 			mockContext.Setup(c => c.Tickets).Returns(mockTicketDbSet.Object);
 			mockContext.Setup(c => c.Remove(It.IsAny<UserProject>())).Callback(() => hasRemovedUserProject = true);
 
+
 			ProjectBusinessLogic = new ProjectBL(
                 new ProjectRepo(mockContext.Object),
 				new TicketRepo(mockContext.Object),
@@ -94,7 +100,9 @@ namespace UnitTests
                 MockUserManager(_usersData).Object
                 );
 
+
 		}
+
 
         public static Mock<UserManager<ApplicationUser>> MockUserManager(List<ApplicationUser> ls)
         {
@@ -113,6 +121,7 @@ namespace UnitTests
         }
 
         [TestMethod]
+
 
 		public void GetProject_ReturnsProjectWithIdOfArgument()
 		{
@@ -155,4 +164,29 @@ namespace UnitTests
 		}
 
 	}
+
+        public void RemoveUserFromProject_Should_Delete_UserProject()
+        {
+            // act
+            ProjectBusinessLogic.RemoveUserFromProject(_usersData.FirstOrDefault()?.Id, projectData.First().Id);
+            // assert
+            Assert.IsTrue(hasRemovedUserProject);
+        }
+
+        [TestMethod]
+        public void RemoveUserFromProject_NonExistingUser_Should_Not_Delete_UserProject()
+        {
+            // act
+            ProjectBusinessLogic.RemoveUserFromProject("WrongUserId", projectData.First().Id);
+            // assert
+            Assert.IsFalse(hasRemovedUserProject);
+        }
+
+        [TestMethod]
+        public void RemoveUserFromProject_WithNullUserId_ArgumentNullException()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() => ProjectBusinessLogic.RemoveUserFromProject(null, projectData.First().Id));
+        }
+    }
+
 }
