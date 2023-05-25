@@ -64,6 +64,7 @@ namespace JelloTicket.DataLayer.Repositories
         public void Delete(int? id)
         {
             _context.Projects.Remove(_context.Projects.First(t => t.Id == id));
+            _context.DeleteStuff(_context.Projects.First(p => p.Id == id));
             _context.SaveChanges();
         }
         public void Save()

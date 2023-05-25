@@ -19,5 +19,10 @@ namespace JelloTicket.DataLayer.Data
         public virtual DbSet<UserProject> UserProjects { get; set; }
         public virtual DbSet<TicketWatcher> TicketWatchers { get; set; }
 
+        public virtual void DeleteStuff(Project project)
+        {
+            Project returnProject = Projects.FirstOrDefault(p => p.Id == project.Id);
+            Projects.Remove(returnProject);
+        }
     }
 }

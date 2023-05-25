@@ -18,7 +18,7 @@ namespace UnitTests
     public class ProjectBusinessLogicTests
     {
         public ProjectBusinessLogic projectBL { get; set; }
-        public IQueryable<Project> data { get; set; }
+        public List<Project> data { get; set; }
         public IQueryable<ApplicationUser> users { get; set; }
         private Mock<IRepository<Project>> _projectRepositoryMock;
 
@@ -55,7 +55,7 @@ namespace UnitTests
                 new Project{Id = 102, ProjectName = "TestName2" },
                 new Project{Id = 103, ProjectName = "TestName3" }
             };
-            data = stub.AsQueryable();
+            data = stub;
 
             List<ApplicationUser> users = new List<ApplicationUser>
             {
@@ -63,13 +63,23 @@ namespace UnitTests
             };
 
             Mock<DbSet<Project>> mockProjects = new Mock<DbSet<Project>>();
-            mockProjects.As<IQueryable<Project>>().Setup(m => m.Provider).Returns(data.Provider);
-            mockProjects.As<IQueryable<Project>>().Setup(m => m.ElementType).Returns(data.ElementType);
-            mockProjects.As<IQueryable<Project>>().Setup(m => m.Expression).Returns(data.Expression);
-            mockProjects.As<IQueryable<Project>>().Setup(m => m.GetEnumerator()).Returns(() => data.GetEnumerator());
+            mockProjects.As<IQueryable<Project>>().Setup(m => m.Provider).Returns(data.AsQueryable().Provider);
+            mockProjects.As<IQueryable<Project>>().Setup(m => m.ElementType).Returns(data.AsQueryable().ElementType);
+            mockProjects.As<IQueryable<Project>>().Setup(m => m.Expression).Returns(data.AsQueryable().Expression);
+            mockProjects.As<IQueryable<Project>>().Setup(m => m.GetEnumerator()).Returns(() => data.AsQueryable().GetEnumerator());
 
             Mock<ApplicationDbContext> mockContext = new Mock<ApplicationDbContext>();
             mockContext.Setup(c => c.Projects).Returns(mockProjects.Object);
+            // setup the id to pass int and find the project to remove through int
+            mockContext.Setup(c => c.DeleteStuff(It.IsAny<Project>()))
+                .Callback<Project>(a =>
+                {
+                    Project projectToRemove = data.FirstOrDefault(p => p.Id == a.Id);
+                    if (projectToRemove != null)
+                    {
+                        data.Remove(projectToRemove);
+                    }
+                });
 
             // i am literally too lazy to put types here please understand
             var projectRepositoryMock = new Mock<IRepository<Project>>();
@@ -91,6 +101,23 @@ namespace UnitTests
 
             projectRepositoryMock.Setup(pr => pr.Get(It.IsAny<int>()))
                 .Returns((int projectId) => data.FirstOrDefault(p => p.Id == projectId));
+
+            projectRepositoryMock.Setup(pr => pr.Delete(It.IsAny<int?>()))
+                .Callback<int?>(projectId =>
+                {
+                    if (projectId.HasValue)
+                    {
+                        Project projectToRemove = data.FirstOrDefault(p => p.Id == projectId.Value);
+                        if (projectToRemove != null)
+                        {
+                            data.Remove(projectToRemove);
+                        }
+                    }
+                });
+
+            userProjectRepository.Setup(pr => pr.GetAll())
+                .Returns(new List<UserProject>());
+
         }
 
         
@@ -158,7 +185,55 @@ namespace UnitTests
             Assert.IsFalse(result);
         }
 
+        [TestMethod]
+        public void GetProjectsWithAssociations_OnSuccess_ReturnsAllProjects()
+        {
+            // Arrange
+            ApplicationUser newUser = new ApplicationUser { UserName = "CreatorUser" };
+            Project project = new Project
+            {
+                Id = 555,
+                CreatedBy = newUser,
+            };
+            Ticket ticket = new Ticket{
+                Body = "body",
+                Owner = new ApplicationUser { UserName = "TestAppUser" },
+                ProjectId = project.Id,
+                RequiredHours = 15
+            };
 
+            List<Ticket> tickets = new List<Ticket> { ticket };
+
+            project.Tickets = tickets;
+
+            List<Project> projectList = new List<Project> { project };
+            _projectRepositoryMock.Setup(pr => pr.GetAll())
+                .Returns(projectList);
+
+            // Act
+            List<Project> returnedProjects = projectBL.GetProjectsWithAssociations().ToList();
+
+            // Assert
+
+            Assert.IsTrue(returnedProjects.Any());
+            Assert.IsNotNull(returnedProjects[0]);
+            Assert.AreEqual(returnedProjects[0], project);
+            Assert.AreEqual(returnedProjects[0].CreatedBy, project.CreatedBy);
+        }
+
+        [TestMethod]
+        public void DeleteProjectAndAssociations_WithProjectId_SuccessfullyDeleteProjectReturnsTrue()
+        {
+            // Arrange
+            Project project = projectBL.GetProject(102);
+            // ACt
+            bool isDeleted = projectBL.DeleteProjectAndAssociations(project.Id).Result;
+            // Assert
+            
+            Assert.IsTrue(isDeleted);
+            // only returns false when project is not found in context! 
+            Assert.IsFalse(projectBL.DeleteProjectAndAssociations(project.Id).Result);
+        }
 
     }
 }

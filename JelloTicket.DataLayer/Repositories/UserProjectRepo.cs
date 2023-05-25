@@ -19,12 +19,12 @@ namespace JelloTicket.DataLayer.Repositories
 
         public UserProjectRepo() { }
 
-        public UserProject Get(int? id)
+        public virtual UserProject Get(int? id)
         {
             return (UserProject)_context.UserProjects.First(t => t.Id == id);
         }
 
-        public ICollection<UserProject> GetAll()
+        public virtual ICollection<UserProject> GetAll()
         {
             return _context.UserProjects.ToHashSet();
         }
