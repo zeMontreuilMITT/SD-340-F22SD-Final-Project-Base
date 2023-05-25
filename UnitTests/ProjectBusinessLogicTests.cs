@@ -235,5 +235,15 @@ namespace UnitTests
             Assert.IsFalse(projectBL.DeleteProjectAndAssociations(project.Id).Result);
         }
 
+        [TestMethod]
+        public void DeleteProjectAndAssociations_WithInvalidId_ReturnsFalse()
+        {
+            //Arrange
+            int invalidID = 7777;
+
+            // Act/Assert
+            Assert.IsFalse(projectBL.DeleteProjectAndAssociations(invalidID).Result);
+        }
+
     }
 }
