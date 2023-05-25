@@ -245,5 +245,35 @@ namespace UnitTests
             Assert.IsFalse(projectBL.DeleteProjectAndAssociations(invalidID).Result);
         }
 
+        [TestMethod]
+        // I'm unsure why I'm unable to set up the repo to handle this correctly
+        // The internal method is returning null so it must be using the wrong repo
+        // but I don't understand how it could be doing that
+        public void RemoveAssignedUser_WithValidArgs_RemoveUserFromProject()
+        {
+            // Arrange
+            Project project = new Project { Id = 555 };
+            ApplicationUser user = new ApplicationUser { Id = 666.ToString() };
+            UserProject userProject = new UserProject
+            {
+                ProjectId = project.Id,
+                UserId = user.Id
+            };
+
+            List<UserProject> userProjects = new List<UserProject>
+            {
+                userProject,
+            };
+
+            var userProjectRepo = new Mock<UserProjectRepo>();
+            userProjectRepo.Setup(pr => pr.GetAll())
+                .Returns(userProjects);
+
+            // Act/Assert
+
+            Assert.IsTrue(projectBL.RemoveAssignedUser(user.Id, project.Id).Result);
+            
+        }
+
     }
 }
