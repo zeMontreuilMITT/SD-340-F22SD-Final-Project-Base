@@ -73,7 +73,7 @@ namespace JelloTicket.BusinessLayer.Services
         {
             if (id == null)
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new NullReferenceException("Id is NUll");
             }
 
             Ticket? ticket = _ticketRepository.Get(id);
@@ -105,6 +105,10 @@ namespace JelloTicket.BusinessLayer.Services
 
         public void RemoveTicket(Ticket ticket)
         {
+            if(ticket == null)
+            {
+                throw new InvalidOperationException();
+            }
             int ticketId = ticket.Id;
             _ticketRepository.Delete(ticketId);
         }
@@ -179,8 +183,8 @@ namespace JelloTicket.BusinessLayer.Services
             _ticketRepository.Create(ticket);
             currProj.Tickets.Add(ticket);
             return ticket;
-
         }
+
         public ICollection<Ticket> GetTickets()
         {
             List<Ticket> tickets = _ticketRepository.GetAll().ToList();

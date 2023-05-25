@@ -1,4 +1,5 @@
-﻿using JelloTicket.BusinessLayer.Services;
+﻿using Castle.Core.Resource;
+using JelloTicket.BusinessLayer.Services;
 using JelloTicket.DataLayer.Data;
 using JelloTicket.DataLayer.Models;
 using JelloTicket.DataLayer.Repositories;
@@ -102,13 +103,14 @@ namespace UnitTests
                 userProjectRepository.Object,
                 ticketWatcherRepo.Object
             );
+            
+            ticketRepositoryMock.Setup(tr => tr.GetAll()).Returns(data.ToList());
 
             ticketRepositoryMock.Setup(tr => tr.Get(It.IsAny<int>()))
                 .Returns((int ticketId) => data.FirstOrDefault(p => p.Id == ticketId));
         }
+
         [TestMethod]
-
-
         public void GetTicketFromId_Ideal()
         {
             // Arrange 
@@ -121,5 +123,83 @@ namespace UnitTests
             Assert.AreEqual(realTicket, returnedTicket);
         }
 
+
+        [TestMethod]
+        public async Task GetTicketDetails_WithId_ReturnsTicket()
+        {
+            // Arrange
+            Ticket realTicket = data.First();
+
+            // Act
+            Ticket ticketTested = await ticketBL.GetTicketDetails(realTicket.Id);
+
+            // Assert
+            Assert.AreEqual(realTicket, ticketTested);
+        }
+
+
+        [TestMethod]
+        public async Task GetTicketDetails_WithNullId_ThrowsException()
+        {
+            // Arrange
+            int? nullId = null;
+
+            //Act & Assert
+
+            await Assert.ThrowsExceptionAsync<NullReferenceException>(async () =>
+            {
+                await ticketBL.GetTicketDetails(nullId);
+            });
+        }
+
+
+
+        [TestMethod]
+        public void RemoveTicket_WithTicket_DeletesTicketFromDb()
+        {
+            // Arrange
+            int initialCountOfTickets = data.Count();
+
+            Ticket ticketTested = ticketBL.GetTicketById(1);
+            
+            int ticketId = ticketTested.Id;
+
+            _ticketRepositoryMock.Setup(tr => tr.Delete(ticketId)).Callback(() =>
+            {
+                data = data.Where(t => t.Id != ticketId);
+            });
+
+            // Act
+            ticketBL.RemoveTicket(ticketTested);
+
+            int finalCountOfTickets = data.Count();
+
+            // Assert
+            Assert.AreEqual(initialCountOfTickets - 1, finalCountOfTickets);
+        }
+
+
+        [TestMethod]
+        public void RemoveTicket_NullTicket_ThrowsInvalidOperationException()
+        {
+            // Arrange
+            Ticket nullTicket = null;
+
+            // Act & Assert
+            Assert.ThrowsException<InvalidOperationException>(() => { ticketBL.RemoveTicket(nullTicket); });
+        }
+
+        [TestMethod]
+        public void GetTickets_ReturnsAllTickets()
+        {
+            // Arrange
+            List<Ticket> expectedTickets = data.ToList();
+
+            // Act
+            ICollection<Ticket> actualTickets = ticketBL.GetTickets();
+
+            // Assert
+            CollectionAssert.AreEqual(expectedTickets, actualTickets.ToList());
+        }
     }
 }
