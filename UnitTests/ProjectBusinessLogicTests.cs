@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Runtime.InteropServices;
 using Microsoft.CodeAnalysis;
 using Project = JelloTicket.DataLayer.Models.Project;
+using System.Drawing.Text;
 
 namespace UnitTests
 {
@@ -272,7 +273,44 @@ namespace UnitTests
             // Act/Assert
 
             Assert.IsTrue(projectBL.RemoveAssignedUser(user.Id, project.Id).Result);
-            
+        }
+
+        [TestMethod]
+        public void SortProjects_OnSortByHoursAscending_Returns_SortedList()
+        {
+            // Arrange
+            Project project = new Project
+            {
+                ProjectName = "TestProj"
+            };
+
+            List<Ticket> tickets = new List<Ticket>
+            {
+                new Ticket { Title = "25hr medium", RequiredHours = 25, ProjectId = project.Id, TicketPriority = Ticket.Priority.Medium },
+                new Ticket { Title = "20hr high", RequiredHours = 20, ProjectId = project.Id, TicketPriority = Ticket.Priority.High },
+                new Ticket { Title = "45hr low", RequiredHours = 45, ProjectId = project.Id, TicketPriority = Ticket.Priority.Low },
+                new Ticket { Title = "40hr high", RequiredHours = 40, ProjectId = project.Id, TicketPriority = Ticket.Priority.High },
+            };
+            project.Tickets = tickets;
+            projectBL.CreateProject(project);
+
+            ICollection<Project> projectList = new List<Project>
+            {
+                project
+            };
+
+            // Act
+            // routing through the projectBL sort logic to choose the correct sort routing
+            List<Project> sortedProjects = projectBL.SortProjects("RequiredHrs", false, projectList);
+            Project returnedProject = sortedProjects.FirstOrDefault();
+
+            // locally sort a project
+            project.Tickets.OrderBy(t => t.RequiredHours);
+
+            // Assert
+            Assert.IsNotNull(returnedProject);
+            CollectionAssert.AreEquivalent((System.Collections.ICollection)returnedProject.Tickets, (System.Collections.ICollection)project.Tickets);
+
         }
 
     }

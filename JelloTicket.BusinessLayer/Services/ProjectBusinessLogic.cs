@@ -47,9 +47,14 @@ namespace JelloTicket.BusinessLayer.Services
             return projects;
         }
 
-        public List<Project> SortProjects(string? sortOrder, bool? sort)
+        public List<Project> SortProjects(string? sortOrder, bool? sort, ICollection<Project> projects)
         {
-            ICollection<Project> projects = (ICollection<Project>)GetProjectsWithAssociations();
+            //ICollection<Project> projects = (ICollection<Project>)GetProjectsWithAssociations();
+
+            if (projects == null)
+            {
+                throw new NullReferenceException(nameof(projects));
+            }
 
             foreach (var project in projects)
             {
@@ -88,7 +93,7 @@ namespace JelloTicket.BusinessLayer.Services
             }
             else
             {
-                return SortProjects(sortOrder, sort);
+                return SortProjects(sortOrder, sort, projects);
             }
         }
 
