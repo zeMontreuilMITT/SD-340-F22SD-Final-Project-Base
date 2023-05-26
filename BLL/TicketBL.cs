@@ -80,10 +80,19 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             return VM;
             
         }
-
+        // Test Method RAG Positive and Negative
         public async Task<Ticket> CreateTicket (CreateTicketViewModel VM, string userId)
         {
-            
+            if(VM == null)
+            {
+                throw new ArgumentNullException(nameof(VM));
+            }
+
+            if (userId == null)
+            {
+                throw new ArgumentNullException(nameof(userId));
+            }
+
             Ticket ticket = new Ticket
             {
                 Title = VM.Title,
@@ -96,11 +105,9 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
             ticket.OwnerId = userId;
 
-			 _ticketRepo.Create(ticket);
+			_ticketRepo.Create(ticket);
 
             return ticket;
-
         }
-
     }
 }
