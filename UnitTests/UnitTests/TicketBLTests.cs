@@ -4,6 +4,7 @@ using Moq;
 using SD_340_W22SD_Final_Project_Group6.BLL;
 using SD_340_W22SD_Final_Project_Group6.Data;
 using SD_340_W22SD_Final_Project_Group6.Models;
+using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +17,9 @@ namespace UnitTests
     public class TicketBLTests
     {
 		public TicketBL TicketBusinessLogic { get; set; }
-		public IQueryable<Ticket> ticketData { get; set; }
+		public List<Ticket> ticketData { get; set; }
 
-		private List<ApplicationUser> _usersData = new List<ApplicationUser>
+        private List<ApplicationUser> _usersData = new List<ApplicationUser>
 		{
 			new ApplicationUser() {UserName = "User1", Id = Guid.NewGuid().ToString(), Email = "user1@test.com"},
 			new ApplicationUser() {UserName = "User2", Id = Guid.NewGuid().ToString(), Email = "user2@test.com" }
@@ -29,11 +30,11 @@ namespace UnitTests
 		{
 			Mock<DbSet<Ticket>> mockTicketDbSet = new Mock<DbSet<Ticket>>();
 
-			ticketData = new List<Ticket>
+            ticketData = new List<Ticket>
 			{
 				new Ticket {Id = 1, Title = "Ticket1", Body = "abcd", RequiredHours = 10, OwnerId = _usersData.First().Id},
 				new Ticket {Id = 2, Title = "Ticket2", Body = "efgh", RequiredHours = 20, OwnerId = _usersData.First().Id}
-			}.AsQueryable();
+			};
 
             IQueryable<Ticket> queryableTicketData = ticketData.AsQueryable();
 
@@ -45,6 +46,7 @@ namespace UnitTests
 			Mock<ApplicationDbContext> mockContext = new Mock<ApplicationDbContext>();
 
 			mockContext.Setup(x => x.Tickets).Returns(mockTicketDbSet.Object);
+			mockContext.Setup(x => x.Add(It.IsAny<Ticket>())).Callback<Ticket>(x => ticketData.Add(x));
 
 			TicketBusinessLogic = new TicketBL(
 				new ProjectRepo(mockContext.Object),
@@ -74,8 +76,47 @@ namespace UnitTests
 
 
 		[TestMethod]
-		public void TestMethod1()
-		{
-		}
-	}
+
+        public void TestMethod1()
+        {
+        }
+
+        [TestMethod]
+        public async Task CreateTicket_Should_Create_Sucessfully()
+        {
+			CreateTicketViewModel vm = new CreateTicketViewModel();
+			vm.OwnerId = _usersData.Last().Id;
+			vm.Title = "Test Project";
+			vm.Body = "Test_Body_Create";
+			vm.RequiredHours = 25;
+
+			int expectedCount = 3;
+
+			// act
+			var result = await TicketBusinessLogic.CreateTicket(vm, _usersData.Last().Id);
+
+            // assert
+            Assert.IsNotNull(result);
+			Assert.AreEqual(ticketData.Count, expectedCount);
+        }
+
+        [TestMethod]
+        public async Task CreateTicket_WithNullViewModel_ThrowsArgumentNullException()
+        {
+            await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await TicketBusinessLogic.CreateTicket(null, _usersData.Last().Id));      
+        }
+
+        [TestMethod]
+        public async Task CreateTicket_WithNullUserId_ThrowsArgumentNullException()
+        {
+
+            CreateTicketViewModel vm = new CreateTicketViewModel();
+            vm.OwnerId = _usersData.Last().Id;
+            vm.Title = "Test Project";
+            vm.Body = "Test_Body_Create";
+            vm.RequiredHours = 25;
+
+            await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await TicketBusinessLogic.CreateTicket(vm, null));
+        }
+    }
 }
