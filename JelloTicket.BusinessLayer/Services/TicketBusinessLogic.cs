@@ -73,7 +73,7 @@ namespace JelloTicket.BusinessLayer.Services
         {
             if (id == null)
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new NullReferenceException("Id is NUll");
             }
 
             Ticket? ticket = _ticketRepository.Get(id);
@@ -105,6 +105,10 @@ namespace JelloTicket.BusinessLayer.Services
 
         public void RemoveTicket(Ticket ticket)
         {
+            if(ticket == null)
+            {
+                throw new InvalidOperationException();
+            }
             int ticketId = ticket.Id;
             _ticketRepository.Delete(ticketId);
         }
@@ -169,9 +173,13 @@ namespace JelloTicket.BusinessLayer.Services
             }
 
         }
-
+        
         public Ticket CreatePost(int projId, string userId, Ticket ticket)
         {
+            if(userId == null)
+            {
+                throw new ArgumentNullException("userId");
+            }
             Project currProj = _projectRepository.Get(projId);
             ticket.Project = currProj;
             ApplicationUser owner = _userManager.Users.FirstOrDefault(u => u.Id == userId);
@@ -179,8 +187,8 @@ namespace JelloTicket.BusinessLayer.Services
             _ticketRepository.Create(ticket);
             currProj.Tickets.Add(ticket);
             return ticket;
-
         }
+
         public ICollection<Ticket> GetTickets()
         {
             List<Ticket> tickets = _ticketRepository.GetAll().ToList();
@@ -227,12 +235,14 @@ namespace JelloTicket.BusinessLayer.Services
             }); return currUsers;
         }
         // forum submission is taken and submitted to db
+
+
         public TicketEditVM EditTicket(TicketEditVM ticketVM, int id, string userId)
         {
-            if (id != ticketVM.ticket.Id)
-            {
-                throw new Exception("Not Found");
-            }
+            //if (id != ticketVM.ticket.Id)
+            //{
+            //    throw new Exception("Not Found");
+            //}
             ApplicationUser currUser = _userManager.Users.FirstOrDefault(u => u.Id == userId);
             ticketVM.ticket.Owner = currUser;
             // business logic for editing the ticket here
@@ -270,5 +280,6 @@ namespace JelloTicket.BusinessLayer.Services
             user.TicketWatching.Remove(currTickWatch);
 
         }
+       
     }
 }
