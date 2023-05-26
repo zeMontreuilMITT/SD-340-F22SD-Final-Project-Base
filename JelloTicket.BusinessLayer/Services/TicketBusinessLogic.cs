@@ -30,6 +30,7 @@ namespace JelloTicket.BusinessLayer.Services
         private readonly UserManagerBusinessLogic _userManagerBusinessLogic;
         private readonly IRepository<UserProject> _userProjectRepo;
         private readonly IRepository<TicketWatcher> _ticketWatcher;
+        private readonly IRepository<ApplicationUser> _userRepo;
 
         public TicketBusinessLogic(IRepository<Ticket> ticketRepository
             , IRepository<DataLayer.Models.Project> projectRepository
@@ -37,7 +38,7 @@ namespace JelloTicket.BusinessLayer.Services
             , UserManager<ApplicationUser> userManager
             , UserManagerBusinessLogic userManagerBusinessLogic
             , IRepository<UserProject> userProjectRepo
-            , IRepository<TicketWatcher> ticketWatcher)
+            , IRepository<TicketWatcher> ticketWatcher,IRepository<ApplicationUser> UserRepo)
         {
             _ticketRepository = ticketRepository;
             _projectRepository = projectRepository;
@@ -46,6 +47,7 @@ namespace JelloTicket.BusinessLayer.Services
             _userManagerBusinessLogic = userManagerBusinessLogic;
             _userProjectRepo = userProjectRepo;
             _ticketWatcher = ticketWatcher;
+            _userRepo = UserRepo;
         }
 
         public Ticket GetTicketById(int? id)
@@ -113,8 +115,13 @@ namespace JelloTicket.BusinessLayer.Services
             _ticketRepository.Delete(ticketId);
         }
 
-        public bool DoesTicketExist(int id)
+        public bool DoesTicketExist(int? id)
         {
+            if(id == null)
+            {
+                throw new NullReferenceException("Id is NUll");
+            }
+
             return _ticketRepository.Exists(id);
         }
 
@@ -226,7 +233,14 @@ namespace JelloTicket.BusinessLayer.Services
 
         public IEnumerable<SelectListItem> users(Ticket ticket)
         {
-            List<ApplicationUser> results = _userManager.Users.Where(u => u != ticket.Owner).ToList();
+            if(ticket == null)
+            {
+                throw new NullReferenceException("Provided Ticket is Null");
+            }
+
+            List<ApplicationUser> Users = _userRepo.GetAll().ToList();
+
+            List<ApplicationUser> results = Users.Where(u => u != ticket.Owner).ToList();
 
             List<SelectListItem> currUsers = new List<SelectListItem>();
             results.ForEach(r =>
@@ -239,10 +253,11 @@ namespace JelloTicket.BusinessLayer.Services
 
         public TicketEditVM EditTicket(TicketEditVM ticketVM, int id, string userId)
         {
-            //if (id != ticketVM.ticket.Id)
-            //{
-            //    throw new Exception("Not Found");
-            //}
+            if (id != ticketVM.ticket.Id)
+            {
+                throw new Exception("Not Found");
+            }            List<ApplicationUser> Users = _userRepo.GetAll().ToList();
+
             ApplicationUser currUser = _userManager.Users.FirstOrDefault(u => u.Id == userId);
             ticketVM.ticket.Owner = currUser;
             // business logic for editing the ticket here
@@ -256,9 +271,11 @@ namespace JelloTicket.BusinessLayer.Services
             TicketWatcher newTickWatch = new TicketWatcher();
             if (userName == null)
             {
-                throw new Exception("UserName is empty:");
+                throw new NullReferenceException("UserName is empty:");
             }
-            ApplicationUser user = _userManager.Users.First(u => u.UserName == userName);
+            List<ApplicationUser> Users = _userRepo.GetAll().ToList();
+
+            ApplicationUser user = Users.FirstOrDefault(u => u.UserName == userName);
             Ticket ticket = _ticketRepository.Get(id);
             newTickWatch.Ticket = ticket;
             newTickWatch.Watcher = user;
@@ -270,7 +287,14 @@ namespace JelloTicket.BusinessLayer.Services
         }
         public void UnWatch(string userName, int id)
         {
-            ApplicationUser user = _userManager.Users.First(u => u.UserName == userName);
+            List<ApplicationUser> Users = _userRepo.GetAll().ToList();
+
+            ApplicationUser user = Users.FirstOrDefault(u => u.UserName == userName);
+            if(user == null )
+            {
+                throw new NullReferenceException(" user Cannot be found");
+            }
+ 
             Ticket ticket = _ticketRepository.Get(id);
             List<TicketWatcher> ticketWatchers = _ticketWatcher.GetAll().ToList();
             TicketWatcher currTickWatch = ticketWatchers.First(tw => tw.Ticket == ticket && tw.Watcher == user);

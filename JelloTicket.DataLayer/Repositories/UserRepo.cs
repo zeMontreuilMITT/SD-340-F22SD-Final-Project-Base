@@ -32,7 +32,7 @@ namespace JelloTicket.DataLayer.Repositories
             _context.SaveChanges();
         }
 
-        public bool Exists(int id)
+        public bool Exists(int? id)
         {
             throw new NotImplementedException();
         }

@@ -72,7 +72,7 @@ namespace JelloTicket.DataLayer.Repositories
             _context.SaveChanges();
         }
 
-        public bool Exists(int id)
+        public bool Exists(int? id)
         {
             return _context.Projects.Any(p => p.Id == id);
         }
