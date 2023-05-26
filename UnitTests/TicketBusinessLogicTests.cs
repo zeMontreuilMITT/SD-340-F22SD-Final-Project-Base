@@ -5,6 +5,7 @@ using JelloTicket.DataLayer.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -194,6 +195,8 @@ namespace UnitTests
 
             Assert.ThrowsException<NullReferenceException>(() => ticketBL.DoesTicketExist(id));
         }
+        [TestMethod]
+        public void AddtoWatcher
 
 
     }
