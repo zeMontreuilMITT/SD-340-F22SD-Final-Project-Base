@@ -16,7 +16,7 @@ using System.Drawing.Text;
 namespace UnitTests
 {
     [TestClass]
-    public class ProjectBusinessLogicTests
+    public class ProjectBusinessLogicTests_Samantha
     {
         public ProjectBusinessLogic projectBL { get; set; }
         public List<Project> data { get; set; }
