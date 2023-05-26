@@ -1,5 +1,6 @@
 ﻿using Castle.Core.Resource;
 using JelloTicket.BusinessLayer.Services;
+using JelloTicket.BusinessLayer.ViewModels;
 using JelloTicket.DataLayer.Data;
 using JelloTicket.DataLayer.Models;
 using JelloTicket.DataLayer.Repositories;
@@ -9,6 +10,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using Ticket = JelloTicket.DataLayer.Models.Ticket;
@@ -18,8 +20,9 @@ namespace UnitTests
     [TestClass]
     public class TicketBusinessLogicTests
     {
-        public TicketBusinessLogic ticketBL { get; set; }
-        public IQueryable<Ticket> data { get; set; }
+        public TicketBusinessLogic ticketBL { get; set; }        
+        public IQueryable<Ticket> ticketData { get; set; }
+        public IQueryable<Project> projectData { get; set; }
         public IQueryable<ApplicationUser> users { get; set; }
 
         private Mock<IRepository<Ticket>> _ticketRepositoryMock;
@@ -32,8 +35,8 @@ namespace UnitTests
 
         private static List<ApplicationUser> _users = new List<ApplicationUser>
         {
-            new ApplicationUser{UserName = "Jim"},
-            new ApplicationUser{UserName = "Tom"},
+            new ApplicationUser{UserName = "Jim", Id = Guid.NewGuid().ToString()},
+            new ApplicationUser{UserName = "Tom", Id = Guid.NewGuid().ToString()},
         };
 
         // spooky magic I did not write!
@@ -55,34 +58,52 @@ namespace UnitTests
         [TestInitialize]
         public void Initialize()
         {
-            List<Ticket> tasks = new List<Ticket>
+            List<Ticket> tickets = new List<Ticket>
             {
                 new Ticket {Id = 1, Title = "Update User Profile", Body = "Implement functionality to update user profiles", RequiredHours = 8, Completed = false },
                 new Ticket {Id = 2, Title = "Fix Login Bug", Body = "Investigate and fix the bug causing login issues for some users", RequiredHours = 6, Completed = true },
                 new Ticket {Id = 3, Title = "Implement Payment Gateway", Body = "Integrate a payment gateway to enable online transactions", RequiredHours = 10, Completed = false },
                 new Ticket {Id = 4, Title = "Improve Search Algorithm", Body = "Optimize the search algorithm to provide faster and more accurate results", RequiredHours = 12, Completed = false }
             };
-            data = tasks.AsQueryable();
-
-            List<ApplicationUser> users = new List<ApplicationUser>
-            {
-                new ApplicationUser{UserName = "Jim"}
-            };
+            ticketData = tickets.AsQueryable();
 
             Mock<DbSet<Ticket>> mockTickets = new Mock<DbSet<Ticket>>();
-            mockTickets.As<IQueryable<Ticket>>().Setup(m => m.Provider).Returns(data.Provider);
-            mockTickets.As<IQueryable<Ticket>>().Setup(m => m.ElementType).Returns(data.ElementType);
-            mockTickets.As<IQueryable<Ticket>>().Setup(m => m.Expression).Returns(data.Expression);
-            mockTickets.As<IQueryable<Ticket>>().Setup(m => m.GetEnumerator()).Returns(() => data.GetEnumerator());
+            mockTickets.As<IQueryable<Ticket>>().Setup(m => m.Provider).Returns(ticketData.Provider);
+            mockTickets.As<IQueryable<Ticket>>().Setup(m => m.ElementType).Returns(ticketData.ElementType);
+            mockTickets.As<IQueryable<Ticket>>().Setup(m => m.Expression).Returns(ticketData.Expression);
+            mockTickets.As<IQueryable<Ticket>>().Setup(m => m.GetEnumerator()).Returns(() => ticketData.GetEnumerator());
 
+            List<Project> projects = new List<Project>
+            {
+                new Project{Id = 101, ProjectName = "TestName" },
+                new Project{Id = 102, ProjectName = "TestName2" },
+                new Project{Id = 103, ProjectName = "TestName3" }
+            };
+            projectData = projects.AsQueryable();
+
+            Mock<DbSet<Project>> mockProjects = new Mock<DbSet<Project>>();
+            mockProjects.As<IQueryable<Project>>().Setup(m => m.Provider).Returns(projectData.Provider);
+            mockProjects.As<IQueryable<Project>>().Setup(m => m.ElementType).Returns(projectData.ElementType);
+            mockProjects.As<IQueryable<Project>>().Setup(m => m.Expression).Returns(projectData.Expression);
+            mockProjects.As<IQueryable<Project>>().Setup(m => m.GetEnumerator()).Returns(() => projectData.GetEnumerator());          
+      
             Mock<ApplicationDbContext> mockContext = new Mock<ApplicationDbContext>();
             mockContext.Setup(t => t.Tickets).Returns(mockTickets.Object);
-
+            mockContext.Setup(c => c.Projects).Returns(mockProjects.Object);
+            
             // i am literally too lazy to put types here please understand
             Mock<IRepository<Ticket>> ticketRepositoryMock = new Mock<IRepository<Ticket>>();
+            ticketRepositoryMock.Setup(tr => tr.GetAll()).Returns(ticketData.ToList());
+            ticketRepositoryMock.Setup(tr => tr.Get(It.IsAny<int>()))
+                .Returns((int ticketId) => ticketData.FirstOrDefault(p => p.Id == ticketId));
+            ticketRepositoryMock.Setup(tr => tr.Create(It.IsAny<Ticket>()))
+               .Callback((Ticket ticket) => ticket.Id = 201 );
             _ticketRepositoryMock = ticketRepositoryMock;
 
             Mock<IRepository<Project>> projectRepositoryMock = new Mock<IRepository<Project>>();
+            projectRepositoryMock.Setup(tr => tr.GetAll()).Returns(projectData.ToList());
+            projectRepositoryMock.Setup(tr => tr.Get(It.IsAny<int>()))
+                .Returns((int ticketId) => projectData.FirstOrDefault(p => p.Id == ticketId));
             _projectRepositoryMock = projectRepositoryMock;
 
             Mock<IRepository<Comment>> commentRepositoryMock = new Mock<IRepository<Comment>>();
@@ -104,17 +125,15 @@ namespace UnitTests
                 ticketWatcherRepo.Object
             );
             
-            ticketRepositoryMock.Setup(tr => tr.GetAll()).Returns(data.ToList());
-
-            ticketRepositoryMock.Setup(tr => tr.Get(It.IsAny<int>()))
-                .Returns((int ticketId) => data.FirstOrDefault(p => p.Id == ticketId));
+           
         }
+
 
         [TestMethod]
         public void GetTicketFromId_Ideal()
         {
             // Arrange 
-            Ticket realTicket = data.First();
+            Ticket realTicket = ticketData.First();
 
             // Act
             Ticket returnedTicket = ticketBL.GetTicketById(realTicket.Id);
@@ -128,7 +147,7 @@ namespace UnitTests
         public async Task GetTicketDetails_WithId_ReturnsTicket()
         {
             // Arrange
-            Ticket realTicket = data.First();
+            Ticket realTicket = ticketData.First();
 
             // Act
             Ticket ticketTested = await ticketBL.GetTicketDetails(realTicket.Id);
@@ -153,12 +172,11 @@ namespace UnitTests
         }
 
 
-
         [TestMethod]
         public void RemoveTicket_WithTicket_DeletesTicketFromDb()
         {
             // Arrange
-            int initialCountOfTickets = data.Count();
+            int initialCountOfTickets = ticketData.Count();
 
             Ticket ticketTested = ticketBL.GetTicketById(1);
             
@@ -166,13 +184,13 @@ namespace UnitTests
 
             _ticketRepositoryMock.Setup(tr => tr.Delete(ticketId)).Callback(() =>
             {
-                data = data.Where(t => t.Id != ticketId);
+                ticketData = ticketData.Where(t => t.Id != ticketId);
             });
 
             // Act
             ticketBL.RemoveTicket(ticketTested);
 
-            int finalCountOfTickets = data.Count();
+            int finalCountOfTickets = ticketData.Count();
 
             // Assert
             Assert.AreEqual(initialCountOfTickets - 1, finalCountOfTickets);
@@ -189,17 +207,63 @@ namespace UnitTests
             Assert.ThrowsException<InvalidOperationException>(() => { ticketBL.RemoveTicket(nullTicket); });
         }
 
+
         [TestMethod]
         public void GetTickets_ReturnsAllTickets()
         {
             // Arrange
-            List<Ticket> expectedTickets = data.ToList();
+            List<Ticket> expectedTickets = ticketData.ToList();
 
             // Act
             ICollection<Ticket> actualTickets = ticketBL.GetTickets();
 
             // Assert
             CollectionAssert.AreEqual(expectedTickets, actualTickets.ToList());
+        }
+
+
+        [TestMethod]
+        public void CreatePost_WithValidArgs_AddsTicketToDb()
+        {
+            // Arrange
+            int projectId = projectData.First().Id;
+
+            Ticket ticket = new Ticket()
+            {
+                Title = "Test Ticket Title",
+                Body = "Test Ticket Body",
+                ProjectId = projectId,
+                RequiredHours = 10,
+                TicketPriority = Ticket.Priority.High
+            };
+
+            // Act
+            Ticket ticketResult = ticketBL.CreatePost(projectId, _users.First().Id, ticket);
+
+            // Assert
+            Assert.AreEqual(ticketResult.Id, 201);
+        }
+
+        [TestMethod]
+        public void CreatePost_WithNullArgs_ThrowsException()
+        {
+            // Arrange
+
+            int? nullId = null;
+
+            int projectId = projectData.First().Id;
+
+            Ticket ticket = new Ticket()
+            {
+                Title = "Test Ticket Title",
+                Body = "Test Ticket Body",
+                ProjectId = projectId,
+                RequiredHours = 10,
+                TicketPriority = Ticket.Priority.High
+            };
+
+            // Act and Assert
+            Assert.ThrowsException<ArgumentNullException>(() => ticketBL.CreatePost(projectId, null, ticket));
         }
     }
 }

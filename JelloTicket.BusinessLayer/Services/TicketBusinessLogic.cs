@@ -173,9 +173,13 @@ namespace JelloTicket.BusinessLayer.Services
             }
 
         }
-
+        
         public Ticket CreatePost(int projId, string userId, Ticket ticket)
         {
+            if(userId == null)
+            {
+                throw new ArgumentNullException("userId");
+            }
             Project currProj = _projectRepository.Get(projId);
             ticket.Project = currProj;
             ApplicationUser owner = _userManager.Users.FirstOrDefault(u => u.Id == userId);
@@ -231,12 +235,14 @@ namespace JelloTicket.BusinessLayer.Services
             }); return currUsers;
         }
         // forum submission is taken and submitted to db
+
+
         public TicketEditVM EditTicket(TicketEditVM ticketVM, int id, string userId)
         {
-            if (id != ticketVM.ticket.Id)
-            {
-                throw new Exception("Not Found");
-            }
+            //if (id != ticketVM.ticket.Id)
+            //{
+            //    throw new Exception("Not Found");
+            //}
             ApplicationUser currUser = _userManager.Users.FirstOrDefault(u => u.Id == userId);
             ticketVM.ticket.Owner = currUser;
             // business logic for editing the ticket here
@@ -274,5 +280,6 @@ namespace JelloTicket.BusinessLayer.Services
             user.TicketWatching.Remove(currTickWatch);
 
         }
+       
     }
 }
