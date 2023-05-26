@@ -218,7 +218,7 @@ namespace JelloTicket.BusinessLayer.Services
 
         public async Task<bool> RemoveAssignedUser(string id, int projectId)
         {
-            UserProject userProject = _userProjectRepo.GetUserProjectByProjectIdAndUSerId(projectId, id).Result;
+            UserProject userProject = await _userProjectRepo.GetUserProjectByProjectIdAndUSerId(projectId, id);
             if (userProject == null) 
             {
                 return false;
