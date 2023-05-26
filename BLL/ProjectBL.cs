@@ -166,6 +166,11 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             // Get project
             Project project = _projectRepo.Get(id);
 
+            if(project == null)
+            {
+                throw new ArgumentNullException();
+            }
+
             List<Ticket> ticketsOnProject = _ticketRepo.GetAll().Where(t => t.ProjectId == id).ToList();
 
             List<UserProject> userProjectsOnProject = _userProjectRepo.GetAll().Where(up => up.ProjectId == id).ToList();
