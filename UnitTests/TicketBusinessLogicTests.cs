@@ -22,6 +22,7 @@ namespace UnitTests
         public TicketBusinessLogic ticketBL { get; set; }
         public IQueryable<Ticket> data { get; set; }
         public IQueryable<ApplicationUser> users { get; set; }
+        public IQueryable<TicketWatcher> ticketWatchers { get; set; }
 
         private Mock<IRepository<Ticket>> _ticketRepositoryMock;
 
@@ -91,7 +92,6 @@ namespace UnitTests
             data = tasks.AsQueryable();
 
 
-
             Mock<DbSet<Ticket>> mockTickets = new Mock<DbSet<Ticket>>();
             mockTickets.As<IQueryable<Ticket>>().Setup(m => m.Provider).Returns(data.Provider);
             mockTickets.As<IQueryable<Ticket>>().Setup(m => m.ElementType).Returns(data.ElementType);
@@ -99,6 +99,22 @@ namespace UnitTests
             mockTickets.As<IQueryable<Ticket>>().Setup(m => m.GetEnumerator()).Returns(() => data.GetEnumerator());
 
             mockContext.Setup(t => t.Tickets).Returns(mockTickets.Object);
+
+
+            List<TicketWatcher> watchers = new List<TicketWatcher>
+            {new TicketWatcher {Id = 1,Watcher = CreatedUsers.Last(),Ticket = data.Last() }
+
+            };
+            ticketWatchers = watchers.AsQueryable();
+
+
+            Mock<DbSet<TicketWatcher>> mockTicketWatchers = new Mock<DbSet<TicketWatcher>>();
+            mockTicketWatchers.As<IQueryable<TicketWatcher>>().Setup(m => m.Provider).Returns(ticketWatchers.Provider);
+            mockTicketWatchers.As<IQueryable<TicketWatcher>>().Setup(m => m.ElementType).Returns(ticketWatchers.ElementType);
+            mockTicketWatchers.As<IQueryable<TicketWatcher>>().Setup(m => m.Expression).Returns(ticketWatchers.Expression);
+            mockTicketWatchers.As<IQueryable<TicketWatcher>>().Setup(m => m.GetEnumerator()).Returns(() => ticketWatchers.GetEnumerator());
+
+            mockContext.Setup(t => t.TicketWatchers).Returns(mockTicketWatchers.Object);
 
             Mock<IRepository<Ticket>> ticketRepositoryMock = new Mock<IRepository<Ticket>>();
             _ticketRepositoryMock = ticketRepositoryMock;
@@ -196,9 +212,42 @@ namespace UnitTests
             Assert.ThrowsException<NullReferenceException>(() => ticketBL.DoesTicketExist(id));
         }
         [TestMethod]
-        public void AddtoWatcher
+        public void AddtoWatcher_solution()
+        {
+            Ticket checkingTicket = data.FirstOrDefault(t => t.Id == 1);
+            ApplicationUser user1 = users.First();
 
+            ticketBL.AddtoWatchers(user1.UserName, checkingTicket.Id);
 
+            Assert.AreEqual(checkingTicket.TicketWatchers.First(),user1.TicketWatching.First()); 
+        }
+
+        [TestMethod]
+        public void AddtoWatcher_Problem()
+        {
+            Ticket checkingTicket = data.FirstOrDefault(t => t.Id == 1);
+
+            Assert.ThrowsException<NullReferenceException>(() => ticketBL.AddtoWatchers(null, checkingTicket.Id));
+        }
+        [TestMethod]
+        public void UnWatch_solution()
+        {
+            Ticket checkingTicket = data.Last();
+            ApplicationUser user1 = users.Last();
+            ticketBL.AddtoWatchers(user1.UserName, checkingTicket.Id);
+
+            ticketBL.UnWatch(user1.UserName, checkingTicket.Id);
+
+            Assert.AreEqual(checkingTicket.TicketWatchers.First(), user1.TicketWatching.First());
+        }
+
+        [TestMethod]
+        public void UnWatch_Problem()
+        {
+            Ticket checkingTicket = data.FirstOrDefault(t => t.Id == 1);
+
+            Assert.ThrowsException<NullReferenceException>(() => ticketBL.UnWatch(null, checkingTicket.Id));
+        }
     }
 
 }

@@ -246,7 +246,8 @@ namespace JelloTicket.BusinessLayer.Services
             if (id != ticketVM.ticket.Id)
             {
                 throw new Exception("Not Found");
-            }
+            }            List<ApplicationUser> Users = _userRepo.GetAll().ToList();
+
             ApplicationUser currUser = _userManager.Users.FirstOrDefault(u => u.Id == userId);
             ticketVM.ticket.Owner = currUser;
             // business logic for editing the ticket here
@@ -260,9 +261,11 @@ namespace JelloTicket.BusinessLayer.Services
             TicketWatcher newTickWatch = new TicketWatcher();
             if (userName == null)
             {
-                throw new Exception("UserName is empty:");
+                throw new NullReferenceException("UserName is empty:");
             }
-            ApplicationUser user = _userManager.Users.First(u => u.UserName == userName);
+            List<ApplicationUser> Users = _userRepo.GetAll().ToList();
+
+            ApplicationUser user = Users.FirstOrDefault(u => u.UserName == userName);
             Ticket ticket = _ticketRepository.Get(id);
             newTickWatch.Ticket = ticket;
             newTickWatch.Watcher = user;
@@ -274,7 +277,14 @@ namespace JelloTicket.BusinessLayer.Services
         }
         public void UnWatch(string userName, int id)
         {
-            ApplicationUser user = _userManager.Users.First(u => u.UserName == userName);
+            List<ApplicationUser> Users = _userRepo.GetAll().ToList();
+
+            ApplicationUser user = Users.FirstOrDefault(u => u.UserName == userName);
+            if(user == null )
+            {
+                throw new NullReferenceException(" user Cannot be found");
+            }
+ 
             Ticket ticket = _ticketRepository.Get(id);
             List<TicketWatcher> ticketWatchers = _ticketWatcher.GetAll().ToList();
             TicketWatcher currTickWatch = ticketWatchers.First(tw => tw.Ticket == ticket && tw.Watcher == user);
