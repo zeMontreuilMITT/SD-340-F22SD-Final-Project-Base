@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Collections;
 using System.Security.Claims;
 using System.ComponentModel;
+using Microsoft.Extensions.Logging;
 
 namespace JelloTicket.BusinessLayer.Services
 {
@@ -153,13 +154,18 @@ namespace JelloTicket.BusinessLayer.Services
             return false;
         }
 
-        public async Task<bool> EditProjectModel(List<String> userIds, Project project)
+        public async Task<bool> EditProjectModel(List<String> userIds, Project project, ApplicationUser currentUser)
         {
+            if(userIds == null || project == null || currentUser == null)
+            {
+                return false;
+            }
+
             try
             {
                 foreach (String userId in userIds)
                 {
-                    ApplicationUser currentUser = await _userManager.FindByIdAsync(userId);
+                    //ApplicationUser currentUser = await _userManager.FindByIdAsync(userId);
 
                     // build the joining table model
                     UserProject newUserProject = new UserProject()

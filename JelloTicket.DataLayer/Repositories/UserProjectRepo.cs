@@ -35,7 +35,7 @@ namespace JelloTicket.DataLayer.Repositories
             _context.SaveChanges();
         }
 
-        public void Update(UserProject up)
+        public virtual void Update(UserProject up)
         {
             _context.Update(up);
             _context.SaveChanges();

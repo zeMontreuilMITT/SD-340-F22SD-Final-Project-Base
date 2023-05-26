@@ -157,7 +157,8 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             {
                 try
                 {
-                    await _projectBusinessLogic.EditProjectModel(userIds, project);
+                    ApplicationUser currentUser = _userManagerBusinessLogic.GetLoggedInUser(User).Result;
+                    await _projectBusinessLogic.EditProjectModel(userIds, project, currentUser);
                 }
                 catch (Exception ex)
                 {

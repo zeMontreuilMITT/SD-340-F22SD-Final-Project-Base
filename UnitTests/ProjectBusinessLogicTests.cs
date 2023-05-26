@@ -21,6 +21,7 @@ namespace UnitTests
         public ProjectBusinessLogic projectBL { get; set; }
         public List<Project> data { get; set; }
         public IQueryable<ApplicationUser> users { get; set; }
+        public Mock<UserProjectRepo> userProjectRepository { get; set; }
         private Mock<IRepository<Project>> _projectRepositoryMock;
 
         private readonly UserManager<ApplicationUser> _userManager = MockUserManager<ApplicationUser>(_users).Object;
@@ -87,7 +88,7 @@ namespace UnitTests
             _projectRepositoryMock = projectRepositoryMock;
 
             var userManagerBusinessLogic = new Mock<UserManagerBusinessLogic>();
-            var userProjectRepository = new Mock<UserProjectRepo>();
+            userProjectRepository = new Mock<UserProjectRepo>();
             var ticketRepository = new Mock<IRepository<Ticket>>();
             var userProjectRepo = new Mock<IUserProjectRepo>();
 
@@ -314,5 +315,56 @@ namespace UnitTests
 
         }
 
+        [TestMethod]
+        public void EditProjectModel_WithArgs_SuccessfullyUpdatesModel()
+        {
+            
+
+            ApplicationUser user = new ApplicationUser { Id = 15.ToString() };
+
+            // Arrange
+            List<String> userIds = new List<String>
+            {
+                user.Id,
+            };
+
+            Project project = new Project
+            {
+                ProjectName = "TestProj"
+            };
+
+            UserProject newUserProject = new UserProject()
+            {
+                ApplicationUser = user,
+                UserId = user.Id,
+                Project = project
+            };
+
+            UserProject returnedUserProject = null;
+            userProjectRepository.Setup(pr => pr.Update(It.IsAny<UserProject>()))
+                .Callback<UserProject>(up =>
+                {
+                    returnedUserProject = up;
+                });
+
+            // Act
+            bool returnsSuccessfully = projectBL.EditProjectModel(userIds, project, user).Result;
+
+            // Assert
+            Assert.IsTrue(returnsSuccessfully);
+            Assert.AreEqual(returnedUserProject.Project.AssignedTo.First().ApplicationUser, newUserProject.ApplicationUser);
+        }
+
+        [TestMethod]
+        public void EditProjectModel_WithInvalidArgs_ReturnsFalse()
+        {
+            // Arrange
+
+            // Act
+            bool returnCondition = projectBL.EditProjectModel(null, null, null).Result;
+
+            // Assert
+            Assert.IsFalse(returnCondition);
+        }
     }
 }
