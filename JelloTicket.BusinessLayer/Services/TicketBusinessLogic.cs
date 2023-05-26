@@ -30,6 +30,7 @@ namespace JelloTicket.BusinessLayer.Services
         private readonly UserManagerBusinessLogic _userManagerBusinessLogic;
         private readonly IRepository<UserProject> _userProjectRepo;
         private readonly IRepository<TicketWatcher> _ticketWatcher;
+        private readonly IRepository<ApplicationUser> _userRepo;
 
         public TicketBusinessLogic(IRepository<Ticket> ticketRepository
             , IRepository<DataLayer.Models.Project> projectRepository
@@ -37,7 +38,7 @@ namespace JelloTicket.BusinessLayer.Services
             , UserManager<ApplicationUser> userManager
             , UserManagerBusinessLogic userManagerBusinessLogic
             , IRepository<UserProject> userProjectRepo
-            , IRepository<TicketWatcher> ticketWatcher)
+            , IRepository<TicketWatcher> ticketWatcher,IRepository<ApplicationUser> UserRepo)
         {
             _ticketRepository = ticketRepository;
             _projectRepository = projectRepository;
@@ -46,6 +47,7 @@ namespace JelloTicket.BusinessLayer.Services
             _userManagerBusinessLogic = userManagerBusinessLogic;
             _userProjectRepo = userProjectRepo;
             _ticketWatcher = ticketWatcher;
+            _userRepo = UserRepo;
         }
 
         public Ticket GetTicketById(int? id)
@@ -109,8 +111,13 @@ namespace JelloTicket.BusinessLayer.Services
             _ticketRepository.Delete(ticketId);
         }
 
-        public bool DoesTicketExist(int id)
+        public bool DoesTicketExist(int? id)
         {
+            if(id == null)
+            {
+                throw new NullReferenceException("Id is NUll");
+            }
+
             return _ticketRepository.Exists(id);
         }
 
@@ -218,7 +225,14 @@ namespace JelloTicket.BusinessLayer.Services
 
         public IEnumerable<SelectListItem> users(Ticket ticket)
         {
-            List<ApplicationUser> results = _userManager.Users.Where(u => u != ticket.Owner).ToList();
+            if(ticket == null)
+            {
+                throw new NullReferenceException("Provided Ticket is Null");
+            }
+
+            List<ApplicationUser> Users = _userRepo.GetAll().ToList();
+
+            List<ApplicationUser> results = Users.Where(u => u != ticket.Owner).ToList();
 
             List<SelectListItem> currUsers = new List<SelectListItem>();
             results.ForEach(r =>

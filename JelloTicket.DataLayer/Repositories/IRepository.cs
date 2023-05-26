@@ -19,6 +19,6 @@ namespace JelloTicket.DataLayer.Repositories
 
         void Save();
 
-        bool Exists(int id);
+        bool Exists(int? id);
     }
 }
