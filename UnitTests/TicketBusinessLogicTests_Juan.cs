@@ -114,6 +114,7 @@ namespace UnitTests
             Mock<IRepository<Ticket>> ticketRepository = new Mock<IRepository<Ticket>>();
             Mock<IUserProjectRepo> userProjectRepo = new Mock<IUserProjectRepo>();
             Mock<TicketWatcherRepo> ticketWatcherRepo = new Mock<TicketWatcherRepo>();
+            Mock<IRepository<ApplicationUser>> userRepo = new Mock<IRepository<ApplicationUser>>();
 
             ticketBL = new TicketBusinessLogic(
                 ticketRepositoryMock.Object,
@@ -122,7 +123,8 @@ namespace UnitTests
                 _userManager,
                 userManagerBusinessLogic.Object,
                 userProjectRepository.Object,
-                ticketWatcherRepo.Object
+                ticketWatcherRepo.Object,
+                userRepo.Object
             );
             
            

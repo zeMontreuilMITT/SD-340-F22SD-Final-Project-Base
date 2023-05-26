@@ -17,7 +17,7 @@ using Ticket = JelloTicket.DataLayer.Models.Ticket;
 namespace UnitTests
 {
     [TestClass]
-    public class TicketBusinessLogicTests
+    public class TicketBusinessLogicTests_Chamanpreet
     {
         public TicketBusinessLogic ticketBL { get; set; }
         public IQueryable<Ticket> data { get; set; }

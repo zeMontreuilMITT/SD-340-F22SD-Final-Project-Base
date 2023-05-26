@@ -32,6 +32,7 @@ builder.Services.AddScoped<TicketBusinessLogic>();
 builder.Services.AddScoped<AdminBusinessLogic>();
 builder.Services.AddScoped<IUserRepo<ApplicationUser>, UserRepo>();
 builder.Services.AddScoped<IUserProjectRepo, UserProjectRepo>();
+builder.Services.AddScoped<IRepository<ApplicationUser>, UserRepo>();
 
 var app = builder.Build();
 
