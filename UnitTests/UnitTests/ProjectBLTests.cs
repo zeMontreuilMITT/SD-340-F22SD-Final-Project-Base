@@ -12,7 +12,7 @@ namespace UnitTests
     public class ProjectBLTests
     {
 		public ProjectBL ProjectBusinessLogic { get; set; }
-		public IQueryable<Project> projectData { get; set; }
+		public List<Project> projectData { get; set; }
 
 		public IQueryable<UserProject> userProjectData { get; set; }
 
@@ -41,11 +41,11 @@ namespace UnitTests
 				new Project{ Id = 1, ProjectName = "Project1", CreatedById = _usersData.First().Id, CreatedBy = _usersData.First()},
 				new Project{ Id = 2, ProjectName = "Project2", CreatedById = _usersData.First().Id, CreatedBy = _usersData.First()}
 
-			}.AsQueryable();
+			};
 
-			mockProjectDbSet.As<IQueryable<Project>>().Setup(m => m.Provider).Returns(projectData.Provider);
-			mockProjectDbSet.As<IQueryable<Project>>().Setup(m => m.Expression).Returns(projectData.Expression);
-			mockProjectDbSet.As<IQueryable<Project>>().Setup(m => m.ElementType).Returns(projectData.ElementType);
+			mockProjectDbSet.As<IQueryable<Project>>().Setup(m => m.Provider).Returns(projectData.AsQueryable().Provider);
+			mockProjectDbSet.As<IQueryable<Project>>().Setup(m => m.Expression).Returns(projectData.AsQueryable().Expression);
+			mockProjectDbSet.As<IQueryable<Project>>().Setup(m => m.ElementType).Returns(projectData.AsQueryable().ElementType);
 			mockProjectDbSet.As<IQueryable<Project>>().Setup(m => m.GetEnumerator()).Returns(projectData.GetEnumerator());
 
 
@@ -82,12 +82,15 @@ namespace UnitTests
 				return entityEntry.Object;
 			});
 
+			
+
 			Mock<ApplicationDbContext> mockContext = new Mock<ApplicationDbContext>();
 
             mockContext.Setup(c => c.Projects).Returns(mockProjectDbSet.Object);
 			mockContext.Setup(c => c.UserProjects).Returns(mockUserProjectDbSet.Object);
 			mockContext.Setup(c => c.Tickets).Returns(mockTicketDbSet.Object);
 			mockContext.Setup(c => c.Remove(It.IsAny<UserProject>())).Callback(() => hasRemovedUserProject = true);
+			mockContext.Setup(c => c.Add(It.IsAny<Project>())).Callback<Project>((entity) => projectData.Add(entity));
 
 
 			ProjectBusinessLogic = new ProjectBL(
@@ -183,6 +186,19 @@ namespace UnitTests
         {
             Assert.ThrowsException<ArgumentNullException>(() => ProjectBusinessLogic.RemoveUserFromProject(null, projectData.First().Id));
         }
+
+		[TestMethod]
+		public void CreateProject_CreatesNewProject()
+		{
+			int startingProjectCount = projectData.Count();
+
+			Project newProject = new Project() { Id = 99, ProjectName = "TestProject", CreatedById = _usersData.First().Id, CreatedBy = _usersData.First() };
+			List<string> newUserIds = new List<string>() {_usersData.Last().Id };
+
+			ProjectBusinessLogic.CreateProject(newProject, newUserIds);
+			
+			Assert.IsTrue(startingProjectCount < projectData.Count());
+		}
     }
 
 }
