@@ -199,6 +199,19 @@ namespace UnitTests
 			
 			Assert.IsTrue(startingProjectCount < projectData.Count());
 		}
+
+		[TestMethod]
+		public void CreateProject_ThrowsArgumentExceptionWhenUserIdsEmpty()
+		{
+			Project newProject = new Project() { Id = 99, ProjectName = "x", CreatedById = _usersData.First().Id, CreatedBy = _usersData.First() };
+            List<string> newUserIds = new List<string>();
+
+			
+
+			Assert.ThrowsException<ArgumentException>(() => ProjectBusinessLogic.CreateProject(newProject, newUserIds));
+
+        }
+		
     }
 
 }

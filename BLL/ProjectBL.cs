@@ -220,6 +220,11 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
         // Paul Positive and Fail Test
         public void CreateProject(Project project, List<string> associatedUserIds)
         {
+            if(associatedUserIds.Count < 1)
+            {
+                throw new ArgumentException("Must assign at least one user to project.");
+            }
+
             associatedUserIds.ForEach((userId) =>
             {                
                 UserProject newUserProj = new UserProject();
