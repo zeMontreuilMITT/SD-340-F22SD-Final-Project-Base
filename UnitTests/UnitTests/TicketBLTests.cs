@@ -60,7 +60,10 @@ namespace UnitTests
 
 		public static Mock<UserManager<ApplicationUser>> MockUserManager(List<ApplicationUser> ls)
 		{
-			Mock<IUserStore<ApplicationUser>> store = new Mock<IUserStore<ApplicationUser>>();
+            /// This method copied from Stack Overflow User
+            /// https://stackoverflow.com/questions/49165810/how-to-mock-usermanager-in-net-core-testing
+            /// 
+            Mock<IUserStore<ApplicationUser>> store = new Mock<IUserStore<ApplicationUser>>();
 
 			Mock<UserManager<ApplicationUser>> mgr = new Mock<UserManager<ApplicationUser>>(store.Object, null, null, null, null, null, null, null, null);
 
